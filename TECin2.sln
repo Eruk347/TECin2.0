@@ -1,13 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35527.113 d17.12
+VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TECin2.Blazor", "TECin2.Blazor\TECin2.Blazor.csproj", "{EDAA73A6-F554-4B2C-9C12-0D5C28D68931}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TECin2.API", "TECin2.API\TECin2.API.csproj", "{76101D5F-870E-4237-B22E-89ACAB6E3739}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TECin2.MAUI", "TECin2.MAUI\TECin2.MAUI.csproj", "{679D53DD-8524-48E4-BA4C-F704E5520AAA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TECin2.MAUI", "TECin2.MAUI\TECin2.MAUI.csproj", "{B52C7F4D-79A5-4632-8666-F602FD5AC490}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,11 +23,10 @@ Global
 		{76101D5F-870E-4237-B22E-89ACAB6E3739}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{76101D5F-870E-4237-B22E-89ACAB6E3739}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{76101D5F-870E-4237-B22E-89ACAB6E3739}.Release|Any CPU.Build.0 = Release|Any CPU
-		{679D53DD-8524-48E4-BA4C-F704E5520AAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{679D53DD-8524-48E4-BA4C-F704E5520AAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{679D53DD-8524-48E4-BA4C-F704E5520AAA}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{679D53DD-8524-48E4-BA4C-F704E5520AAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{679D53DD-8524-48E4-BA4C-F704E5520AAA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B52C7F4D-79A5-4632-8666-F602FD5AC490}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B52C7F4D-79A5-4632-8666-F602FD5AC490}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B52C7F4D-79A5-4632-8666-F602FD5AC490}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B52C7F4D-79A5-4632-8666-F602FD5AC490}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
