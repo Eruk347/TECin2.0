@@ -9,6 +9,56 @@
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <SolidColorBrush x:Key="TECAubergine" Color="#550041"/>
+            <SolidColorBrush x:Key="TECFlaskegron" Color="#004b46"/>
+            <SolidColorBrush x:Key="TECGranatrod" Color="#5a1400"/>
+            <SolidColorBrush x:Key="TECHimmeblaa" Color="#64becd"/>
+            <SolidColorBrush x:Key="TECKhaki" Color="#b4a082"/>
+            <SolidColorBrush x:Key="TECKoralrod" Color="#fa5050"/>
+            <SolidColorBrush x:Key="TECPetrolium" Color="#00415a"/>
+            <SolidColorBrush x:Key="TECSennepsgul" Color="#cda01e"/>
+            <SolidColorBrush x:Key="TECTurkis" Color="#28cdaf"/>
+
+
+            <Color x:Key="TECWhite">#ffffff</Color>
+            <Color x:Key="TECGray" >#828282</Color>
+            <Color x:Key="TECBlack">#000000</Color>
+
+            <!--Border-->
+            <Style x:Key="BorderTest" TargetType="Border">
+                <Setter Property="StrokeThickness" Value="1"/>
+                <Setter Property="Stroke" Value="{StaticResource TECKoralrod}"/>
+            </Style>
+
+
+
+            <!--Labels-->
+            <Style x:Key="WhiteText" TargetType="Label">
+                <Setter Property="TextColor" Value="{StaticResource TECWhite}"/>
+                <Setter Property="FontFamily" Value="Arial"/>
+            </Style>
+            <Style x:Key="BigLabel" TargetType="Label" BasedOn="{StaticResource WhiteText}">
+                <Setter Property="FontSize" Value="35"/>
+                <Setter Property="HorizontalTextAlignment" Value="Center"/>
+            </Style>
+            <Style x:Key="Warning" TargetType="Label" >
+                <Setter Property="TextColor" Value="{StaticResource TECKoralrod}"/>
+                <Setter Property="HorizontalTextAlignment" Value="Center"/>
+                <Setter Property="FontSize" Value="25"/>
+                <Setter Property="FontFamily" Value="Arial"/>
+            </Style>
+
+
+            <!--PasswordBox-->
+            <Style x:Key="bigPasswordBox" TargetType="Entry">
+                <Setter Property="FontSize" Value="40"/>
+                <Setter Property="FontFamily" Value="Arial"/>
+                <Setter Property="HorizontalTextAlignment" Value="Center"/>
+                <Setter Property="WidthRequest" Value="400"/>
+            </Style>
+            
+
         </ResourceDictionary>
+
     </Application.Resources>
 </Application>

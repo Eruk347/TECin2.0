@@ -1,25 +1,24 @@
-﻿namespace TECin2.MAUI
+﻿using TECin2.MAUI.Pages;
+
+namespace TECin2.MAUI
 {
     public partial class MainPage : ContentPage
     {
-        int count = 0;
-
         public MainPage()
         {
             InitializeComponent();
         }
 
-        private void OnCounterClicked(object sender, EventArgs e)
+        private void Button_Clicked(object sender, EventArgs e)
         {
-            count++;
+            Navigation.PushAsync(new Registration());
+        }
 
-            if (count == 1)
-                CounterBtn.Text = $"Clicked {count} time";
-            else
-                CounterBtn.Text = $"Clicked {count} times";
-
-            SemanticScreenReader.Announce(CounterBtn.Text);
+        private void CPR_entry_Completed(object sender, EventArgs e)
+        {
+            //https://github.com/afriscic/BarcodeScanning.Native.Maui
+            NameLabel.Text = CPR_entry.Text;
+            CPR_entry.Text = "";
         }
     }
-
 }
