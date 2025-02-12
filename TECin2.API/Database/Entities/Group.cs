@@ -22,19 +22,19 @@ namespace TECin2.API.Database.Entities
         [Column(TypeName = "time")]
         public required TimeOnly ArrivalTime { get; set; }
 
-        [ForeignKey("DepartureTimes")]
+        [ForeignKey("WorkHoursInDay")]
         [Column(TypeName = "int")]
-        public int? DepartureTimesId { get; set; }
-        public DepartureTimes? DepartureTimes { get; set; }
+        public int? WorkHoursInDayId { get; set; }
+        public WorkHoursInDay? WorkHoursInDay { get; set; }
 
         //[Column(TypeName = "nvarchar(100)")]
         //public required string DepartureTime { get; set; }
 
         [Column(TypeName = "binary")]
-        public bool FlexibleArrival { get; set; }
+        public bool FlexibleArrivalEnabled { get; set; }
 
         [Column(TypeName = "nvarchar(5)")]
-        public TimeOnly? FlexibleTime { get; set; }
+        public TimeOnly? FlexibleAmount { get; set; }
 
         [Column(TypeName = "time")]
         public TimeOnly? IsLateBuffer { get; set; }

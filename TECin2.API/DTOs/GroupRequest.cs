@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using TECin2.API.Database.Entities;
 
 namespace TECin2.API.DTOs
 {
@@ -15,17 +16,16 @@ namespace TECin2.API.DTOs
         public bool Deactivated { get; set; }
 
         [Required]
-        public required string ArrivalTime { get; set; }
+        public required TimeOnly ArrivalTime { get; set; }
 
-        [Required]
-        public string? IsLatebuffer { get; set; }
+        public TimeOnly? IsLatebuffer { get; set; }
 
         public string? IsLateMessage { get; set; }
 
-        public string? DepartureTime { get; set; }
+        public WorkHoursInDay? WorkHoursInDay { get; set; }
 
-        public bool FlexibleArrival { get; set; }
+        public bool FlexibleArrivalEnabled { get; set; }
 
-        public string? FlexibleTime { get; set; }
+        public TimeOnly? FlexibleAmount { get; set; }
     }
 }

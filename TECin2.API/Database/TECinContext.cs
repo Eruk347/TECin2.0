@@ -10,7 +10,7 @@ namespace TECin2.API.Database
 
         public DbSet<CheckInStatus> CheckInStatus { get; set; }
         public DbSet<Department> Department { get; set; }
-        public DbSet<DepartureTimes> DepartureTimes { get; set; }
+        public DbSet<WorkHoursInDay> WorkHoursInDay { get; set; }
         public DbSet<Group> Group { get; set; }
         public DbSet<Log> Log { get; set; }
         public DbSet<Role> Role { get; set; }

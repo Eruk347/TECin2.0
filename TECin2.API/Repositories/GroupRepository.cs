@@ -7,11 +7,12 @@ namespace TECin2.API.Repositories
     public interface IGroupRepository
     {
 
-        Task<List<Group>?> SelectAllGroups();
+        Task<List<Group>> SelectAllGroups();
         Task<Group?> SelectGroupById(int groupId);
         Task<Group?> InsertNewGroup(Group group);
         Task<Group?> UpdateGroup(int groupId, Group group);
         Task<Group?> DeleteGroup(int groupId);
+        //Task<List<User>?> SelectAllUsersFromGroup(Group group);
     }
     public class GroupRepository(TECinContext context) : IGroupRepository
     {
@@ -28,7 +29,7 @@ namespace TECin2.API.Repositories
             {
                 Group? deletedGroup = await _context.Group
                     .Include(g => g.Department)
-                    .Include(g=>g.DepartureTimes)
+                    .Include(g => g.WorkHoursInDay)
                     .FirstOrDefaultAsync(group => group.Id == groupId);
                 if (deletedGroup != null)
                 {
@@ -51,7 +52,7 @@ namespace TECin2.API.Repositories
             {
                 return await _context.Group
                     .Include(g => g.Department)
-                    .Include(g => g.DepartureTimes)
+                    .Include(g => g.WorkHoursInDay)
                     .Include(u => u.Users)
                     .FirstOrDefaultAsync(group => group.Id == groupId);
             }
@@ -70,7 +71,7 @@ namespace TECin2.API.Repositories
                 await _context.SaveChangesAsync();
                 return await _context.Group
                     .Include(g => g.Department)
-                    .Include(g => g.DepartureTimes)
+                    .Include(g => g.WorkHoursInDay)
                     .FirstOrDefaultAsync(group => group.Id == group.Id);
             }
             catch (Exception e)
@@ -80,19 +81,19 @@ namespace TECin2.API.Repositories
             }
         }
 
-        public async Task<List<Group>?> SelectAllGroups()
+        public async Task<List<Group>> SelectAllGroups()
         {
             try
             {
                 return await _context.Group
                     .Include(g => g.Department)
-                    .Include(g => g.DepartureTimes)
+                    .Include(g => g.WorkHoursInDay)
                     .ToListAsync();
             }
             catch (Exception e)
             {
                 WriteToLog("SelectAllGroups", e);
-                return null;
+                return [];
             }
         }
 
@@ -102,7 +103,7 @@ namespace TECin2.API.Repositories
             {
                 Group? updatedGroup = await _context.Group
                     .Include(g => g.Department)
-                    .Include(g => g.DepartureTimes)
+                    .Include(g => g.WorkHoursInDay)
                     .FirstOrDefaultAsync(group => group.Id == groupId);
                 if (updatedGroup != null)
                 {
@@ -111,16 +112,16 @@ namespace TECin2.API.Repositories
                     updatedGroup.ArrivalTime = group.ArrivalTime;
                     updatedGroup.IsLateBuffer = group.IsLateBuffer;
                     updatedGroup.IsLateMessage = group.IsLateMessage;
-                    updatedGroup.DepartureTimes = group.DepartureTimes;
+                    updatedGroup.WorkHoursInDay = group.WorkHoursInDay;
                     updatedGroup.Deactivated = group.Deactivated;
-                    updatedGroup.FlexibleArrival = group.FlexibleArrival;
-                    updatedGroup.FlexibleTime = group.FlexibleTime;
+                    updatedGroup.FlexibleArrivalEnabled = group.FlexibleArrivalEnabled;
+                    updatedGroup.FlexibleAmount = group.FlexibleAmount;
                     await _context.SaveChangesAsync();
                 }
 
                 Group? returnGroup = await _context.Group
                     .Include(g => g.Department)
-                    .Include(g => g.DepartureTimes)
+                    .Include(g => g.WorkHoursInDay)
                     .FirstOrDefaultAsync(group => group.Id == groupId);
 
                 return returnGroup;
@@ -132,13 +133,12 @@ namespace TECin2.API.Repositories
             }
         }
 
-        //public async Task<List<User>?> SelectAllUsersFromGroup(int groupId)
+        //public async Task<List<User>?> SelectAllUsersFromGroup(Group group)
         //{
         //    try
         //    {
         //        List<User> usersInGroup = await _context.User
-        //            .Where()
-        //            .SelectMany(c => c.)
+        //            .Where(u => u.Groups.Contains(group))
         //            .Include(r => r.Role)
         //            .ToListAsync();
 

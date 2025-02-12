@@ -1,16 +1,18 @@
-﻿namespace TECin2.API.DTOs
+﻿using TECin2.API.Database.Entities;
+
+namespace TECin2.API.DTOs
 {
     public class GroupResponse
     {
         public int Id { get; set; }
         public required string Name { get; set; }
         public bool Deactivated { get; set; }
-        public required string ArrivalTime { get; set; }
-        public string? IsLateBuffer { get; set; }
+        public required TimeOnly ArrivalTime { get; set; }
+        public bool FlexibleArrivalEnabled { get; set; }
+        public TimeOnly? FlexibleAmount { get; set; }
+        public TimeOnly? IsLateBuffer { get; set; }
         public string? IsLateMessage { get; set; }
-        public string? DepartureTime { get; set; }
-        public bool FlexibleArrival { get; set; }
-        public string? FlexibleTime { get; set; }
+        public WorkHoursInDay? WorkHoursInDay { get; set; }
         public required GroupDepartmentResponse Department { get; set; }
         public List<GroupUsersResponse> Users { get; set; } = [];
     }
@@ -30,7 +32,7 @@
         public int? Phonenumber { get; set; }
         public string? Email { get; set; }
         public string? Username { get; set; }
-        public string? LastCheckin { get; set; }
+        public DateOnly? LastCheckin { get; set; }
         public bool Deactivated { get; set; }
     }
 }

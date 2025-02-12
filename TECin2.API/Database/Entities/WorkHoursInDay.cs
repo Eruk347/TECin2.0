@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TECin2.API.Database.Entities
 {
-    public class DepartureTimes
+    public class WorkHoursInDay
     {
         [Key]
         public int Id { get; set; }

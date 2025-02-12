@@ -51,9 +51,9 @@ namespace TECin2.Tests.Repositories
                 Deactivated = false,
                 ArrivalTime = new(),
                 DepartmentId = 1,
-                DepartureTimesId = 1,
-                FlexibleArrival = true,
-                FlexibleTime = new(),
+                WorkHoursInDayId = 1,
+                FlexibleArrivalEnabled = true,
+                FlexibleAmount = new(),
                 IsLateBuffer = new(),
                 IsLateMessage = "",
             });
@@ -108,9 +108,9 @@ namespace TECin2.Tests.Repositories
                 Deactivated = false,
                 ArrivalTime = new(),
                 DepartmentId = 1,
-                DepartureTimesId = 1,
-                FlexibleArrival = true,
-                FlexibleTime = new(),
+                WorkHoursInDayId = 1,
+                FlexibleArrivalEnabled = true,
+                FlexibleAmount = new(),
                 IsLateBuffer = new(),
                 IsLateMessage = "",
             };
@@ -126,9 +126,9 @@ namespace TECin2.Tests.Repositories
             Assert.Equal(newGroup.Deactivated, result.Deactivated);
             Assert.Equal(newGroup.ArrivalTime, result.ArrivalTime);
             Assert.Equal(newGroup.DepartmentId, result.DepartmentId);
-            Assert.Equal(newGroup.DepartureTimes, result.DepartureTimes);
-            Assert.Equal(newGroup.FlexibleArrival, result.FlexibleArrival);
-            Assert.Equal(newGroup.FlexibleTime, result.FlexibleTime);
+            Assert.Equal(newGroup.WorkHoursInDayId, result.WorkHoursInDayId);
+            Assert.Equal(newGroup.FlexibleArrivalEnabled, result.FlexibleArrivalEnabled);
+            Assert.Equal(newGroup.FlexibleAmount, result.FlexibleAmount);
             Assert.Equal(newGroup.IsLateBuffer, result.IsLateBuffer);
             Assert.Equal(newGroup.IsLateMessage, result.IsLateMessage);
         }
@@ -146,9 +146,9 @@ namespace TECin2.Tests.Repositories
                 Deactivated = false,
                 ArrivalTime = new(),
                 DepartmentId = 1,
-                DepartureTimesId = 1,
-                FlexibleArrival = true,
-                FlexibleTime = new(),
+                WorkHoursInDayId = 1,
+                FlexibleArrivalEnabled = true,
+                FlexibleAmount = new(),
                 IsLateBuffer = new(),
                 IsLateMessage = "",
             };
@@ -189,9 +189,9 @@ namespace TECin2.Tests.Repositories
                 Deactivated = false,
                 ArrivalTime = new(),
                 DepartmentId = 1,
-                DepartureTimesId = 1,
-                FlexibleArrival = true,
-                FlexibleTime = new(),
+                WorkHoursInDayId = 1,
+                FlexibleArrivalEnabled = true,
+                FlexibleAmount = new(),
                 IsLateBuffer = new(),
                 IsLateMessage = "",
             });
@@ -203,9 +203,9 @@ namespace TECin2.Tests.Repositories
                 Deactivated = false,
                 ArrivalTime = new(),
                 DepartmentId = 1,
-                DepartureTimesId = 1,
-                FlexibleArrival = true,
-                FlexibleTime = new(),
+                WorkHoursInDayId = 1,
+                FlexibleArrivalEnabled = true,
+                FlexibleAmount = new(),
                 IsLateBuffer = new(),
                 IsLateMessage = "",
             });
@@ -262,9 +262,9 @@ namespace TECin2.Tests.Repositories
                 Deactivated = false,
                 ArrivalTime = new(),
                 DepartmentId = 1,
-                DepartureTimesId = 1,
-                FlexibleArrival = true,
-                FlexibleTime = new(),
+                WorkHoursInDayId = 1,
+                FlexibleArrivalEnabled = true,
+                FlexibleAmount = new(),
                 IsLateBuffer = new(),
                 IsLateMessage = "",
             });
@@ -293,6 +293,7 @@ namespace TECin2.Tests.Repositories
             Assert.Null(result);
         }
         #endregion
+
 
         #region Update
         [Fact]
@@ -328,9 +329,9 @@ namespace TECin2.Tests.Repositories
                 Deactivated = false,
                 ArrivalTime = new(),
                 DepartmentId = 1,
-                DepartureTimesId = 1,
-                FlexibleArrival = true,
-                FlexibleTime = new(),
+                WorkHoursInDayId = 1,
+                FlexibleArrivalEnabled = true,
+                FlexibleAmount = new(),
                 IsLateBuffer = new(),
                 IsLateMessage = "",
             };
@@ -345,9 +346,9 @@ namespace TECin2.Tests.Repositories
                 Deactivated = true,
                 ArrivalTime = TimeOnly.FromDateTime(DateTime.Now),
                 DepartmentId = 2,
-                DepartureTimesId = 1,
-                FlexibleArrival = false,
-                FlexibleTime = TimeOnly.FromDateTime(DateTime.Now),
+                WorkHoursInDayId = 1,
+                FlexibleArrivalEnabled = false,
+                FlexibleAmount = TimeOnly.FromDateTime(DateTime.Now),
                 IsLateBuffer = TimeOnly.FromDateTime(DateTime.Now),
                 IsLateMessage = "2",
             };
@@ -364,9 +365,9 @@ namespace TECin2.Tests.Repositories
             Assert.Equal(newGroup.Deactivated, result.Deactivated);
             Assert.Equal(newGroup.ArrivalTime, result.ArrivalTime);
             Assert.Equal(newGroup.DepartmentId, result.DepartmentId);
-            Assert.Equal(newGroup.DepartureTimes, result.DepartureTimes);
-            Assert.Equal(newGroup.FlexibleArrival, result.FlexibleArrival);
-            Assert.Equal(newGroup.FlexibleTime, result.FlexibleTime);
+            Assert.Equal(newGroup.WorkHoursInDayId, result.WorkHoursInDayId);
+            Assert.Equal(newGroup.FlexibleArrivalEnabled, result.FlexibleArrivalEnabled);
+            Assert.Equal(newGroup.FlexibleAmount, result.FlexibleAmount);
             Assert.Equal(newGroup.IsLateBuffer, result.IsLateBuffer);
             Assert.Equal(newGroup.IsLateMessage, result.IsLateMessage);
         }
@@ -385,9 +386,9 @@ namespace TECin2.Tests.Repositories
                 Deactivated = false,
                 ArrivalTime = new(),
                 DepartmentId = 1,
-                DepartureTimesId = 1,
-                FlexibleArrival = true,
-                FlexibleTime = new(),
+                WorkHoursInDayId = 1,
+                FlexibleArrivalEnabled = true,
+                FlexibleAmount = new(),
                 IsLateBuffer = new(),
                 IsLateMessage = "",
             };
