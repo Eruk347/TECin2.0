@@ -28,14 +28,14 @@ namespace TECin2.API.Database.Entities
         [Column(TypeName = "nvarchar(32)")]
         public string? Email { get; set; }
 
-        [Column(TypeName = "binary")]
+        [Column(TypeName = "bit")]
         public bool Deactivated { get; set; }
 
         public virtual ICollection<Group>? Groups { get; set; }
 
         public List<Setting>? Settings { get; set; }
 
-        [Column(TypeName = "binary")]
+        [Column(TypeName = "bit")]
         public bool IsStudent { get; set; }
 
         [ForeignKey("Role")]

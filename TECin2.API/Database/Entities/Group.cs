@@ -11,7 +11,7 @@ namespace TECin2.API.Database.Entities
         [Column(TypeName = "nvarchar(32)")]
         public required string Name { get; set; }
 
-        [Column(TypeName = "binary")]
+        [Column(TypeName = "bit")]
         public bool Deactivated { get; set; }
 
         [ForeignKey("Department")]
@@ -27,10 +27,7 @@ namespace TECin2.API.Database.Entities
         public int? WorkHoursInDayId { get; set; }
         public WorkHoursInDay? WorkHoursInDay { get; set; }
 
-        //[Column(TypeName = "nvarchar(100)")]
-        //public required string DepartureTime { get; set; }
-
-        [Column(TypeName = "binary")]
+        [Column(TypeName = "bit")]
         public bool FlexibleArrivalEnabled { get; set; }
 
         [Column(TypeName = "nvarchar(5)")]

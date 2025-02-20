@@ -4,7 +4,23 @@ namespace TECin2.API.Services
 {
     public static class Global
     {
-        private static readonly List<string> Tokens = [];
+        public enum CheckInStatus
+        {
+            Hello,
+            Goodbye,
+            Early,
+            Late,            
+            Error
+        }
+
+        public enum LeavingEarly
+        {
+            No,
+            Yes,
+            Flex,
+        }
+
+        public static readonly List<string> Tokens = [];
 
         public static List<string> GetTokens()
         {

@@ -13,7 +13,7 @@ namespace TECin2.API.Database.Entities
 
         public ICollection<Department>? Departments { get; set; }
 
-        [Column(TypeName = "binary")]
+        [Column(TypeName = "bit")]
         public bool Deactivated { get; set; }
 
         [Column(TypeName = "nvarchar(36)")]

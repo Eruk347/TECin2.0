@@ -17,7 +17,7 @@ namespace TECin2.API.Database.Entities
         [Column(TypeName ="int")]
         public int Rank { get; set; }
 
-        [Column(TypeName = "binary")]
+        [Column(TypeName = "bit")]
         public bool Deactivated { get; set; }
     }
 }

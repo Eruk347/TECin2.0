@@ -25,7 +25,7 @@ namespace TECin2.API.DTOs
         public int GroupId { get; set; }
 
         [Required]
-        public bool isStudent { get; set; }
+        public bool IsStudent { get; set; }
         
         [Required]
         public int RoleId { get; set; }

@@ -24,7 +24,7 @@ namespace TECin2.API.Services
         /// <param name="_action"></param>
         /// <param name="_accessToken"></param>
         /// <param name="_entity"></param>
-        public void WriteLog(string _action, string _accessToken, Department _entity)
+        public async void WriteLog(string _action, string _accessToken, Department _entity)
         {
             string _message = "Department";
             if (_action == "Create")
@@ -36,7 +36,7 @@ namespace TECin2.API.Services
                 _message += " " + _entity.Name + " was deleted.";
             }
 
-            WriteLog(_message, _accessToken);
+            await WriteLog(_message, _accessToken);
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace TECin2.API.Services
         /// <param name="_accessToken"></param>
         /// <param name="_originalEntity"></param>
         /// <param name="_updatedEntity"></param>
-        public void WriteLog(string _accessToken, Department _originalEntity, Department _updatedEntity)
+        public async void WriteLog(string _accessToken, Department _originalEntity, Department _updatedEntity)
         {
             string _message = "Department";
             _message += " " + _originalEntity.Name;
@@ -59,7 +59,7 @@ namespace TECin2.API.Services
                 _message += ", changed its deparmenthead from " + _originalEntity.DepartmentHead + " to " + _updatedEntity.DepartmentHead;
             }
 
-            WriteLog(_message, _accessToken);
+            await WriteLog(_message, _accessToken);
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace TECin2.API.Services
         /// <param name="_action"></param>
         /// <param name="_accessToken"></param>
         /// <param name="_entity"></param>
-        public void WriteLog(string _action, string _accessToken, Group _entity)
+        public async void WriteLog(string _action, string _accessToken, Group _entity)
         {
             string _message = "Group";
             if (_action == "Create")
@@ -82,7 +82,7 @@ namespace TECin2.API.Services
                 _message += " was deleted from " + _entity.Department.Name;
             }
 
-            WriteLog(_message, _accessToken);
+            await WriteLog(_message, _accessToken);
         }
 
         /// <summary>
@@ -131,7 +131,7 @@ namespace TECin2.API.Services
         /// <param name="_action"></param>
         /// <param name="_accessToken"></param>
         /// <param name="_entity"></param>
-        public void WriteLog(string _action, string _accessToken, User _entity)
+        public async void WriteLog(string _action, string _accessToken, User _entity)
         {
             string _message;
             if (_entity.IsStudent)
@@ -150,7 +150,7 @@ namespace TECin2.API.Services
                 _message += " was deleted";
             }
 
-            WriteLog(_message, _accessToken);
+            await WriteLog(_message, _accessToken);
         }
 
         /// <summary>
@@ -159,7 +159,7 @@ namespace TECin2.API.Services
         /// <param name="_accessToken"></param>
         /// <param name="_originalEntity"></param>
         /// <param name="_updatedEntity"></param>
-        public void WriteLog(string _accessToken, User _originalEntity, User _updatedEntity)
+        public async void WriteLog(string _accessToken, User _originalEntity, User _updatedEntity)
         {
             string _message;
             if (_originalEntity.IsStudent)
@@ -198,7 +198,7 @@ namespace TECin2.API.Services
                 _message += ", changed its lastcheckin from " + _originalEntity.LastCheckin + " to " + _updatedEntity.LastCheckin;
             }
 
-            WriteLog(_message, _accessToken);
+            await WriteLog(_message, _accessToken);
         }
 
         /// <summary>
@@ -207,7 +207,7 @@ namespace TECin2.API.Services
         /// <param name="_action"></param>
         /// <param name="_accessToken"></param>
         /// <param name="_entity"></param>
-        public void WriteLog(string _action, string _accessToken, Role _entity)
+        public async void WriteLog(string _action, string _accessToken, Role _entity)
         {
             string _message = "Role";
             if (_action == "Create")
@@ -221,7 +221,7 @@ namespace TECin2.API.Services
                 _message += " was deleted";
             }
 
-            WriteLog(_message, _accessToken);
+            await WriteLog(_message, _accessToken);
         }
 
         /// <summary>
@@ -230,7 +230,7 @@ namespace TECin2.API.Services
         /// <param name="_accessToken"></param>
         /// <param name="_originalEntity"></param>
         /// <param name="_updatedEntity"></param>
-        public void WriteLog(string _accessToken, Role _originalEntity, Role _updatedEntity)
+        public async void WriteLog(string _accessToken, Role _originalEntity, Role _updatedEntity)
         {
             string _message = "Role";
             _message += " " + _originalEntity.Name;
@@ -247,7 +247,7 @@ namespace TECin2.API.Services
             {
                 _message += ", changed its Description from " + _originalEntity.Description + " to " + _updatedEntity.Description;
             }
-            WriteLog(_message, _accessToken);
+            await WriteLog(_message, _accessToken);
         }
 
 

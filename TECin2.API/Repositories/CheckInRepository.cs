@@ -11,6 +11,7 @@ namespace TECin2.API.Repositories
         Task<CheckInStatus?> InsertCheckInStatus(CheckInStatus request);
         Task<List<CheckInStatus>?> SelectCheckInForUser(string userId);
         Task<List<CheckInStatus>?> SelectCheckInForDate(DateOnly today);
+        Task<CheckInStatus?> SelectCheckInForUserOnDate(string userId, DateOnly today);
         Task<CheckInStatus?> UpdateCheckInStatus(CheckInStatus checkInStatus, int checkInStatusId);
     }
 
@@ -74,6 +75,22 @@ namespace TECin2.API.Repositories
             catch (Exception e)
             {
                 WriteToLog("SelectCheckInForDate", e);
+                return null;
+            }
+        }
+
+        public async Task<CheckInStatus?> SelectCheckInForUserOnDate(string userId, DateOnly today)
+        {
+            try
+            {
+                CheckInStatus? checkIn = await _context.CheckInStatus
+                    .FirstOrDefaultAsync(UN => UN.ArrivalDate == today && UN.User_Id == userId);
+
+                return checkIn;
+            }
+            catch (Exception e)
+            {
+                WriteToLog("SelectCheckInForUserOnDate", e);
                 return null;
             }
         }
