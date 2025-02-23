@@ -37,11 +37,11 @@ namespace TECin2.API.Services
                     return new CheckInResponse { FirstName = "", Message = "Lærling findes ikke", Color = FindColor(Global.CheckInStatus.Error) };
                 }
 
-                TimeOnly checkinTime = TimeOnly.FromDateTime(checkInRequest.CheckinTime);
-                CheckInStatus? checkIn = await _checkInRepository.SelectCheckInForUserOnDate(securityNumb.Id, DateOnly.FromDateTime(DateTime.Now));
-                if (CheckIn == null)//der findes ikke et checkin, så det er første checkin for dagen
+                TimeOnly checkinTimeFromRequest = TimeOnly.FromDateTime(checkInRequest.CheckinTime);
+                CheckInStatus? firstCheckIn = await _checkInRepository.SelectCheckInForUserOnDate(securityNumb.Id, DateOnly.FromDateTime(DateTime.Now));
+                if (firstCheckIn == null)//der findes ikke et checkin, så det er første checkin for dagen
                 {
-                    bool isStudentLate = IsStudentLate(checkinTime, user.Groups.ToList()[0]);
+                    bool isStudentLate = IsStudentLate(checkinTimeFromRequest, user.Groups.ToList()[0]);
                     if (isStudentLate)
                     {
                         return new CheckInResponse { FirstName = user.FirstName, Message = user.Groups.ToList()[0].IsLateMessage, Color = FindColor(Global.CheckInStatus.Late) };
@@ -49,35 +49,22 @@ namespace TECin2.API.Services
                     return new CheckInResponse { FirstName = user.FirstName, Message = "Hej " + user.FirstName, Color = FindColor(Global.CheckInStatus.Hello) };
                 }
 
-                if (checkIn != null)
+                if (checkinTimeFromRequest < firstCheckIn.ArrivalTime.AddMinutes(30))
                 {
-                    if (checkinTime < checkIn.ArrivalTime.AddMinutes(30))
-                    {
-                        return new CheckInResponse { FirstName = user.FirstName, Message = "Du er allerede tjekket ind." + user.FirstName, Color = FindColor(Global.CheckInStatus.Hello) };
-                    }
-
-                    Global.LeavingEarly isStudentLeavingEarly = IsStudentLeavingEarly(checkinTime, user.Groups.ToList()[0]);
-                    if (isStudentLeavingEarly == Global.LeavingEarly.No)
-                    {
-                        return new CheckInResponse { FirstName = user.FirstName, Message = "Farvel " + user.FirstName, Color = FindColor(Global.CheckInStatus.Goodbye) };
-                    }
-                    else if (isStudentLeavingEarly == Global.LeavingEarly.Yes)//der skal fikses noget her........
-                    {
-                        WorkHoursInDay? workHoursInDay = user.Groups.ToList()[0].WorkHoursInDay;
-                        if (workHoursInDay != null)
-                        {
-                            DateTime today = DateTime.Now;
-                            
-                                return new CheckInResponse { FirstName = user.FirstName, Message = "Du har først fri kl. " + user.FirstName, Color = FindColor(Global.CheckInStatus.Goodbye) };
-                        }
-                    }
-                    else if (isStudentLeavingEarly == Global.LeavingEarly.Flex)
-                    {
-
-                    }
-                    //er der flextid??
-                    //er der krav om check ud??
+                    return new CheckInResponse { FirstName = user.FirstName, Message = "Du er allerede tjekket ind." + user.FirstName, Color = FindColor(Global.CheckInStatus.Hello) };
                 }
+
+                Global.LeavingEarly isStudentLeavingEarly = IsStudentLeavingEarly(firstCheckIn.ArrivalTime, checkinTimeFromRequest, user.Groups.ToList()[0]);
+                if (isStudentLeavingEarly == Global.LeavingEarly.No)
+                {
+                    return new CheckInResponse { FirstName = user.FirstName, Message = "Farvel " + user.FirstName, Color = FindColor(Global.CheckInStatus.Goodbye) };
+                }
+                else if (isStudentLeavingEarly == Global.LeavingEarly.Yes)
+                {
+                    string message = ReturnMessage(firstCheckIn.ArrivalTime, checkinTimeFromRequest, user.Groups.ToList()[0], user.FirstName);
+                    return new CheckInResponse { FirstName = user.FirstName, Message = message, Color = FindColor(Global.CheckInStatus.Early) };
+                }
+
                 return null;
             }
             catch (Exception e)
@@ -141,9 +128,113 @@ namespace TECin2.API.Services
             return false;
         }
 
-        private static Global.LeavingEarly IsStudentLeavingEarly(TimeOnly checkOutTime, Group group)
+        private static Global.LeavingEarly IsStudentLeavingEarly(TimeOnly arrivalTime, TimeOnly checkOutTime, Group group)
         {
+            group.WorkHoursInDay ??= new()
+            {
+                Monday = new(7, 30, 0),
+                Tuesday = new(7, 30, 0),
+                Wednesday = new(7, 30, 0),
+                Thursday = new(7, 30, 0),
+                Friday = new(7, 0, 0),
+            };
 
+            switch ((int)DateTime.Now.DayOfWeek)
+            {
+                case 0:
+                    return Global.LeavingEarly.No;
+                case 1:
+                    if (checkOutTime < arrivalTime.Add(group.WorkHoursInDay.Monday.ToTimeSpan()))
+                        return Global.LeavingEarly.Yes;
+                    break;
+                case 2:
+                    if (checkOutTime < arrivalTime.Add(group.WorkHoursInDay.Tuesday.ToTimeSpan()))
+                        return Global.LeavingEarly.Yes;
+                    break;
+                case 3:
+                    if (checkOutTime < arrivalTime.Add(group.WorkHoursInDay.Wednesday.ToTimeSpan()))
+                        return Global.LeavingEarly.Yes;
+                    break;
+                case 4:
+                    if (checkOutTime < arrivalTime.Add(group.WorkHoursInDay.Thursday.ToTimeSpan()))
+                        return Global.LeavingEarly.Yes;
+                    break;
+                case 5:
+                    if (checkOutTime < arrivalTime.Add(group.WorkHoursInDay.Friday.ToTimeSpan()))
+                        return Global.LeavingEarly.Yes;
+                    break;
+                case 6: return Global.LeavingEarly.No;
+            }
+            return Global.LeavingEarly.No;
+        }
+
+        private static string ReturnMessage(TimeOnly arrivalTime, TimeOnly checkOutTime, Group group, string firstName)
+        {
+            if ((int)DateTime.Now.DayOfWeek == 0 || (int)DateTime.Now.DayOfWeek == 6)
+                return firstName + ", det er weekend!";
+
+            if (group.WorkHoursInDay == null)
+            {
+                group.WorkHoursInDay = new()
+                {
+                    Monday = new(7, 30, 0),
+                    Tuesday = new(7, 30, 0),
+                    Wednesday = new(7, 30, 0),
+                    Thursday = new(7, 30, 0),
+                    Friday = new(7, 0, 0),
+                };
+            }
+            if (group.FlexibleArrivalEnabled)
+            {
+                switch ((int)DateTime.Now.DayOfWeek)
+                {
+                    case 1:
+                        if (checkOutTime < arrivalTime.Add(group.WorkHoursInDay.Monday.ToTimeSpan()))
+                            return firstName + ",\ndu tjekkede ind " + arrivalTime.ToString() + ",\ndu har først fri kl. " + arrivalTime.Add(group.WorkHoursInDay.Monday.ToTimeSpan());
+                        break;
+                    case 2:
+                        if (checkOutTime < arrivalTime.Add(group.WorkHoursInDay.Tuesday.ToTimeSpan()))
+                            return firstName + ",\ndu tjekkede ind " + arrivalTime.ToString() + ",\ndu har først fri kl. " + arrivalTime.Add(group.WorkHoursInDay.Tuesday.ToTimeSpan());
+                        break;
+                    case 3:
+                        if (checkOutTime < arrivalTime.Add(group.WorkHoursInDay.Wednesday.ToTimeSpan()))
+                            return firstName + ",\ndu tjekkede ind " + arrivalTime.ToString() + ",\ndu har først fri kl. " + arrivalTime.Add(group.WorkHoursInDay.Wednesday.ToTimeSpan());
+                        break;
+                    case 4:
+                        if (checkOutTime < arrivalTime.Add(group.WorkHoursInDay.Thursday.ToTimeSpan()))
+                            return firstName + ",\ndu tjekkede ind " + arrivalTime.ToString() + ",\ndu har først fri kl. " + arrivalTime.Add(group.WorkHoursInDay.Thursday.ToTimeSpan());
+                        break;
+                    case 5:
+                        if (checkOutTime < arrivalTime.Add(group.WorkHoursInDay.Friday.ToTimeSpan()))
+                            return firstName + ",\ndu tjekkede ind " + arrivalTime.ToString() + ",\ndu har først fri kl. " + arrivalTime.Add(group.WorkHoursInDay.Friday.ToTimeSpan());
+                        break;
+
+                }
+            }
+            switch ((int)DateTime.Now.DayOfWeek)
+            {
+                case 1:
+                    if (checkOutTime < group.ArrivalTime.Add(group.WorkHoursInDay.Monday.ToTimeSpan()))
+                        return "Du har først fri kl. " + group.ArrivalTime.Add(group.WorkHoursInDay.Monday.ToTimeSpan());
+                    break;
+                case 2:
+                    if (checkOutTime < group.ArrivalTime.Add(group.WorkHoursInDay.Tuesday.ToTimeSpan()))
+                        return "Du har først fri kl. " + group.ArrivalTime.Add(group.WorkHoursInDay.Tuesday.ToTimeSpan());
+                    break;
+                case 3:
+                    if (checkOutTime < group.ArrivalTime.Add(group.WorkHoursInDay.Wednesday.ToTimeSpan()))
+                        return "Du har først fri kl. " + group.ArrivalTime.Add(group.WorkHoursInDay.Wednesday.ToTimeSpan());
+                    break;
+                case 4:
+                    if (checkOutTime < group.ArrivalTime.Add(group.WorkHoursInDay.Thursday.ToTimeSpan()))
+                        return "Du har først fri kl. " + group.ArrivalTime.Add(group.WorkHoursInDay.Thursday.ToTimeSpan());
+                    break;
+                case 5:
+                    if (checkOutTime < group.ArrivalTime.Add(group.WorkHoursInDay.Friday.ToTimeSpan()))
+                        return "Du har først fri kl. " + group.ArrivalTime.Add(group.WorkHoursInDay.Friday.ToTimeSpan());
+                    break;
+            }
+            return "Farvel " + firstName;
         }
 
         private void WriteToLog(string task, Exception e)
