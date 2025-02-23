@@ -8,8 +8,8 @@
         public required string LastName { get; set; }
         public string? Email { get; set; }
         public int? Phonenumber { get; set; }
-        public required string Arrival { get; set; }
-        public string? LastCheckin { get; set; }
-        public string? Checkout { get; set; }
+        public required TimeOnly Arrival { get; set; }
+        public DateOnly? LastCheckin { get; set; }
+        public TimeOnly? Checkout { get; set; }
     }
 }

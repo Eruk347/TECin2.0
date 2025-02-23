@@ -74,15 +74,45 @@ namespace TECin2.API.Services
             }
         }
 
-        public Task<List<CheckInResponseLong>> GetAllCheckInsFromGroup(int groupId, DateOnly date)
+        public async Task<List<CheckInResponseLong>> GetAllCheckInsFromGroup(int groupId, DateOnly date)
         {
-            //hvilken medlemmer har vi?
-            throw new NotImplementedException();
+            Group? group = await _groupRepository.SelectGroupById(groupId);
+            if (group == null || group.Users == null)
+            {
+                return [];
+            }
+
+            List<User>? users = [.. group.Users];
+            List<CheckInResponseLong> checkInResponses = [];
+            foreach (User user in users)
+            {
+                CheckInStatus? checkInStatus = await _checkInRepository.SelectCheckInForUserOnDate(user.Id, date);//?? new CheckInStatus() { ArrivalDate = date, ArrivalTime = new(), User_Id = user.Id };
+                if (checkInStatus != null)
+                {
+                    checkInResponses.Add(new CheckInResponseLong
+                    {
+                        Arrival = checkInStatus.ArrivalTime,
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
+                        UserId = user.Id,
+                        Email = user.Email,
+                        Phonenumber = user.Phonenumber,
+                        LastCheckin = user.LastCheckin,
+                        Checkout = checkInStatus.Departure,
+                    });
+                }
+            }
+            return checkInResponses;
         }
 
-        public Task<List<CheckInStatus>> GetCheckInstatusesForUser(string userId)
+        public async Task<List<CheckInStatus>> GetCheckInstatusesForUser(string userId)
         {
-            throw new NotImplementedException();
+            List<CheckInStatus>? checkInStatuses = await _checkInRepository.SelectCheckInForUser(userId);
+            if (checkInStatuses != null)
+            {
+                return checkInStatuses;
+            }
+            return [];
         }
 
         private static byte[] FindColor(Global.CheckInStatus message)
@@ -130,6 +160,23 @@ namespace TECin2.API.Services
 
         private static Global.LeavingEarly IsStudentLeavingEarly(TimeOnly arrivalTime, TimeOnly checkOutTime, Group group)
         {
+            if (arrivalTime < group.ArrivalTime)
+            {
+                arrivalTime = group.ArrivalTime;
+            }
+            if (group.FlexibleArrivalEnabled)
+            {
+                if (group.FlexibleAmount == null)
+                {
+                    group.FlexibleAmount = new TimeOnly(0, 0, 0);
+                }
+
+                TimeSpan flexSpan = new(group.FlexibleAmount.Value.Hour, group.FlexibleAmount.Value.Minute, 0);
+                if (group.FlexibleArrivalEnabled && arrivalTime > group.ArrivalTime.Add(flexSpan))
+                {
+                    arrivalTime = group.ArrivalTime.Add(flexSpan);
+                }
+            }
             group.WorkHoursInDay ??= new()
             {
                 Monday = new(7, 30, 0),
