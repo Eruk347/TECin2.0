@@ -8,8 +8,8 @@ namespace TECin2.API.Services
     public interface ICheckInService
     {
         Task<CheckInResponse?> CheckIn(CheckInRequest checkInRequest);
-        Task<List<CheckInResponseLong>> GetAllCheckInsFromGroup(int groupId, DateOnly date);
-        Task<List<CheckInStatus>> GetCheckInstatusesForUser(string userId);
+        Task<List<CheckInResponseLong>> GetAllCheckInStatusesFromGroup(int groupId, DateOnly date);
+        Task<List<CheckInStatus>> GetAllCheckInStatusesForUser(string userId);
     }
     public class CheckInService(ICheckInRepository checkInRepository, ISecurityRepository securityRepository, IUserRepository userRepository, IGroupRepository groupRepository) : ICheckInService
     {
@@ -41,6 +41,13 @@ namespace TECin2.API.Services
                 CheckInStatus? firstCheckIn = await _checkInRepository.SelectCheckInForUserOnDate(securityNumb.Id, DateOnly.FromDateTime(DateTime.Now));
                 if (firstCheckIn == null)//der findes ikke et checkin, så det er første checkin for dagen
                 {
+                    CheckInStatus newCheckInStatus = MapCheckInRequestToCheckInStatus(checkInRequest, user.Id);
+                    CheckInStatus? insertedCheckInStatus = await _checkInRepository.InsertCheckInStatus(newCheckInStatus);
+                    if (insertedCheckInStatus == null)
+                    {
+                        WriteToLog("CheckIn", new Exception("Der skete en fejl ved indsættelse af checkin"));
+                        return new CheckInResponse { FirstName = "", Message = "Der skete en fejl", Color = FindColor(Global.CheckInStatus.Error) };
+                    }
                     bool isStudentLate = IsStudentLate(checkinTimeFromRequest, user.Groups.ToList()[0]);
                     if (isStudentLate)
                     {
@@ -52,6 +59,15 @@ namespace TECin2.API.Services
                 if (checkinTimeFromRequest < firstCheckIn.ArrivalTime.AddMinutes(30))
                 {
                     return new CheckInResponse { FirstName = user.FirstName, Message = "Du er allerede tjekket ind." + user.FirstName, Color = FindColor(Global.CheckInStatus.Hello) };
+                }
+
+                CheckInStatus checkInStatus = MapCheckInRequestToCheckInStatus(checkInRequest, user.Id);
+                CheckInStatus? updatedCheckInStatus = await _checkInRepository.UpdateCheckInStatus(checkInStatus, firstCheckIn.Id);
+
+                if (updatedCheckInStatus == null)
+                {
+                    WriteToLog("CheckIn", new Exception("Der skete en fejl ved opdatering af checkin"));
+                    return new CheckInResponse { FirstName = "", Message = "Der skete en fejl", Color = FindColor(Global.CheckInStatus.Error) };
                 }
 
                 Global.LeavingEarly isStudentLeavingEarly = IsStudentLeavingEarly(firstCheckIn.ArrivalTime, checkinTimeFromRequest, user.Groups.ToList()[0]);
@@ -74,7 +90,7 @@ namespace TECin2.API.Services
             }
         }
 
-        public async Task<List<CheckInResponseLong>> GetAllCheckInsFromGroup(int groupId, DateOnly date)
+        public async Task<List<CheckInResponseLong>> GetAllCheckInStatusesFromGroup(int groupId, DateOnly date)
         {
             Group? group = await _groupRepository.SelectGroupById(groupId);
             if (group == null || group.Users == null)
@@ -105,7 +121,7 @@ namespace TECin2.API.Services
             return checkInResponses;
         }
 
-        public async Task<List<CheckInStatus>> GetCheckInstatusesForUser(string userId)
+        public async Task<List<CheckInStatus>> GetAllCheckInStatusesForUser(string userId)
         {
             List<CheckInStatus>? checkInStatuses = await _checkInRepository.SelectCheckInForUser(userId);
             if (checkInStatuses != null)
@@ -220,9 +236,7 @@ namespace TECin2.API.Services
             if ((int)DateTime.Now.DayOfWeek == 0 || (int)DateTime.Now.DayOfWeek == 6)
                 return firstName + ", det er weekend!";
 
-            if (group.WorkHoursInDay == null)
-            {
-                group.WorkHoursInDay = new()
+            group.WorkHoursInDay ??= new()
                 {
                     Monday = new(7, 30, 0),
                     Tuesday = new(7, 30, 0),
@@ -230,7 +244,6 @@ namespace TECin2.API.Services
                     Thursday = new(7, 30, 0),
                     Friday = new(7, 0, 0),
                 };
-            }
             if (group.FlexibleArrivalEnabled)
             {
                 switch ((int)DateTime.Now.DayOfWeek)
@@ -282,6 +295,16 @@ namespace TECin2.API.Services
                     break;
             }
             return "Farvel " + firstName;
+        }
+
+        private static CheckInStatus MapCheckInRequestToCheckInStatus(CheckInRequest checkInRequest, string userID)
+        {
+            return new CheckInStatus
+            {
+                ArrivalTime = TimeOnly.FromDateTime(checkInRequest.CheckinTime),
+                User_Id = userID,
+                ArrivalDate = DateOnly.FromDateTime(DateTime.Now),
+            };
         }
 
         private void WriteToLog(string task, Exception e)

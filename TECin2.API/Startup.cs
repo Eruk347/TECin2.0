@@ -4,17 +4,13 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using TECin2.API.Database;
 using TECin2.API.Repositories;
+using TECin2.API.Services;
 
 namespace TECin2.API
 {
-    public class Startup
+    public class Startup(IConfiguration configuration)
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-
-        public IConfiguration Configuration { get; }
+        public IConfiguration Configuration { get; } = configuration;
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -57,12 +53,12 @@ namespace TECin2.API
             services.AddScoped<ISettingRepository, SettingRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
 
-            //services.AddScoped<ICheckInService, CheckInService>();
+            services.AddScoped<ICheckInService, CheckInService>();
             //services.AddScoped<IDepartmentService, DepartmentService>();
-            //services.AddScoped<IGroupService, GroupService>();
+            services.AddScoped<IGroupService, GroupService>();
             //services.AddScoped<IInstruktorService, InstruktorService>();
-            //services.AddScoped<ILoginService, LoginService>();
-            //services.AddScoped<ILoggerService, LoggerService>();
+            services.AddScoped<ILoginService, LoginService>();
+            services.AddScoped<ILoggerService, LoggerService>();
             //services.AddScoped<IPermissionService, PermissionService>();
             //services.AddScoped<IRoleService, RoleService>();
             //services.AddScoped<ISettingService, SettingService>();

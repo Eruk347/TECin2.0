@@ -143,6 +143,10 @@ namespace TECin2.API.Services
         {
             try
             {
+                if (group.Department == null)
+                {
+                    return null;
+                }
                 return new GroupResponse
                 {
                     Id = group.Id,

@@ -37,7 +37,7 @@ namespace TECin2.API.Database.Entities
         public TimeOnly? IsLateBuffer { get; set; }
 
         [Column(TypeName = "nvarchar(100)")]
-        public string? IsLateMessage { get; set; }
+        public required string IsLateMessage { get; set; }
 
         public virtual ICollection<User>? Users { get; set; }
     }
