@@ -17,7 +17,6 @@ namespace TECin2.Tests.Services
         private readonly Mock<ISecurityRepository> _mockSecurityRepostitory = new();
         private readonly Mock<IUserRepository> _mockUserRepository = new();
         private readonly Mock<IGroupRepository> _mockGroupRepository = new();
-        //private readonly Mock<IGroupService> _mockGroupService = new();
         private readonly CheckInService _checkInservice;
 
         public CheckInServiceTests()
@@ -839,14 +838,154 @@ namespace TECin2.Tests.Services
             Assert.IsType<List<CheckInResponseLong>>(result);
             Assert.Single(result);
         }
-        //no group
 
-        //no users in group
-        //no checkins on date
+        [Fact]
+        public async Task GetAllCheckInsFromGroup_ShouldReturnEmptyList_WhenNoGroupExist()
+        {
+            //Arrange
+            _mockGroupRepository
+                .Setup(x => x.SelectGroupById(It.IsAny<int>()))
+                .ReturnsAsync(() => null);
+
+
+            //Act
+            var result = await _checkInservice.GetAllCheckInStatusesFromGroup(1, DateOnly.FromDateTime(DateTime.Now));
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsType<List<CheckInResponseLong>>(result);
+            Assert.Empty(result);
+        }
+
+        [Fact]
+        public async Task GetAllCheckInsFromGroup_ShouldReturnEmptyList_WhenNoUsersInGroup()
+        {
+            //Arrange
+            Group group = TestData.TestData.GetGroupTestData();
+            group.Users = null;
+            _mockGroupRepository
+                .Setup(x => x.SelectGroupById(It.IsAny<int>()))
+                .ReturnsAsync(group);
+            
+            _mockCheckInRepository
+                .Setup(x=>x.SelectCheckInForUserOnDate(It.IsAny<string>(), It.IsAny<DateOnly>()))
+                .ReturnsAsync(() => null);
+
+            //Act
+            var result = await _checkInservice.GetAllCheckInStatusesFromGroup(1, DateOnly.FromDateTime(DateTime.Now));
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsType<List<CheckInResponseLong>>(result);
+            Assert.Empty(result);
+        }
+
+        [Fact]
+        public async Task GetAllCheckInsFromGroup_ShouldReturnEmptyList_WhenNoCheckInsForTheDayExist()
+        {
+            //Arrange
+            Group group = TestData.TestData.GetGroupTestData();
+            group.Users =
+            [
+                TestData.TestData.GetUserTestData("1")
+            ];
+            _mockGroupRepository
+                .Setup(x => x.SelectGroupById(It.IsAny<int>()))
+                .ReturnsAsync(group);
+
+            _mockCheckInRepository
+                .Setup(x => x.SelectCheckInForUserOnDate(It.IsAny<string>(), It.IsAny<DateOnly>()))
+                .ReturnsAsync(() => null);
+
+            //Act
+            var result = await _checkInservice.GetAllCheckInStatusesFromGroup(1, DateOnly.FromDateTime(DateTime.Now));
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsType<List<CheckInResponseLong>>(result);
+            Assert.Empty(result);
+        }
         #endregion
 
         #region Get all from user
+        [Fact]
+        public async Task GetAllCheckInsForUser_ShouldReturnListOfCheckInStatuses_WhenSuccess()
+        {
+            //Arrange
+            User user = TestData.TestData.GetUserTestData("1");
 
+            List<CheckInStatus> checkInStatuses =
+            [
+                new CheckInStatus()
+                {
+                    ArrivalDate = DateOnly.FromDateTime(DateTime.Now),
+                    ArrivalTime = new(7, 31, 0),
+                    User_Id = user.Id,
+                    User = user
+                },
+                new CheckInStatus()
+                {
+                    ArrivalDate = DateOnly.FromDateTime(DateTime.Now.AddDays(-1)),
+                    ArrivalTime = new(7, 31, 0),
+                    User_Id = user.Id,
+                    User = user
+                }
+            ];
+            _mockCheckInRepository
+                .Setup(x => x.SelectCheckInForUser(It.IsAny<string>()))
+                .ReturnsAsync(checkInStatuses);
+            //Act
+            var result = await _checkInservice.GetAllCheckInStatusesForUser(user.Id);
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsType<List<CheckInStatus>>(result);
+            Assert.Equal(2, result.Count);
+        }
+
+        [Fact]
+        public async Task GetAllCheckInsForUser_ShouldReturnEmptyListOfCheckInStatuses_WhenNoUserExists()
+        {
+            //Arrange
+            _mockCheckInRepository
+                .Setup(x => x.SelectCheckInForUser(It.IsAny<string>()))
+                .ReturnsAsync([]);
+            //Act
+            var result = await _checkInservice.GetAllCheckInStatusesForUser("1");
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsType<List<CheckInStatus>>(result);
+            Assert.Empty(result);
+        }
+
+        [Fact]
+        public async Task GetAllCheckInsForUser_ShouldReturnEmptyListOfCheckInStatuses_WhenNoCheckInsExists()
+        {
+            //Arrange
+            _mockCheckInRepository
+                .Setup(x => x.SelectCheckInForUser(It.IsAny<string>()))
+                .ReturnsAsync([]);
+            //Act
+            var result = await _checkInservice.GetAllCheckInStatusesForUser("1");
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsType<List<CheckInStatus>>(result);
+            Assert.Empty(result);
+        }
+
+        [Fact]
+        public async Task GetAllCheckInsForUser_ShouldReturnEmptyListOfCheckInStatuses_WhenRepositoryReturnNULL()
+        {
+            //Arrange
+            _mockCheckInRepository
+                .Setup(x => x.SelectCheckInForUser(It.IsAny<string>()))
+                .ReturnsAsync(() => null);
+            //Act
+            var result = await _checkInservice.GetAllCheckInStatusesForUser("1");
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsType<List<CheckInStatus>>(result);
+            Assert.Empty(result);
+        }
         #endregion
     }
 }

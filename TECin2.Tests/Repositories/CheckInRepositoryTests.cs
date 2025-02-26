@@ -203,6 +203,83 @@ namespace TECin2.Tests.Repositories
         }
         #endregion
 
+        #region SelectyByUserIdAndDate
+        [Fact]
+        public async Task SelectCheckInForUserOnDate_ShouldReturnCheckInStatus_WhenSuccess()
+        {
+            //Arrange
+            await _context.Database.EnsureDeletedAsync();
+            string userId = "test";
+            DateOnly today = DateOnly.FromDateTime(DateTime.Now);
+            _context.User.Add(new()
+            {
+                FirstName = "test",
+                Id = userId,
+                LastName = "test",
+                Role = new(),
+                Username = "test",
+            });
+            _context.CheckInStatus.Add(new()
+            {
+                ArrivalDate = today,
+                ArrivalTime = new TimeOnly(),
+                User_Id = userId,
+                Departure = new(),
+            });
+            _context.CheckInStatus.Add(new()
+            {
+                ArrivalDate = today.AddDays(-1),
+                ArrivalTime = new TimeOnly(),
+                User_Id = userId,
+                Departure = new(),
+            });
+            await _context.SaveChangesAsync();
+            //Act
+            var result = await _repository.SelectCheckInForUserOnDate(userId, today);
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsType<CheckInStatus>(result);
+            Assert.Equal(today, result.ArrivalDate);
+        }
+
+        [Fact]
+        public async Task SelectCheckInForUserOnDate_ShouldReturnNull_WhenUserDoesNotExist()
+        {
+            //Arrange
+            await _context.Database.EnsureDeletedAsync();
+            DateOnly today = DateOnly.FromDateTime(DateTime.Now);
+            
+            //Act
+            var result = await _repository.SelectCheckInForUserOnDate("userId", today);
+            
+            //Assert
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task SelectCheckInForUserOnDate_ShouldReturnNull_WhenNoCheckInForDateExist()
+        {
+            //Arrange
+            await _context.Database.EnsureDeletedAsync();
+            string userId = "test";
+            DateOnly today = DateOnly.FromDateTime(DateTime.Now);
+            _context.User.Add(new()
+            {
+                FirstName = "test",
+                Id = userId,
+                LastName = "test",
+                Role = new(),
+                Username = "test",
+            });
+
+            //Act
+            var result = await _repository.SelectCheckInForUserOnDate("userId", today);
+            
+            //Assert
+            Assert.Null(result);
+        }
+        #endregion
+
         #region SelctByDate
         [Fact]
         public async Task SelectCheckInByDate_ShouldReturnListOfCheckIns_WhenSuccess()
