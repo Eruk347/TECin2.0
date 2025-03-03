@@ -5,6 +5,8 @@ namespace TECin2.API.Services
 {
     public interface ILoggerService
     {
+        void WriteLog(string _action, string _accessToken, School _entity);
+        void WriteLog(string _accessToken, School _originalEntity, School _updatedEntity);
         void WriteLog(string _action, string _accessToken, Department _entity);
         void WriteLog(string _accessToken, Department _originalEntity, Department _updatedEntity);
         void WriteLog(string _action, string _accessToken, Group _entity);
@@ -17,6 +19,13 @@ namespace TECin2.API.Services
     public class LoggerService(LoggerRepository loggerRepository) : ILoggerService
     {
         private readonly LoggerRepository _loggerRepository = loggerRepository;
+
+        //public async void WriteLog(string _action, string _accessToken, Object _entity)
+        //{
+           
+        //}
+
+
 
         /// <summary>
         /// Department - create/delete
@@ -272,6 +281,38 @@ namespace TECin2.API.Services
                     return item.Split(',')[1];
             }
             return string.Empty;
+        }
+
+        public async void WriteLog(string _action, string _accessToken, School _entity)
+        {
+            string _message = "School";
+            if (_action == "Create")
+            {
+                _message += " " + _entity.Name + " was created.";
+            }
+            else if (_action == "Delete")
+            {
+                _message += " " + _entity.Name + " was deleted.";
+            }
+
+            await WriteLog(_message, _accessToken);
+        }
+
+        public async void WriteLog(string _accessToken, School _originalEntity, School _updatedEntity)
+        {
+            string _message = "School";
+            _message += " " + _originalEntity.Name;
+
+            if (_originalEntity.Name != _updatedEntity.Name)
+            {
+                _message += ", changed its name to " + _updatedEntity.Name;
+            }
+            if (_originalEntity.Principal != _updatedEntity.Principal)
+            {
+                _message += ", changed its deparmenthead from " + _originalEntity.Principal + " to " + _updatedEntity.Principal;
+            }
+
+            await WriteLog(_message, _accessToken);
         }
     }
 }

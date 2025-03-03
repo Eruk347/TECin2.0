@@ -7,9 +7,9 @@ namespace TECin2.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class GroupController(IGroupService groupService) : Controller
+    public class SchoolController(ISchoolService schoolService) : Controller
     {
-        private readonly IGroupService _groupService = groupService;
+        private readonly ISchoolService _schoolService = schoolService;
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -19,17 +19,18 @@ namespace TECin2.API.Controllers
         {
             try
             {
-                List<GroupResponse?> groups = await _groupService.GetAllGroups();
+                List<SchoolResponse?> schools = await _schoolService.GetAllSchools();
 
-                if (groups == null)
+                if (schools == null)
                 {
                     return Problem("Got no list; NULL");
                 }
-                if (groups.Count == 0)
+                if (schools.Count == 0)
                 {
                     return NoContent();
                 }
-                return Ok(groups);
+
+                return Ok(schools);
             }
             catch (Exception ex)
             {
@@ -37,24 +38,24 @@ namespace TECin2.API.Controllers
             }
         }
 
-        [HttpGet("{groupId}")] //https://localhost:5001/api/author/1 - 1 bliver sat ind i linjen i stedet for userId
+        [HttpGet("{schoolId}")] //https://localhost:5001/api/author/1 - 1 bliver sat ind i linjen i stedet for userId
         //[Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]//bliver håndteret på et højere niveau, pga [FromRoute]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetById([FromRoute] int groupId)
+        public async Task<IActionResult> GetById([FromRoute] int schoolId)
         {
             try
             {
-                GroupResponse? groupResponse = await _groupService.GetGroupById(groupId);
+                SchoolResponse? schoolResponse = await _schoolService.GetSchoolById(schoolId);
 
-                if (groupResponse == null)
+                if (schoolResponse == null)
                 {
                     return NotFound();
                 }
 
-                return Ok(groupResponse);
+                return Ok(schoolResponse);
             }
             catch (Exception ex)
             {
@@ -67,19 +68,19 @@ namespace TECin2.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Create([FromBody] GroupRequest newGroup)
+        public async Task<IActionResult> Create([FromBody] SchoolRequest newSchool)
         {
             try
             {
-                //var accesstoken = Request.Headers.Authorization.ToString().Replace("bearer ", "");
-                GroupResponse? groupResponse = await _groupService.CreateGroup(newGroup, "accesstoken");
+                var accesstoken = Request.Headers.Authorization.ToString().Replace("bearer ", "");
+                SchoolResponse? schoolResponse = await _schoolService.CreateSchool(newSchool, accesstoken);
 
-                if (groupResponse == null)
+                if (schoolResponse == null)
                 {
                     return BadRequest();
                 }
 
-                return Ok(groupResponse);
+                return Ok(schoolResponse);
             }
             catch (Exception ex)
             {
@@ -87,25 +88,25 @@ namespace TECin2.API.Controllers
             }
         }
 
-        [HttpPut("{groupId}")]
+        [HttpPut("{schoolId}")]
         //[Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]//bliver håndteret på et højere niveau, pga [FromRoute]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Update([FromRoute] int groupId, [FromBody] GroupRequest updateGroup)
+        public async Task<IActionResult> Update([FromRoute] int schoolId, [FromBody] SchoolRequest updateSchool)
         {
             try
             {
-                //var accesstoken = Request.Headers.Authorization.ToString().Replace("bearer ", "");
-                GroupResponse? groupResponse = await _groupService.UpdateGroup(groupId, updateGroup, "accesstoken");
+                var accesstoken = Request.Headers.Authorization.ToString().Replace("bearer ", "");
+                SchoolResponse? schoolResponse = await _schoolService.UpdateSchool(schoolId, updateSchool, accesstoken);
 
-                if (groupResponse == null)
+                if (schoolResponse == null)
                 {
                     return NotFound();
                 }
 
-                return Ok(groupResponse);
+                return Ok(schoolResponse);
             }
             catch (Exception ex)
             {
@@ -113,28 +114,25 @@ namespace TECin2.API.Controllers
             }
         }
 
-        [HttpDelete("{groupId}")]
+        [HttpDelete("{schoolId}")]
         //[Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]//bliver håndteret på et højere niveau, pga [FromRoute]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Delete([FromRoute] string groupId)
+        public async Task<IActionResult> Delete([FromRoute] int schoolId)
         {
             try
             {
-                //var accesstoken = Request.Headers.Authorization.ToString().Replace("bearer ", "");
-                string[] groupIdSplit = groupId.Split(',');
-                int[] groupIds = [Convert.ToInt32(groupIdSplit[0]), Convert.ToInt32(groupIdSplit[1])];
+                var accesstoken = Request.Headers.Authorization.ToString().Replace("bearer ", "");
+                SchoolResponse? schoolResponse = await _schoolService.DeleteSchool(schoolId, accesstoken);
 
-                GroupResponse? groupResponse = await _groupService.DeleteGroup(groupIds[0], groupIds[1], "accesstoken");
-
-                if (groupResponse == null)
+                if (schoolResponse == null)
                 {
                     return NotFound();
                 }
 
-                return Ok(groupResponse);
+                return Ok(schoolResponse);
             }
             catch (Exception ex)
             {

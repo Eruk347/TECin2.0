@@ -28,7 +28,8 @@ namespace TECin2.API.Services
         {
             try
             {
-                var key = _config["Jwt:Key"];
+                //var key = _config["Jwt:Key"];
+                var key = System.Environment.GetEnvironmentVariable("TECin2 - JWT", EnvironmentVariableTarget.User);
                 if (key != null)
                 {
                     var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
@@ -85,7 +86,7 @@ namespace TECin2.API.Services
 
                             if (user.Groups != null)
                             {
-                                response.Groups = user.Groups.Select(group => new LogInGroupResponse
+                                response.Groups = [.. user.Groups.Select(group => new LogInGroupResponse
                                 {
                                     Id = group.Id,
                                     Name = group.Name,
@@ -95,20 +96,20 @@ namespace TECin2.API.Services
                                     IsLateBuffer = group.IsLateBuffer,
                                     IsLateMessage = group.IsLateMessage,
                                     WorkHoursInDay = group.WorkHoursInDay,
-                                }).ToList();
+                                })];
                             }
                             else
                                 response.Groups = [];
 
                             if (user.Settings != null)
                             {
-                                response.Settings = user.Settings.Select(setting => new LogInSettingResponse
+                                response.Settings = [.. user.Settings.Select(setting => new LogInSettingResponse
                                 {
                                     Id = setting.Id,
                                     Name = setting.Name,
                                     Description = setting.Description,
                                     Deactivated = setting.Deactivated
-                                }).ToList();
+                                })];
                             }
                             else
                                 response.Settings = [];

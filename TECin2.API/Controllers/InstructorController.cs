@@ -7,11 +7,12 @@ namespace TECin2.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class GroupController(IGroupService groupService) : Controller
+    public class InstructorController(IInstructorService instructorService) : Controller
     {
-        private readonly IGroupService _groupService = groupService;
+        private readonly IInstructorService _instructorService = instructorService;
 
         [HttpGet]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -19,17 +20,16 @@ namespace TECin2.API.Controllers
         {
             try
             {
-                List<GroupResponse?> groups = await _groupService.GetAllGroups();
-
-                if (groups == null)
+                List<InstructorResponse?> instructors = await _instructorService.GetAllInstructors();
+                if (instructors == null)
                 {
                     return Problem("Got no list; NULL");
                 }
-                if (groups.Count == 0)
+                if (instructors.Count == 0)
                 {
                     return NoContent();
                 }
-                return Ok(groups);
+                return Ok(instructors);
             }
             catch (Exception ex)
             {
@@ -37,26 +37,25 @@ namespace TECin2.API.Controllers
             }
         }
 
-        [HttpGet("{groupId}")] //https://localhost:5001/api/author/1 - 1 bliver sat ind i linjen i stedet for userId
-        //[Authorize]
+        [HttpGet("{instructorId}")] //https://localhost:5001/api/author/1 - 1 bliver sat ind i linjen i stedet for userId
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]//bliver håndteret på et højere niveau, pga [FromRoute]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetById([FromRoute] int groupId)
+        public async Task<IActionResult> GetById([FromRoute] string instructorId)
         {
             try
             {
-                GroupResponse? groupResponse = await _groupService.GetGroupById(groupId);
+                InstructorResponse? instructorResponse = await _instructorService.GetInstruktoById(instructorId);
 
-                if (groupResponse == null)
+                if (instructorResponse == null)
                 {
                     return NotFound();
                 }
-
-                return Ok(groupResponse);
+                return Ok(instructorResponse);
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
                 return Problem(ex.Message);
             }
@@ -67,76 +66,67 @@ namespace TECin2.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Create([FromBody] GroupRequest newGroup)
+        public async Task<IActionResult> Create([FromBody] InstructorRequest newInstructor)
         {
             try
             {
-                //var accesstoken = Request.Headers.Authorization.ToString().Replace("bearer ", "");
-                GroupResponse? groupResponse = await _groupService.CreateGroup(newGroup, "accesstoken");
-
-                if (groupResponse == null)
+                var accesstoken = Request.Headers.Authorization.ToString().Replace("bearer ", "");
+                InstructorResponse? instructorResponse = await _instructorService.CreateInstructor(newInstructor, accesstoken);
+                if (instructorResponse == null)
                 {
                     return BadRequest();
                 }
-
-                return Ok(groupResponse);
+                return Ok(instructorResponse);
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
                 return Problem(ex.Message);
             }
         }
 
-        [HttpPut("{groupId}")]
-        //[Authorize]
+        [HttpPut("{instructorId}")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]//bliver håndteret på et højere niveau, pga [FromRoute]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Update([FromRoute] int groupId, [FromBody] GroupRequest updateGroup)
+        public async Task<IActionResult> Update([FromRoute] string instructorId, [FromBody] InstructorRequest newInstructor)
         {
             try
             {
-                //var accesstoken = Request.Headers.Authorization.ToString().Replace("bearer ", "");
-                GroupResponse? groupResponse = await _groupService.UpdateGroup(groupId, updateGroup, "accesstoken");
-
-                if (groupResponse == null)
+                var accesstoken = Request.Headers.Authorization.ToString().Replace("bearer ", "");
+                InstructorResponse? instructorResponse = await _instructorService.UpdateInstructor(instructorId, newInstructor, accesstoken);
+                if (instructorResponse == null)
                 {
                     return NotFound();
                 }
-
-                return Ok(groupResponse);
+                return Ok(instructorResponse);
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
                 return Problem(ex.Message);
             }
         }
 
-        [HttpDelete("{groupId}")]
-        //[Authorize]
+        [HttpDelete("{instructorId}")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]//bliver håndteret på et højere niveau, pga [FromRoute]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Delete([FromRoute] string groupId)
+        public async Task<IActionResult> Delete([FromRoute] string instructorId)
         {
             try
             {
-                //var accesstoken = Request.Headers.Authorization.ToString().Replace("bearer ", "");
-                string[] groupIdSplit = groupId.Split(',');
-                int[] groupIds = [Convert.ToInt32(groupIdSplit[0]), Convert.ToInt32(groupIdSplit[1])];
-
-                GroupResponse? groupResponse = await _groupService.DeleteGroup(groupIds[0], groupIds[1], "accesstoken");
-
-                if (groupResponse == null)
+                var accesstoken = Request.Headers.Authorization.ToString().Replace("bearer ", "");
+                InstructorResponse? instructorResponse = await _instructorService.DeleteInstructor(instructorId, accesstoken);
+                if (instructorResponse == null)
                 {
                     return NotFound();
                 }
-
-                return Ok(groupResponse);
+                return Ok(instructorResponse);
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
                 return Problem(ex.Message);
             }

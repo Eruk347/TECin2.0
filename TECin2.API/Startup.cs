@@ -15,6 +15,7 @@ namespace TECin2.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
             services.AddCors(options =>
             {
                 options.AddPolicy(name: "_CORSRules",
@@ -38,37 +39,39 @@ namespace TECin2.API
                         ValidateIssuerSigningKey = true,
                         ValidIssuer = Configuration["Jwt:Issuer"],
                         ValidAudience = Configuration["Jwt:Issuer"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"])),
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(System.Environment.GetEnvironmentVariable("TECin2 - JWT", EnvironmentVariableTarget.User) ?? "TECin1WasAMistake!")),
                         ClockSkew = TimeSpan.Zero
                     };
                 });
 
-            services.AddScoped<ICheckInRepository, CheckInRepository>();
+                        services.AddScoped<ICheckInRepository, CheckInRepository>();
             services.AddScoped<IDepartmentRepository, DepartmentRepository>();
             services.AddScoped<IGroupRepository, GroupRepository>();
             services.AddScoped<LoggerRepository>();
             services.AddScoped<IPasswordRepository, PasswordRepository>();
             services.AddScoped<IRoleRepository, RoleRepository>();
+            services.AddScoped<ISchoolRepository, SchoolRepository>();
             services.AddScoped<ISecurityRepository, SecurityRepository>();
             services.AddScoped<ISettingRepository, SettingRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
 
             services.AddScoped<ICheckInService, CheckInService>();
-            //services.AddScoped<IDepartmentService, DepartmentService>();
+            services.AddScoped<IDepartmentService, DepartmentService>();
             services.AddScoped<IGroupService, GroupService>();
-            //services.AddScoped<IInstruktorService, InstruktorService>();
+            services.AddScoped<IInstructorService, InstructorService>();
             services.AddScoped<ILoginService, LoginService>();
             services.AddScoped<ILoggerService, LoggerService>();
             //services.AddScoped<IPermissionService, PermissionService>();
-            //services.AddScoped<IRoleService, RoleService>();
-            //services.AddScoped<ISettingService, SettingService>();
-            //services.AddScoped<IStudentService, StudentService>();
+            services.AddScoped<IRoleService, RoleService>();
+            services.AddScoped<ISchoolService, SchoolService>();
+            services.AddScoped<ISettingService, SettingService>();
+            services.AddScoped<IStudentService, StudentService>();
 
             services.AddDbContext<TECinContext>(
-                x => x.UseSqlServer(Configuration.GetConnectionString("Default"))
+                x => x.UseSqlServer(System.Environment.GetEnvironmentVariable("TECin2-Default", EnvironmentVariableTarget.User))
                 );
             services.AddDbContext<TECinContext2>(
-                x => x.UseSqlServer(Configuration.GetConnectionString("Security"))
+                x => x.UseSqlServer(System.Environment.GetEnvironmentVariable("TECin2-Security", EnvironmentVariableTarget.User))
                 );
             services.AddControllers();
             services.AddRazorPages();
@@ -80,6 +83,7 @@ namespace TECin2.API
         {
             if (env.IsDevelopment())
             {
+
                 app.UseDeveloperExceptionPage();
             }
             else

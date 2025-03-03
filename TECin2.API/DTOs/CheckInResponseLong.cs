@@ -10,6 +10,6 @@
         public int? Phonenumber { get; set; }
         public required TimeOnly Arrival { get; set; }
         public DateOnly? LastCheckin { get; set; }
-        public TimeOnly? Checkout { get; set; }
+        public TimeOnly? Departure { get; set; }
     }
 }

@@ -11,6 +11,7 @@ namespace TECin2.API.Repositories
         Task<Role?> InsertNewRole(Role role);
         Task<List<Role>?> SelectAlleRoles();
         Task<Role?> SelectRoleById(int roleId);
+        Task<Role?> SelectRoleByName(string roleName);
         Task<Role?> UpdateRole(int roleId, Role role);
     }
     public class RoleRepository : IRoleRepository
@@ -81,6 +82,20 @@ namespace TECin2.API.Repositories
             {
                 return await _context.Role
                     .FirstOrDefaultAsync(role => role.Id == roleId);
+            }
+            catch (Exception e)
+            {
+                WriteToLog("SelectRoleById", e);
+                return null;
+            }
+        }
+
+        public async Task<Role?> SelectRoleByName(string roleName)
+        {
+            try
+            {
+                return await _context.Role
+                    .FirstOrDefaultAsync(role => role.Name == roleName);
             }
             catch (Exception e)
             {

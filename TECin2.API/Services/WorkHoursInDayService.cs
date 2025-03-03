@@ -115,7 +115,7 @@ namespace TECin2.API.Services
             {
                 return new()
                 {
-                    Id = workHoursInDay.Id,
+                    Id = 1,
                     Monday = workHoursInDay.Monday,
                     Tuesday = workHoursInDay.Tuesday,
                     Wednesday = workHoursInDay.Wednesday,

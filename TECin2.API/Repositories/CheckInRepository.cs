@@ -7,10 +7,10 @@ namespace TECin2.API.Repositories
 {
     public interface ICheckInRepository
     {
-        Task<List<CheckInStatus>?> DeleteAllCheckInStatusForUser(string userId);
+        Task<List<CheckInStatus>> DeleteAllCheckInStatusForUser(string userId);
         Task<CheckInStatus?> InsertCheckInStatus(CheckInStatus request);
-        Task<List<CheckInStatus>?> SelectCheckInForUser(string userId);
-        Task<List<CheckInStatus>?> SelectCheckInForDate(DateOnly today);
+        Task<List<CheckInStatus>> SelectCheckInForUser(string userId);
+        Task<List<CheckInStatus>> SelectCheckInForDate(DateOnly today);
         Task<CheckInStatus?> SelectCheckInForUserOnDate(string userId, DateOnly today);
         Task<CheckInStatus?> UpdateCheckInStatus(CheckInStatus checkInStatus, int checkInStatusId);
     }
@@ -24,7 +24,7 @@ namespace TECin2.API.Repositories
             LoggerRepository.WriteLog("Error caught in " + this.GetType().Name + " in method " + task + ": " + e.InnerException + " " + e.Message);
         }
 
-        public async Task<List<CheckInStatus>?> DeleteAllCheckInStatusForUser(string userId)
+        public async Task<List<CheckInStatus>> DeleteAllCheckInStatusForUser(string userId)
         {
             try
             {
@@ -42,7 +42,7 @@ namespace TECin2.API.Repositories
             catch (Exception e)
             {
                 WriteToLog("DeleteAllCheckInStatusForUser", e);
-                return null;
+                return [];
             }
         }
 
@@ -63,7 +63,7 @@ namespace TECin2.API.Repositories
             }
         }
 
-        public async Task<List<CheckInStatus>?> SelectCheckInForDate(DateOnly today)
+        public async Task<List<CheckInStatus>> SelectCheckInForDate(DateOnly today)
         {
             try
             {
@@ -75,7 +75,7 @@ namespace TECin2.API.Repositories
             catch (Exception e)
             {
                 WriteToLog("SelectCheckInForDate", e);
-                return null;
+                return [];
             }
         }
 
@@ -95,7 +95,7 @@ namespace TECin2.API.Repositories
             }
         }
 
-        public async Task<List<CheckInStatus>?> SelectCheckInForUser(string userId)
+        public async Task<List<CheckInStatus>> SelectCheckInForUser(string userId)
         {
             try
             {
@@ -106,7 +106,7 @@ namespace TECin2.API.Repositories
             catch (Exception e)
             {
                 WriteToLog("SelectCheckInForUser", e);
-                return null;
+                return [];
             }
         }
 

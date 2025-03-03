@@ -9,7 +9,7 @@ namespace TECin2.API.Services
             Hello,
             Goodbye,
             Early,
-            Late,            
+            Late,
             Error
         }
 
@@ -54,9 +54,7 @@ namespace TECin2.API.Services
 
             var now = DateTime.Now.ToUniversalTime();
 
-            var valid = tokenDate >= now;
-
-            return valid;
+            return tokenDate >= now;
         }
 
         public static TimeOnly ConvertStringToTimeOnly(string time)//input string(071523) - output TimeOnly(07:15:23)

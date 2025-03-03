@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using Microsoft.AspNetCore.Identity;
+using System.Security.Cryptography;
 using System.Text;
 using TECin2.API.Repositories;
 
@@ -12,6 +13,25 @@ namespace TECin2.API.Services
         private static void WriteToLog(string task, Exception e)
         {
             LoggerRepository.WriteLog("Error caught in Hash.cs in method " + task + ": " + e.InnerException + " " + e.Message);
+        }
+
+        public static string? GetSalt(string fullPassword)
+        {
+            try
+            {
+                var split = fullPassword.Split(':');
+
+                if (split.Length != 2)
+                {
+                    return null;
+                }
+                return split[SaltIndex];
+            }
+            catch (Exception e)
+            {
+                WriteToLog("Validate", e);
+                return null;
+            }
         }
 
         public static string HashPassword(string password, string salt)

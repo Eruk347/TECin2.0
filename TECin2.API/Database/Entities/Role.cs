@@ -8,13 +8,13 @@ namespace TECin2.API.Database.Entities
         [Key]
         public int Id { get; set; }
 
-        [Column(TypeName ="nvarchar(32)")]
-        public string? Name { get; set; }
+        [Column(TypeName = "nvarchar(32)")]
+        public required string Name { get; set; }
 
-        [Column(TypeName ="nvarchar(250)")]
-        public string? Description { get; set; }
+        [Column(TypeName = "nvarchar(250)")]
+        public required string Description { get; set; }
 
-        [Column(TypeName ="int")]
+        [Column(TypeName = "int")]
         public int Rank { get; set; }
 
         [Column(TypeName = "bit")]

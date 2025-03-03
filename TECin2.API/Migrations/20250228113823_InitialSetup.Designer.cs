@@ -12,8 +12,8 @@ using TECin2.API.Database;
 namespace TECin2.API.Migrations
 {
     [DbContext(typeof(TECinContext))]
-    [Migration("20250219071909_Initial-setup")]
-    partial class Initialsetup
+    [Migration("20250228113823_InitialSetup")]
+    partial class InitialSetup
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -128,8 +128,8 @@ namespace TECin2.API.Migrations
                     b.Property<int>("DepartmentId")
                         .HasColumnType("int");
 
-                    b.Property<string>("FlexibleAmount")
-                        .HasColumnType("nvarchar(5)");
+                    b.Property<TimeOnly?>("FlexibleAmount")
+                        .HasColumnType("time");
 
                     b.Property<bool>("FlexibleArrivalEnabled")
                         .HasColumnType("bit");
@@ -138,6 +138,7 @@ namespace TECin2.API.Migrations
                         .HasColumnType("time");
 
                     b.Property<string>("IsLateMessage")
+                        .IsRequired()
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Name")
@@ -299,10 +300,7 @@ namespace TECin2.API.Migrations
             modelBuilder.Entity("TECin2.API.Database.Entities.WorkHoursInDay", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<TimeOnly>("Friday")
                         .HasColumnType("time");

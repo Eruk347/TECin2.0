@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using TECin2.API.Database.Entities;
 
 namespace TECin2.API.DTOs
 {
-    public class InstruktorRequest
+    public class InstructorUpdateRequest
     {
         [Required]
         public required string FirstName { get; set; }
@@ -22,15 +23,16 @@ namespace TECin2.API.DTOs
 
         public string? Password { get; set; }
 
-        public int GroupId { get; set; }
+        //[Compare("Password", ErrorMessage = "Passwords skal være ens")]
+        public string? ConfirmPassword { get; set; }
 
-        [Required]
-        public bool IsStudent { get; set; }
-        
+        public List<Group>? Groups { get; set; }
+
         [Required]
         public int RoleId { get; set; }
 
-        public List<string>? Settings { get; set; }
+        public List<Setting>? Settings { get; set; }
 
+        public bool Deactivated { get; set; }
     }
 }

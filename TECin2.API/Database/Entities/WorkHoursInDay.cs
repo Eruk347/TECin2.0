@@ -6,8 +6,8 @@ namespace TECin2.API.Database.Entities
     public class WorkHoursInDay
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
-
         [Column(TypeName = "time")]
         public required TimeOnly Monday { get; set; }
 

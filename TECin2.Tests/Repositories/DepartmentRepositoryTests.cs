@@ -78,13 +78,23 @@ namespace TECin2.Tests.Repositories
             await _context.Database.EnsureDeletedAsync();
 
             int departmentId = 1;
+            int schoolId = 1;
+            _context.School.Add(new()
+            {
+                Id = schoolId,
+                Name = "Test School",
+                Deactivated = false,
+                Principal = null
+            });
+
+
 
             Department newDepartment = new()
             {
                 Name = "Data",
                 Deactivated = false,
                 DepartmentHead = "testLeader",
-                SchoolId = 1,
+                SchoolId = schoolId,
             };
 
             //Act
@@ -139,9 +149,9 @@ namespace TECin2.Tests.Repositories
             {
                 Id = 1,
                 Name = "Data",
-                Deactivated=false,
-                DepartmentHead="test",
-                SchoolId=1,
+                Deactivated = false,
+                DepartmentHead = "test",
+                SchoolId = 1,
             });
 
             _context.Department.Add(new()
@@ -188,13 +198,21 @@ namespace TECin2.Tests.Repositories
             //Arrange
             await _context.Database.EnsureDeletedAsync();
             int departmentId = 1;
+            int schoolId = 1;
+            _context.School.Add(new()
+            {
+                Id = schoolId,
+                Name = "Test School",
+                Deactivated = false,
+                Principal = null
+            });
             _context.Department.Add(new()
             {
                 Id = departmentId,
                 Name = "Data",
                 Deactivated = false,
                 DepartmentHead = "testLeader",
-                SchoolId = 1,
+                SchoolId = schoolId,
             });
 
             await _context.SaveChangesAsync();

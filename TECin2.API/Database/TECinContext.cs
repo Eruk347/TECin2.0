@@ -14,9 +14,10 @@ namespace TECin2.API.Database
         public DbSet<Group> Group { get; set; }
         public DbSet<Log> Log { get; set; }
         public DbSet<Role> Role { get; set; }
+        public DbSet<School> School { get; set; }
         public DbSet<Setting> Setting { get; set; }
         public DbSet<User> User { get; set; }
-        
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

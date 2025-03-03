@@ -262,7 +262,7 @@ namespace TECin2.Tests.Repositories
                 Deactivated = false,
                 ArrivalTime = new(),
                 DepartmentId = 1,
-                WorkHoursInDayId = 1,
+               WorkHoursInDayId = 1,
                 FlexibleArrivalEnabled = true,
                 FlexibleAmount = new(),
                 IsLateBuffer = new(),

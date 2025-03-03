@@ -32,7 +32,7 @@ namespace TECin2.API.DTOs
 
         public bool Deactivated { get; set; }
 
-        public string? LastCheckin { get; set; }
+        public DateOnly? LastCheckin { get; set; }
 
     }
 }

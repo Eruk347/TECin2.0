@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using TECin2.API.DTOs;
 using TECin2.API.Services;
 
@@ -7,9 +6,9 @@ namespace TECin2.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class GroupController(IGroupService groupService) : Controller
+    public class StudentController(IStudentService studentService) : Controller
     {
-        private readonly IGroupService _groupService = groupService;
+        private readonly IStudentService _studentService = studentService;
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -19,17 +18,16 @@ namespace TECin2.API.Controllers
         {
             try
             {
-                List<GroupResponse?> groups = await _groupService.GetAllGroups();
-
-                if (groups == null)
+                List<StudentResponse?> students = await _studentService.GetAllStudents();
+                if (students == null)
                 {
                     return Problem("Got no list; NULL");
                 }
-                if (groups.Count == 0)
+                if (students.Count == 0)
                 {
                     return NoContent();
                 }
-                return Ok(groups);
+                return Ok(students);
             }
             catch (Exception ex)
             {
@@ -37,24 +35,22 @@ namespace TECin2.API.Controllers
             }
         }
 
-        [HttpGet("{groupId}")] //https://localhost:5001/api/author/1 - 1 bliver sat ind i linjen i stedet for userId
+        [HttpGet("{studentId}")] //https://localhost:5001/api/author/1 - 1 bliver sat ind i linjen i stedet for userId
         //[Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]//bliver håndteret på et højere niveau, pga [FromRoute]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetById([FromRoute] int groupId)
+        public async Task<IActionResult> GetById([FromRoute] string studentId)
         {
             try
             {
-                GroupResponse? groupResponse = await _groupService.GetGroupById(groupId);
-
-                if (groupResponse == null)
+                StudentResponse? studentResponse = await _studentService.GetStudentById(studentId);
+                if (studentResponse == null)
                 {
                     return NotFound();
                 }
-
-                return Ok(groupResponse);
+                return Ok(studentResponse);
             }
             catch (Exception ex)
             {
@@ -67,19 +63,17 @@ namespace TECin2.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Create([FromBody] GroupRequest newGroup)
+        public async Task<IActionResult> Create([FromBody] StudentRequest newStudent)
         {
             try
             {
-                //var accesstoken = Request.Headers.Authorization.ToString().Replace("bearer ", "");
-                GroupResponse? groupResponse = await _groupService.CreateGroup(newGroup, "accesstoken");
-
-                if (groupResponse == null)
+                var accesstoken = Request.Headers.Authorization.ToString().Replace("bearer ", "");
+                StudentResponse? studentResponse = await _studentService.CreateStudent(newStudent, accesstoken);
+                if (studentResponse == null)
                 {
                     return BadRequest();
                 }
-
-                return Ok(groupResponse);
+                return Ok(studentResponse);
             }
             catch (Exception ex)
             {
@@ -87,54 +81,46 @@ namespace TECin2.API.Controllers
             }
         }
 
-        [HttpPut("{groupId}")]
+        [HttpPut("{studentId}")]
         //[Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]//bliver håndteret på et højere niveau, pga [FromRoute]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Update([FromRoute] int groupId, [FromBody] GroupRequest updateGroup)
+        public async Task<IActionResult> Update([FromRoute] string studentId, [FromBody] StudentRequest updateStudent)
         {
             try
             {
-                //var accesstoken = Request.Headers.Authorization.ToString().Replace("bearer ", "");
-                GroupResponse? groupResponse = await _groupService.UpdateGroup(groupId, updateGroup, "accesstoken");
-
-                if (groupResponse == null)
+                var accesstoken = Request.Headers.Authorization.ToString().Replace("bearer ", "");
+                StudentResponse? studentResponse = await _studentService.UpdateStudent(studentId, updateStudent, accesstoken);
+                if (studentResponse == null)
                 {
                     return NotFound();
                 }
-
-                return Ok(groupResponse);
+                return Ok(studentResponse);
             }
             catch (Exception ex)
             {
                 return Problem(ex.Message);
             }
         }
-
-        [HttpDelete("{groupId}")]
-        //[Authorize]
+        [HttpDelete("{studentId}")]
+        // [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]//bliver håndteret på et højere niveau, pga [FromRoute]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Delete([FromRoute] string groupId)
+        public async Task<IActionResult> Delete([FromRoute] string studentId)
         {
             try
             {
-                //var accesstoken = Request.Headers.Authorization.ToString().Replace("bearer ", "");
-                string[] groupIdSplit = groupId.Split(',');
-                int[] groupIds = [Convert.ToInt32(groupIdSplit[0]), Convert.ToInt32(groupIdSplit[1])];
-
-                GroupResponse? groupResponse = await _groupService.DeleteGroup(groupIds[0], groupIds[1], "accesstoken");
-
-                if (groupResponse == null)
+                var accesstoken = Request.Headers.Authorization.ToString().Replace("bearer ", "");
+                StudentResponse? studentResponse = await _studentService.DeleteStudent(studentId, accesstoken);
+                if (studentResponse == null)
                 {
                     return NotFound();
                 }
-
-                return Ok(groupResponse);
+                return Ok(studentResponse);
             }
             catch (Exception ex)
             {

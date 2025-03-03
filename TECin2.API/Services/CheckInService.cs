@@ -22,7 +22,7 @@ namespace TECin2.API.Services
         {
             try
             {
-                string encryptedCpr = Hash.HashPassword(checkInRequest.CPR_number, "salt");
+                string encryptedCpr = Hash.HashPassword(checkInRequest.CPR_number, "sugar");//!!!!! HUSK SALT !!!!!!
                 SecurityNumb? securityNumb = await _securityRepository.SelectSecurityNumbByCPR(encryptedCpr);
 
                 if (securityNumb == null)
@@ -49,7 +49,7 @@ namespace TECin2.API.Services
                         return new CheckInResponse { FirstName = "", Message = "Der skete en fejl", Color = FindColor(Global.CheckInStatus.Error) };
                     }
                     bool isStudentLate = IsStudentLate(checkinTimeFromRequest, user.Groups.ToList()[0]);
-                    if (isStudentLate)
+                    if (isStudentLate && user.Groups.ToList()[0].IsLateMessage != null)
                     {
                         return new CheckInResponse { FirstName = user.FirstName, Message = user.Groups.ToList()[0].IsLateMessage, Color = FindColor(Global.CheckInStatus.Late) };
                     }
@@ -114,7 +114,7 @@ namespace TECin2.API.Services
                         Email = user.Email,
                         Phonenumber = user.Phonenumber,
                         LastCheckin = user.LastCheckin,
-                        Checkout = checkInStatus.Departure,
+                        Departure = checkInStatus.Departure,
                     });
                 }
             }
@@ -237,13 +237,13 @@ namespace TECin2.API.Services
                 return firstName + ", det er weekend!";
 
             group.WorkHoursInDay ??= new()
-                {
-                    Monday = new(7, 30, 0),
-                    Tuesday = new(7, 30, 0),
-                    Wednesday = new(7, 30, 0),
-                    Thursday = new(7, 30, 0),
-                    Friday = new(7, 0, 0),
-                };
+            {
+                Monday = new(7, 30, 0),
+                Tuesday = new(7, 30, 0),
+                Wednesday = new(7, 30, 0),
+                Thursday = new(7, 30, 0),
+                Friday = new(7, 0, 0),
+            };
             if (group.FlexibleArrivalEnabled)
             {
                 switch ((int)DateTime.Now.DayOfWeek)

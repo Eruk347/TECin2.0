@@ -1,6 +1,6 @@
 ﻿namespace TECin2.API.DTOs
 {
-    public class InstruktorResponse
+    public class InstructorResponse
     {
         public required string Id { get; set; }
         public required string FirstName { get; set; }
@@ -8,11 +8,11 @@
         public int? Phonenumber { get; set; }
         public string? Email { get; set; }
         public required string Username { get; set; }
-        public required InstruktorGroupResponse Group { get; set; }
-        public required InstruktorRoleResponse Role { get; set; }
+        public required List<InstructorGroupResponse> Groups { get; set; }
+        public required InstructorRoleResponse Role { get; set; }
     }
 
-    public class InstruktorRoleResponse
+    public class InstructorRoleResponse
     {
         public int Id { get; set; }
         public required string Name { get; set; }
@@ -20,7 +20,7 @@
         public int Rank { get; set; }
     }
 
-    public class InstruktorGroupResponse
+    public class InstructorGroupResponse
     {
         public int Id { get; set; }
         public required string Name { get; set; }

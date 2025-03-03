@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace TECin2.API.Migrations
 {
     /// <inheritdoc />
-    public partial class Initialsetup : Migration
+    public partial class InitialSetup : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -76,8 +76,7 @@ namespace TECin2.API.Migrations
                 name: "WorkHoursInDay",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<int>(type: "int", nullable: false),
                     Monday = table.Column<TimeOnly>(type: "time", nullable: false),
                     Tuesday = table.Column<TimeOnly>(type: "time", nullable: false),
                     Wednesday = table.Column<TimeOnly>(type: "time", nullable: false),
@@ -196,9 +195,9 @@ namespace TECin2.API.Migrations
                     ArrivalTime = table.Column<TimeOnly>(type: "time", nullable: false),
                     WorkHoursInDayId = table.Column<int>(type: "int", nullable: true),
                     FlexibleArrivalEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    FlexibleAmount = table.Column<string>(type: "nvarchar(5)", nullable: true),
+                    FlexibleAmount = table.Column<TimeOnly>(type: "time", nullable: true),
                     IsLateBuffer = table.Column<TimeOnly>(type: "time", nullable: true),
-                    IsLateMessage = table.Column<string>(type: "nvarchar(100)", nullable: true)
+                    IsLateMessage = table.Column<string>(type: "nvarchar(100)", nullable: false)
                 },
                 constraints: table =>
                 {

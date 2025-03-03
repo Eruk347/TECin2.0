@@ -8,7 +8,7 @@ namespace TECin2.API.Repositories
     {
         Task<Department?> DeleteDepartment(int departmentId);
         Task<Department?> InsertNewDepartment(Department department);
-        Task<List<Department>?> SelectAllDepartments();
+        Task<List<Department>> SelectAllDepartments();
         Task<Department?> SelectDepartmentById(int departmentId);
         Task<Department?> SelectDepartmentByName(string departmentName);
         Task<Department?> UpdateDepartment(int departmentId, Department department);
@@ -49,7 +49,10 @@ namespace TECin2.API.Repositories
             {
                 _context.Department.Add(department);
                 await _context.SaveChangesAsync();
-                return department;
+                return _context.Department
+                    .Include(a => a.Groups)
+                    .Include(d => d.School)
+                    .FirstOrDefault(department => department.Name == department.Name);
             }
             catch (Exception e)
             {
@@ -58,18 +61,19 @@ namespace TECin2.API.Repositories
             }
         }
 
-        public async Task<List<Department>?> SelectAllDepartments()
+        public async Task<List<Department>> SelectAllDepartments()
         {
             try
             {
                 return await _context.Department
+                    .Include(d => d.School)
                 .Include(a => a.Groups)
                 .ToListAsync();
             }
             catch (Exception e)
             {
                 WriteToLog("SelectAllDepartments", e);
-                return null;
+                return [];
             }
         }
 
@@ -79,6 +83,7 @@ namespace TECin2.API.Repositories
             {
                 return await _context.Department
                     .Include(a => a.Groups)
+                    .Include(d => d.School)
                     .FirstOrDefaultAsync(department => department.Id == departmentId);
             }
             catch (Exception e)

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TECin2.API.DTOs;
 using TECin2.API.Services;
@@ -7,9 +8,9 @@ namespace TECin2.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class GroupController(IGroupService groupService) : Controller
+    public class DepartmentController(IDepartmentService departmentService) : Controller
     {
-        private readonly IGroupService _groupService = groupService;
+        private readonly IDepartmentService _departmentService = departmentService;
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -19,17 +20,18 @@ namespace TECin2.API.Controllers
         {
             try
             {
-                List<GroupResponse?> groups = await _groupService.GetAllGroups();
+                List<DepartmentResponse?> departments = await _departmentService.GetAllDepartments();
 
-                if (groups == null)
+                if (departments == null)
                 {
                     return Problem("Got no list; NULL");
                 }
-                if (groups.Count == 0)
+                if (departments.Count == 0)
                 {
                     return NoContent();
                 }
-                return Ok(groups);
+
+                return Ok(departments);
             }
             catch (Exception ex)
             {
@@ -37,24 +39,24 @@ namespace TECin2.API.Controllers
             }
         }
 
-        [HttpGet("{groupId}")] //https://localhost:5001/api/author/1 - 1 bliver sat ind i linjen i stedet for userId
+        [HttpGet("{departmentId}")] //https://localhost:5001/api/author/1 - 1 bliver sat ind i linjen i stedet for userId
         //[Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]//bliver håndteret på et højere niveau, pga [FromRoute]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetById([FromRoute] int groupId)
+        public async Task<IActionResult> GetById([FromRoute] int departmentId)
         {
             try
             {
-                GroupResponse? groupResponse = await _groupService.GetGroupById(groupId);
+                DepartmentResponse? departmentResponse = await _departmentService.GetDepartmentById(departmentId);
 
-                if (groupResponse == null)
+                if (departmentResponse == null)
                 {
                     return NotFound();
                 }
 
-                return Ok(groupResponse);
+                return Ok(departmentResponse);
             }
             catch (Exception ex)
             {
@@ -67,19 +69,19 @@ namespace TECin2.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Create([FromBody] GroupRequest newGroup)
+        public async Task<IActionResult> Create([FromBody] DepartmentRequest newDepartment)
         {
             try
             {
-                //var accesstoken = Request.Headers.Authorization.ToString().Replace("bearer ", "");
-                GroupResponse? groupResponse = await _groupService.CreateGroup(newGroup, "accesstoken");
+                var accesstoken = Request.Headers.Authorization.ToString().Replace("bearer ", "");
+                DepartmentResponse? departmentResponse = await _departmentService.CreateDepartment(newDepartment, accesstoken);
 
-                if (groupResponse == null)
+                if (departmentResponse == null)
                 {
                     return BadRequest();
                 }
 
-                return Ok(groupResponse);
+                return Ok(departmentResponse);
             }
             catch (Exception ex)
             {
@@ -87,25 +89,25 @@ namespace TECin2.API.Controllers
             }
         }
 
-        [HttpPut("{groupId}")]
+        [HttpPut("{departmentId}")]
         //[Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]//bliver håndteret på et højere niveau, pga [FromRoute]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Update([FromRoute] int groupId, [FromBody] GroupRequest updateGroup)
+        public async Task<IActionResult> Update([FromRoute] int departmentId, [FromBody] DepartmentRequest updateDepartment)
         {
             try
             {
-                //var accesstoken = Request.Headers.Authorization.ToString().Replace("bearer ", "");
-                GroupResponse? groupResponse = await _groupService.UpdateGroup(groupId, updateGroup, "accesstoken");
+                var accesstoken = Request.Headers.Authorization.ToString().Replace("bearer ", "");
+                DepartmentResponse? departmentResponse = await _departmentService.UpdateDepartment(departmentId, updateDepartment, accesstoken);
 
-                if (groupResponse == null)
+                if (departmentResponse == null)
                 {
                     return NotFound();
                 }
 
-                return Ok(groupResponse);
+                return Ok(departmentResponse);
             }
             catch (Exception ex)
             {
@@ -113,28 +115,25 @@ namespace TECin2.API.Controllers
             }
         }
 
-        [HttpDelete("{groupId}")]
-        //[Authorize]
+        [HttpDelete("{departmentId}")]
+       // [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]//bliver håndteret på et højere niveau, pga [FromRoute]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Delete([FromRoute] string groupId)
+        public async Task<IActionResult> Delete([FromRoute] int departmentId)
         {
             try
             {
-                //var accesstoken = Request.Headers.Authorization.ToString().Replace("bearer ", "");
-                string[] groupIdSplit = groupId.Split(',');
-                int[] groupIds = [Convert.ToInt32(groupIdSplit[0]), Convert.ToInt32(groupIdSplit[1])];
+                var accesstoken = Request.Headers.Authorization.ToString().Replace("bearer ", "");
+                DepartmentResponse? departmentResponse = await _departmentService.DeleteDepartment(departmentId, accesstoken);
 
-                GroupResponse? groupResponse = await _groupService.DeleteGroup(groupIds[0], groupIds[1], "accesstoken");
-
-                if (groupResponse == null)
+                if (departmentResponse == null)
                 {
                     return NotFound();
                 }
 
-                return Ok(groupResponse);
+                return Ok(departmentResponse);
             }
             catch (Exception ex)
             {

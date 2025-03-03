@@ -3,7 +3,7 @@ using TECin2.API.Database.Entities;
 
 namespace TECin2.API.DTOs
 {
-    public class InstruktorUpdateRequest
+    public class InstructorRequest
     {
         [Required]
         public required string FirstName { get; set; }
@@ -23,14 +23,17 @@ namespace TECin2.API.DTOs
 
         public string? Password { get; set; }
 
-        //[Compare("Password", ErrorMessage = "Passwords skal være ens")]
-        public string? ConfirmPassword { get; set; }
-
-        public int GroupId { get; set; }
+        public List<Group>? Groups { get; set; }
 
         [Required]
-        public int RoleId { get;set; }
+        public bool IsStudent { get; set; }
+        
+        [Required]
+        public int RoleId { get; set; }
 
-        public List<string>? Settings { get; set; }
+        public List<Setting>? Settings { get; set; }
+
+        public bool Deactivated { get; set; }   
+
     }
 }

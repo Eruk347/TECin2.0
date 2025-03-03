@@ -9,9 +9,9 @@ namespace TECin2.API.Repositories
 
         Task<Setting?> DeleteSetting(int settingId);
         Task<Setting?> InsertNewSetting(Setting setting);
-        Task<List<Setting>?> SelectAllSettings();
+        Task<List<Setting>> SelectAllSettings();
         Task<Setting?> SelectSettingById(int settingId);
-        Task<List<Setting>?> SelectSettingsByUserId(string userId);
+        Task<List<Setting>> SelectSettingsByUserId(string userId);
         Task<Setting?> UpdateSetting(int settinId, Setting setting);
     }
     public class SettingRepository(TECinContext context) : ISettingRepository
@@ -58,7 +58,7 @@ namespace TECin2.API.Repositories
             }
         }
 
-        public async Task<List<Setting>?> SelectAllSettings()
+        public async Task<List<Setting>> SelectAllSettings()
         {
             try
             {
@@ -67,7 +67,7 @@ namespace TECin2.API.Repositories
             catch (Exception e)
             {
                 WriteToLog("SelectAllSettings", e);
-                return null;
+                return [];
             }
         }
 
@@ -85,7 +85,7 @@ namespace TECin2.API.Repositories
             }
         }
 
-        public async Task<List<Setting>?> SelectSettingsByUserId(string userId)//skal nok fjernes
+        public async Task<List<Setting>> SelectSettingsByUserId(string userId)//skal nok fjernes
         {
             try
             {
@@ -94,7 +94,7 @@ namespace TECin2.API.Repositories
             catch (Exception e)
             {
                 WriteToLog("SelectSettingsByUserId", e);
-                return null;
+                return [null];
             }
         }
 

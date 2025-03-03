@@ -30,7 +30,7 @@ namespace TECin2.API.Database.Entities
         [Column(TypeName = "bit")]
         public bool FlexibleArrivalEnabled { get; set; }
 
-        [Column(TypeName = "nvarchar(5)")]
+        [Column(TypeName = "time")]
         public TimeOnly? FlexibleAmount { get; set; }
 
         [Column(TypeName = "time")]

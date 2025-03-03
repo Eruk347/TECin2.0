@@ -14,7 +14,7 @@ namespace TECin2.API.Database.Entities
         public required string Username { get; set; }
 
         [Column(TypeName = "nvarchar(36)")]
-        public string? Salt { get; set; }
+        public required string Salt { get; set; }
 
         [Column(TypeName = "nvarchar(32)")]
         public required string FirstName { get; set; }
@@ -42,7 +42,7 @@ namespace TECin2.API.Database.Entities
         [Column(TypeName = "int")]
         public int RoleId { get; set; }
 
-        public required Role Role { get; set; }
+        public Role? Role { get; set; }
 
         [Column(TypeName = "date")]
         public DateOnly? LastCheckin { get; set; }

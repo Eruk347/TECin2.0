@@ -126,7 +126,7 @@ namespace TECin2.API.Services
                     DepartmentId = groupRequest.DepartmentId,
                     ArrivalTime = groupRequest.ArrivalTime,
                     IsLateBuffer = groupRequest.IsLatebuffer,
-                    IsLateMessage = groupRequest.IsLateMessage,
+                    IsLateMessage = groupRequest.IsLateMessage ?? "",
                     WorkHoursInDay = groupRequest.WorkHoursInDay,
                     FlexibleAmount = groupRequest.FlexibleAmount,
                     FlexibleArrivalEnabled = groupRequest.FlexibleArrivalEnabled,

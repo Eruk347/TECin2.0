@@ -8,9 +8,9 @@ namespace TECin2.API.Repositories
     {
         Task<User?> DeleteUser(string userId);
         Task<User?> InsertNewUser(User user);
-        Task<List<User>?> SelectAllUsers();
-        Task<List<User>?> SelectAllStudents();
-        Task<List<User>?> SelectAllStaff();
+        Task<List<User>> SelectAllUsers();
+        Task<List<User>> SelectAllStudents();
+        Task<List<User>> SelectAllStaff();
         Task<User?> SelectUserById(string userId);
         Task<User?> SelectUserByUsername(string userName);
         Task<User?> UpdateUser(string userId, User user);
@@ -64,7 +64,7 @@ namespace TECin2.API.Repositories
             }
         }
 
-        public async Task<List<User>?> SelectAllUsers()
+        public async Task<List<User>> SelectAllUsers()
         {
             try
             {
@@ -76,11 +76,11 @@ namespace TECin2.API.Repositories
             catch (Exception e)
             {
                 WriteToLog("SelectAllUsers", e);
-                return null;
+                return [];
             }
         }
 
-        public async Task<List<User>?> SelectAllStudents()
+        public async Task<List<User>> SelectAllStudents()
         {
             try
             {
@@ -92,11 +92,11 @@ namespace TECin2.API.Repositories
             catch (Exception e)
             {
                 WriteToLog("SelectAllStudents", e);
-                return null;
+                return [];
             }
         }
 
-        public async Task<List<User>?> SelectAllStaff()
+        public async Task<List<User>> SelectAllStaff()
         {
             try
             {
@@ -109,7 +109,7 @@ namespace TECin2.API.Repositories
             catch (Exception e)
             {
                 WriteToLog("SelectAllStaff", e);
-                return null;
+                return [];
             }
         }
 

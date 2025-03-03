@@ -2,7 +2,7 @@
 
 namespace TECin2.API.DTOs
 {
-    public class DepartmentRequest
+    public class SchoolRequest
     {
         [Required]
         [StringLength(100)]
@@ -11,8 +11,6 @@ namespace TECin2.API.DTOs
         [Required]
         public bool Deactivated { get; set; }
 
-        public string? DepartmentHead { get; set; }
-
-        public int SchoolId { get; set; }
+        public string? Principal { get; set; }
     }
 }
