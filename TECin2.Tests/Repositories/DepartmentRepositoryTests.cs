@@ -145,6 +145,8 @@ namespace TECin2.Tests.Repositories
             //Arrange
             await _context.Database.EnsureDeletedAsync();
 
+            _context.School.Add(TestData.TestData.GetSchoolTestData());
+
             _context.Department.Add(new()
             {
                 Id = 1,

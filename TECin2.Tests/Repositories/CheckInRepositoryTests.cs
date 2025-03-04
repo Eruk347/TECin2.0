@@ -83,14 +83,7 @@ namespace TECin2.Tests.Repositories
 
             string userId = "test";
 
-            _context.User.Add(new()
-            {
-                FirstName = "test",
-                Id = userId,
-                LastName = "test",
-                Role = new(),
-                Username = "test",
-            });
+            _context.User.Add(TestData.TestData.GetUserTestData(userId));
 
             CheckInStatus newCheckin = new()
             {
@@ -150,14 +143,7 @@ namespace TECin2.Tests.Repositories
 
             string userId = "test";
 
-            _context.User.Add(new()
-            {
-                FirstName = "test",
-                Id = userId,
-                LastName = "test",
-                Role = new(),
-                Username = "test",
-            });
+            _context.User.Add(TestData.TestData.GetUserTestData(userId));
 
             _context.CheckInStatus.Add(new()
             {
@@ -211,14 +197,7 @@ namespace TECin2.Tests.Repositories
             await _context.Database.EnsureDeletedAsync();
             string userId = "test";
             DateOnly today = DateOnly.FromDateTime(DateTime.Now);
-            _context.User.Add(new()
-            {
-                FirstName = "test",
-                Id = userId,
-                LastName = "test",
-                Role = new(),
-                Username = "test",
-            });
+            _context.User.Add(TestData.TestData.GetUserTestData(userId));
             _context.CheckInStatus.Add(new()
             {
                 ArrivalDate = today,
@@ -248,10 +227,10 @@ namespace TECin2.Tests.Repositories
             //Arrange
             await _context.Database.EnsureDeletedAsync();
             DateOnly today = DateOnly.FromDateTime(DateTime.Now);
-            
+
             //Act
             var result = await _repository.SelectCheckInForUserOnDate("userId", today);
-            
+
             //Assert
             Assert.Null(result);
         }
@@ -263,18 +242,11 @@ namespace TECin2.Tests.Repositories
             await _context.Database.EnsureDeletedAsync();
             string userId = "test";
             DateOnly today = DateOnly.FromDateTime(DateTime.Now);
-            _context.User.Add(new()
-            {
-                FirstName = "test",
-                Id = userId,
-                LastName = "test",
-                Role = new(),
-                Username = "test",
-            });
+            _context.User.Add(TestData.TestData.GetUserTestData(userId));
 
             //Act
             var result = await _repository.SelectCheckInForUserOnDate("userId", today);
-            
+
             //Assert
             Assert.Null(result);
         }
@@ -290,14 +262,7 @@ namespace TECin2.Tests.Repositories
             string userId = "test";
             DateOnly today = DateOnly.FromDateTime(DateTime.Now);
 
-            _context.User.Add(new()
-            {
-                FirstName = "test",
-                Id = userId,
-                LastName = "test",
-                Role = new(),
-                Username = "test",
-            });
+            _context.User.Add(TestData.TestData.GetUserTestData(userId));
 
             _context.CheckInStatus.Add(new()
             {
@@ -357,14 +322,7 @@ namespace TECin2.Tests.Repositories
             int id = 1;
 
 
-            _context.User.Add(new()
-            {
-                FirstName = "test",
-                Id = userId,
-                LastName = "test",
-                Role = new(),
-                Username = "test",
-            });
+            _context.User.Add(TestData.TestData.GetUserTestData(userId));
 
             _context.CheckInStatus.Add(new()
             {

@@ -9,7 +9,7 @@ namespace TECin2.API.Repositories
 
         Task<Role?> DeleteRole(int roleId);
         Task<Role?> InsertNewRole(Role role);
-        Task<List<Role>?> SelectAlleRoles();
+        Task<List<Role>> SelectAlleRoles();
         Task<Role?> SelectRoleById(int roleId);
         Task<Role?> SelectRoleByName(string roleName);
         Task<Role?> UpdateRole(int roleId, Role role);
@@ -62,7 +62,7 @@ namespace TECin2.API.Repositories
             }
         }
 
-        public async Task<List<Role>?> SelectAlleRoles()
+        public async Task<List<Role>> SelectAlleRoles()
         {
             try
             {
@@ -72,7 +72,7 @@ namespace TECin2.API.Repositories
             catch (Exception e)
             {
                 WriteToLog("SelectAlleRoles", e);
-                return null;
+                return [];
             }
         }
 

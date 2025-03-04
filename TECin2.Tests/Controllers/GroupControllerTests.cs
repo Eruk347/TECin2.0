@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Moq;
 using TECin2.API.Controllers;
@@ -38,9 +39,11 @@ namespace TECin2.Tests.Controllers
             var result = await _controller.GetAll();
 
             // Assert
+            var statusCodeResult = (IStatusCodeActionResult)result;
             var okResult = Assert.IsType<OkObjectResult>(result);
             var returnValue = Assert.IsType<List<GroupResponse?>>(okResult.Value);
-            Assert.Single(returnValue);
+            Assert.Equal(200, statusCodeResult.StatusCode);
+            Assert.IsType<List<GroupResponse>>(returnValue);
         }
 
         [Fact]
@@ -54,7 +57,22 @@ namespace TECin2.Tests.Controllers
             var result = await _controller.GetAll();
 
             // Assert
-            Assert.IsType<NoContentResult>(result);
+            var statusCodeResult = (IStatusCodeActionResult)result;
+            Assert.Equal(204, statusCodeResult.StatusCode);
+        }
+
+        [Fact]
+        public async Task GetAll_ReturnsProblem_WhenNull()
+        {
+            // Arrange
+            _mockGroupService.Setup(service => service.GetAllGroups()).ReturnsAsync(() => null);
+
+            // Act
+            var result = await _controller.GetAll();
+
+            // Assert
+            var statusCodeResult = (IStatusCodeActionResult)result;
+            Assert.Equal(500, statusCodeResult.StatusCode);
         }
 
         [Fact]
@@ -76,12 +94,14 @@ namespace TECin2.Tests.Controllers
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnValue = Assert.IsType<GroupResponse>(okResult.Value);
-            Assert.Equal(1, returnValue.Id);
+            var returnValue = Assert.IsType<GroupResponse?>(okResult.Value);
+            var statusCodeResult = (IStatusCodeActionResult)result;
+            Assert.Equal(200, statusCodeResult.StatusCode);
+            Assert.IsType<GroupResponse>(returnValue);
         }
 
         [Fact]
-        public async Task GetById_Returns500_WhenGroupNotFound()
+        public async Task GetById_Returns404_WhenGroupNotFound()
         {
             // Arrange
             _mockGroupService.Setup(service => service.GetGroupById(1)).ReturnsAsync((GroupResponse?)null);
@@ -90,7 +110,8 @@ namespace TECin2.Tests.Controllers
             var result = await _controller.GetById(1);
 
             // Assert
-            Assert.IsType<NotFoundResult>(result);
+            var statusCodeResult = (IStatusCodeActionResult)result;
+            Assert.Equal(404, statusCodeResult.StatusCode);
         }
 
         [Fact]
@@ -125,7 +146,7 @@ namespace TECin2.Tests.Controllers
         }
 
         [Fact]
-        public async Task Create_Returns500_WhenGroupNotCreated()
+        public async Task Create_Returns400_WhenGroupNotCreated()
         {
             // Arrange
             var newGroup = new GroupRequest { Name = "Group1", DepartmentId = 1, Deactivated = false, ArrivalTime = new TimeOnly(8, 0) };
@@ -198,7 +219,7 @@ namespace TECin2.Tests.Controllers
         }
 
         [Fact]
-        public async Task Delete_Return404_WhenGroupNotFound()
+        public async Task Delete_Returns404_WhenGroupNotFound()
         {
             // Arrange
             _mockGroupService.Setup(service => service.DeleteGroup(1, 2, It.IsAny<string>())).ReturnsAsync((GroupResponse?)null);

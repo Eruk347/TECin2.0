@@ -44,7 +44,7 @@ namespace TECin2.API
                     };
                 });
 
-                        services.AddScoped<ICheckInRepository, CheckInRepository>();
+            services.AddScoped<ICheckInRepository, CheckInRepository>();
             services.AddScoped<IDepartmentRepository, DepartmentRepository>();
             services.AddScoped<IGroupRepository, GroupRepository>();
             services.AddScoped<LoggerRepository>();
