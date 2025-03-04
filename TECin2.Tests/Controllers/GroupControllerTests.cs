@@ -33,7 +33,9 @@ namespace TECin2.Tests.Controllers
 
 
             var groups = new List<GroupResponse?> { response };
-            _mockGroupService.Setup(service => service.GetAllGroups()).ReturnsAsync(groups);
+            _mockGroupService
+                .Setup(service => service.GetAllGroups())
+                .ReturnsAsync(groups);
 
             // Act
             var result = await _controller.GetAll();

@@ -8,7 +8,7 @@ namespace TECin2.API.Services
     public interface ICheckInService
     {
         Task<CheckInResponse?> CheckIn(CheckInRequest checkInRequest);
-        Task<List<CheckInResponseLong>> GetAllCheckInStatusesFromGroup(int groupId, DateOnly date);
+        Task<List<CheckInResponseLong?>> GetAllCheckInStatusesFromGroup(int groupId, DateOnly date);
         Task<List<CheckInStatus>> GetAllCheckInStatusesForUser(string userId);
     }
     public class CheckInService(ICheckInRepository checkInRepository, ISecurityRepository securityRepository, IUserRepository userRepository, IGroupRepository groupRepository) : ICheckInService
@@ -90,7 +90,7 @@ namespace TECin2.API.Services
             }
         }
 
-        public async Task<List<CheckInResponseLong>> GetAllCheckInStatusesFromGroup(int groupId, DateOnly date)
+        public async Task<List<CheckInResponseLong?>> GetAllCheckInStatusesFromGroup(int groupId, DateOnly date)
         {
             Group? group = await _groupRepository.SelectGroupById(groupId);
             if (group == null || group.Users == null)
@@ -99,7 +99,7 @@ namespace TECin2.API.Services
             }
 
             List<User>? users = [.. group.Users];
-            List<CheckInResponseLong> checkInResponses = [];
+            List<CheckInResponseLong?> checkInResponses = [];
             foreach (User user in users)
             {
                 CheckInStatus? checkInStatus = await _checkInRepository.SelectCheckInForUserOnDate(user.Id, date);//?? new CheckInStatus() { ArrivalDate = date, ArrivalTime = new(), User_Id = user.Id };

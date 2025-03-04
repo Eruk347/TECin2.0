@@ -19,7 +19,7 @@ namespace TECin2.Tests.Controllers
         }
 
         [Fact]
-        public async Task CheckIn_ShouldReturnCheckInResponse_WithFirstnameHelloMessageAndTuquiseColor_WhenSuccess()
+        public async Task CheckIn_ShouldReturnOKResultWithCheckInResponse_WithFirstnameHelloMessageAndTurquiseColor_WhenSuccess()
         {
             //Arrange
             CheckInRequest request = new()
@@ -45,6 +45,49 @@ namespace TECin2.Tests.Controllers
             //Assert
             var statusCodeResult = (IStatusCodeActionResult)result;
             Assert.Equal(200, statusCodeResult.StatusCode);
+        }
+
+        [Fact]
+        public async Task CheckIn_ShouldReturnNotFound_WhenUserDoesNotExist()
+        {
+            //Arrange
+            _mockCheckInService
+                .Setup(service => service.CheckIn(It.IsAny<CheckInRequest>()))
+                .ReturnsAsync(() => null);
+
+            CheckInRequest request = new()
+            {
+                CPR_number = "test",
+                CheckinTime = new(),
+            };
+
+            //Act
+            var result = await _controller.CheckIn(request);
+
+            //Assert
+            var statusCodeResult = (IStatusCodeActionResult)result;
+            Assert.Equal(404, statusCodeResult.StatusCode);
+        }
+
+        [Fact]
+        public async Task GetAll_ShouldReturn200_WithListOfCheckIns_WhenSuccess()
+        {
+            //Arrange
+            var responses = new List<CheckInResponseLong?> { TestData.TestData.GetCheckInResponseLong(1, "1") };
+
+            _mockCheckInService
+                .Setup(service => service.GetAllCheckInStatusesFromGroup(It.IsAny<int>(), It.IsAny<DateOnly>()))
+                .ReturnsAsync(responses);
+
+            //Act
+            var result = await _controller.GetAll("1,20250303");
+
+            //Assert
+            var statusCodeResult = (IStatusCodeActionResult)result;
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var returnValue = Assert.IsType<List<CheckInResponseLong?>>(okResult.Value);
+            Assert.Equal(200, statusCodeResult.StatusCode);
+            Assert.IsType<List<CheckInResponseLong?>>(returnValue);
         }
     }
 }

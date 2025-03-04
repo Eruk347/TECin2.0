@@ -49,12 +49,12 @@ namespace TECin2.API.Controllers
 
                 string date = infoSplit[1];
                 int year = Convert.ToInt32(date[..4]);
-                int month = Convert.ToInt32(date.Substring(2, 2));
-                int day = Convert.ToInt32(date.Substring(4, 2));
+                int month = Convert.ToInt32(date.Substring(4, 2));
+                int day = Convert.ToInt32(date.Substring(6, 2));
 
                 DateOnly datePicked = new(year, month, day);
 
-                List<CheckInResponseLong> response = await _checkInService.GetAllCheckInStatusesFromGroup(groupId, datePicked);
+                List<CheckInResponseLong?> response = await _checkInService.GetAllCheckInStatusesFromGroup(groupId, datePicked);
 
                 if (response == null)
                 {

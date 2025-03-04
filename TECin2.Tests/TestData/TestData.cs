@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TECin2.API.Database.Entities;
+using TECin2.API.DTOs;
 
 namespace TECin2.Tests.TestData
 {
@@ -12,6 +13,7 @@ namespace TECin2.Tests.TestData
         public static readonly byte[] turkis = [0xff, 0x28, 0xcd, 0xaf];
         public static readonly byte[] koralRoed = [0xFF, 0xfa, 0x50, 0x50];
         public static readonly byte[] sennepsGul = [0xFF, 0xcd, 0xa0, 0x1e];
+
         public static School GetSchoolTestData()
         {
             return new School()
@@ -100,6 +102,18 @@ namespace TECin2.Tests.TestData
                 RoleId = 1,
                 Salt = "salt",
                 Settings = []
+            };
+        }
+
+        public static CheckInResponseLong GetCheckInResponseLong(int id, string userId)
+        {
+            return new()
+            {
+                Id = id,
+                UserId = userId,
+                Arrival = new(7, 30, 0),
+                FirstName = "Test",
+                LastName = "Test",
             };
         }
     }
