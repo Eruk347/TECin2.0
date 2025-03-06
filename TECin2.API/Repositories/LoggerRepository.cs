@@ -38,10 +38,5 @@ namespace TECin2.API.Repositories
             }
             return true;
         }
-
-        public static Log GetAllLogs()
-        {
-            return null;
-        }
     }
 }

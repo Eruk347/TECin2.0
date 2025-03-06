@@ -76,7 +76,7 @@ namespace TECin2.API.Controllers
 
                 if (groupResponse == null)
                 {
-                    return BadRequest();
+                    return Problem("Noget gik galt. Gruppe blev IKKE oprettet.");
                 }
 
                 return Ok(groupResponse);

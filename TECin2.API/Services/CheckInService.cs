@@ -22,7 +22,7 @@ namespace TECin2.API.Services
         {
             try
             {
-                string encryptedCpr = Hash.HashPassword(checkInRequest.CPR_number, "sugar");//!!!!! HUSK SALT !!!!!!
+                string encryptedCpr = Hash.HashPassword(checkInRequest.CPR_number, "");//!!!!! HUSK SALT !!!!!!
                 SecurityNumb? securityNumb = await _securityRepository.SelectSecurityNumbByCPR(encryptedCpr);
 
                 if (securityNumb == null)

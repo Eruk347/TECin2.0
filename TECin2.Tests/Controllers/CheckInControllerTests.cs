@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Moq;
 using TECin2.API.Controllers;
@@ -18,8 +19,9 @@ namespace TECin2.Tests.Controllers
             _controller = new CheckInController(_mockCheckInService.Object);
         }
 
+        #region Checkin
         [Fact]
-        public async Task CheckIn_ShouldReturnOKResultWithCheckInResponse_WithFirstnameHelloMessageAndTurquiseColor_WhenSuccess()
+        public async Task CheckIn_ShouldReturn200_OKResult_WithCheckInResponse_WithFirstnameHelloMessageAndTurquiseColor_WhenSuccess()
         {
             //Arrange
             CheckInRequest request = new()
@@ -48,7 +50,7 @@ namespace TECin2.Tests.Controllers
         }
 
         [Fact]
-        public async Task CheckIn_ShouldReturnNotFound_WhenUserDoesNotExist()
+        public async Task CheckIn_ShouldReturn404_NotFound_WhenUserDoesNotExist()
         {
             //Arrange
             _mockCheckInService
@@ -70,7 +72,31 @@ namespace TECin2.Tests.Controllers
         }
 
         [Fact]
-        public async Task GetAll_ShouldReturn200_WithListOfCheckIns_WhenSuccess()
+        public async Task CheckIn_ShouldReturn500_Problem_WhenExceptionIsRaised()
+        {
+            //Arrange
+            CheckInRequest request = new()
+            {
+                CPR_number = "test",
+                CheckinTime = new(),
+            };
+
+            _mockCheckInService
+                .Setup(service => service.CheckIn(It.IsAny<CheckInRequest>()))
+                .ReturnsAsync(() => throw new System.Exception("This is an exception"));
+
+            //Act
+            var result = await _controller.CheckIn(request);
+
+            //Assert
+            var statusCodeResult = (IStatusCodeActionResult)result;
+            Assert.Equal(500, statusCodeResult.StatusCode);
+        }
+        #endregion
+
+        #region GetAll
+        [Fact]
+        public async Task GetAll_ShouldReturn200_OKResult_WithListOfCheckIns_WhenSuccess()
         {
             //Arrange
             var responses = new List<CheckInResponseLong?> { TestData.TestData.GetCheckInResponseLong(1, "1") };
@@ -89,5 +115,57 @@ namespace TECin2.Tests.Controllers
             Assert.Equal(200, statusCodeResult.StatusCode);
             Assert.IsType<List<CheckInResponseLong?>>(returnValue);
         }
+
+        [Fact]
+        public async Task GetAll_ShouldReturn204_NoContent_WhenNoCheckIns()
+        {
+            //Arrange
+            var responses = new List<CheckInResponseLong?>();
+
+            _mockCheckInService
+                .Setup(service => service.GetAllCheckInStatusesFromGroup(It.IsAny<int>(), It.IsAny<DateOnly>()))
+                .ReturnsAsync(responses);
+
+            //Act
+            var result = await _controller.GetAll("1,20250303");
+
+            //Assert
+            var statusCodeResult = (IStatusCodeActionResult)result;
+            var noContentResult = Assert.IsType<NoContentResult>(result);
+            Assert.Equal(204, statusCodeResult.StatusCode);
+        }
+
+        [Fact]
+        public async Task GetAll_ShouldReturn500_Problem_WhenServiceReturnsNull()
+        {
+            //Arrange
+            _mockCheckInService
+                .Setup(service => service.GetAllCheckInStatusesFromGroup(It.IsAny<int>(), It.IsAny<DateOnly>()))
+                .ReturnsAsync(() => null);
+
+            //Act
+            var result = await _controller.GetAll("1,20250303");
+
+            //Assert
+            var statusCodeResult = (IStatusCodeActionResult)result;
+            Assert.Equal(500, statusCodeResult.StatusCode);
+        }
+
+        [Fact]
+        public async Task GetAll_ShouldReturn500_Problem_WhenExceptionIsRaised()
+        {
+            //Arrange
+            _mockCheckInService
+                .Setup(service => service.GetAllCheckInStatusesFromGroup(It.IsAny<int>(), It.IsAny<DateOnly>()))
+                .ReturnsAsync(() => throw new System.Exception("This is an exception"));
+
+            //Act
+            var result = await _controller.GetAll("1,20250303");
+
+            //Assert
+            var statusCodeResult = (IStatusCodeActionResult)result;
+            Assert.Equal(500, statusCodeResult.StatusCode);
+        }
+        #endregion
     }
 }

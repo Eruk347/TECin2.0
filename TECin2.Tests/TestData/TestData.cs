@@ -72,11 +72,11 @@ namespace TECin2.Tests.TestData
             };
         }
 
-        public static Role GetRoleTestData()
+        public static Role GetRoleTestData(int id)
         {
             return new Role()
             {
-                Id = 1,
+                Id = id,
                 Name = "Test Role",
                 Deactivated = false,
                 Rank = 1,
@@ -92,7 +92,7 @@ namespace TECin2.Tests.TestData
                 FirstName = "Test",
                 LastName = "User",
                 Email = "@",
-                Role = GetRoleTestData(),
+                Role = GetRoleTestData(1),
                 Username = "Test",
                 Deactivated = false,
                 Groups = [],
@@ -116,5 +116,7 @@ namespace TECin2.Tests.TestData
                 LastName = "Test",
             };
         }
+    
+  
     }
 }

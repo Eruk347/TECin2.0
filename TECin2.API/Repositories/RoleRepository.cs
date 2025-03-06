@@ -14,13 +14,9 @@ namespace TECin2.API.Repositories
         Task<Role?> SelectRoleByName(string roleName);
         Task<Role?> UpdateRole(int roleId, Role role);
     }
-    public class RoleRepository : IRoleRepository
+    public class RoleRepository(TECinContext context) : IRoleRepository
     {
-        private readonly TECinContext _context;
-        public RoleRepository(TECinContext context)
-        {
-            _context = context;
-        }
+        private readonly TECinContext _context = context;
 
         private void WriteToLog(string task, Exception e)
         {

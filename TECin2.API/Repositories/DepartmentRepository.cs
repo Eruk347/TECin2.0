@@ -67,8 +67,8 @@ namespace TECin2.API.Repositories
             {
                 return await _context.Department
                     .Include(d => d.School)
-                .Include(a => a.Groups)
-                .ToListAsync();
+                    .Include(a => a.Groups)
+                    .ToListAsync();
             }
             catch (Exception e)
             {
