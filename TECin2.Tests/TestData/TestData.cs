@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TECin2.API.Database.Entities;
+﻿using TECin2.API.Database.Entities;
 using TECin2.API.DTOs;
 
 namespace TECin2.Tests.TestData
@@ -14,12 +9,12 @@ namespace TECin2.Tests.TestData
         public static readonly byte[] koralRoed = [0xFF, 0xfa, 0x50, 0x50];
         public static readonly byte[] sennepsGul = [0xFF, 0xcd, 0xa0, 0x1e];
 
-        public static School GetSchoolTestData()
+        public static School GetSchoolTestData(int id)
         {
             return new School()
             {
-                Id = 1,
-                Name = "Test School",
+                Id = id,
+                Name = "Test",
                 Deactivated = false,
                 Departments = [],
                 Principal = "1"

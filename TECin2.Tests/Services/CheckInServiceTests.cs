@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TECin2.API.Repositories;
+﻿using TECin2.API.Repositories;
 using TECin2.API.Services;
 using TECin2.API.DTOs;
 using Moq;

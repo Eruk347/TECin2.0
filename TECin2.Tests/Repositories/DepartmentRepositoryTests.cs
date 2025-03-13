@@ -1,13 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TECin2.API.Database;
 using TECin2.API.Database.Entities;
 using TECin2.API.Repositories;
-using Xunit;
 
 namespace TECin2.Tests.Repositories
 {
@@ -87,7 +81,34 @@ namespace TECin2.Tests.Repositories
                 Principal = null
             });
 
+            Department newDepartment = new()
+            {
+                Name = "Data",
+                Deactivated = false,
+                DepartmentHead = "testLeader",
+                SchoolId = schoolId,
+            };
+            await _context.SaveChangesAsync();
+            //Act
+            var result = await _repository.InsertNewDepartment(newDepartment);
 
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsType<Department>(result);
+            Assert.Equal(departmentId, result.Id);
+            Assert.Equal(newDepartment.Name, result.Name);
+            Assert.Equal(newDepartment.Deactivated, result.Deactivated);
+            Assert.Equal(newDepartment.SchoolId, result.SchoolId);
+            Assert.Equal(newDepartment.DepartmentHead, result.DepartmentHead);
+        }
+
+        [Fact]
+        public async Task InsertNewDepartment_ShouldReturnNull_WhenTryingToInsertWithSchoolId_WhenNoSchoolWithThatIdExist()
+        {
+            //Arrange
+            await _context.Database.EnsureDeletedAsync();
+
+            int schoolId = 1;
 
             Department newDepartment = new()
             {
@@ -101,13 +122,7 @@ namespace TECin2.Tests.Repositories
             var result = await _repository.InsertNewDepartment(newDepartment);
 
             //Assert
-            Assert.NotNull(result);
-            Assert.IsType<Department>(result);
-            Assert.Equal(departmentId, result.Id);
-            Assert.Equal(newDepartment.Name, result.Name);
-            Assert.Equal(newDepartment.Deactivated, result.Deactivated);
-            Assert.Equal(newDepartment.SchoolId, result.SchoolId);
-            Assert.Equal(newDepartment.DepartmentHead, result.DepartmentHead);
+            Assert.Null(result);
         }
 
         [Fact]
@@ -145,7 +160,7 @@ namespace TECin2.Tests.Repositories
             //Arrange
             await _context.Database.EnsureDeletedAsync();
 
-            _context.School.Add(TestData.TestData.GetSchoolTestData());
+            _context.School.Add(TestData.TestData.GetSchoolTestData(1));
 
             _context.Department.Add(new()
             {
@@ -306,7 +321,7 @@ namespace TECin2.Tests.Repositories
             _context.Add(newDepartment);
             await _context.SaveChangesAsync();
 
-            Department Update = new()
+            Department update = new()
             {
                 Id = departmentId,
                 Name = "Updated Data",
@@ -317,16 +332,16 @@ namespace TECin2.Tests.Repositories
 
             //Act
 
-            var result = await _repository.UpdateDepartment(departmentId, Update);
+            var result = await _repository.UpdateDepartment(departmentId, update);
 
             //Assert
             Assert.NotNull(result);
             Assert.IsType<Department>(result);
             Assert.Equal(departmentId, result.Id);
-            Assert.Equal(Update.Name, result.Name);
-            Assert.Equal(Update.Deactivated, result.Deactivated);
-            Assert.Equal(Update.SchoolId, result.SchoolId);
-            Assert.Equal(Update.DepartmentHead, result.DepartmentHead);
+            Assert.Equal(update.Name, result.Name);
+            Assert.Equal(update.Deactivated, result.Deactivated);
+            Assert.Equal(update.SchoolId, result.SchoolId);
+            Assert.Equal(update.DepartmentHead, result.DepartmentHead);
         }
 
         [Fact]

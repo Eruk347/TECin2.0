@@ -1,9 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TECin2.API.Database;
 using TECin2.API.Database.Entities;
 using TECin2.API.Repositories;
@@ -76,7 +71,7 @@ namespace TECin2.Tests.Repositories
 
         #region Insert
         [Fact]
-        public async Task InsertNewCheckinStatus_ShouldReturnCheckinStatus_WhenSuccess()
+        public async Task Insert_ShouldReturnCheckinStatus_WhenSuccess()
         {
             //Arrange
             await _context.Database.EnsureDeletedAsync();
@@ -108,7 +103,7 @@ namespace TECin2.Tests.Repositories
         }
 
         [Fact]
-        public async Task InsertNewDepartment_ShouldReturnNull_WhenIdNumberIsAlreadyUsed()
+        public async Task Insert_ShouldReturnNull_WhenIdNumberIsAlreadyUsed()
         {
             //Arrange
             await _context.Database.EnsureDeletedAsync();
@@ -123,6 +118,30 @@ namespace TECin2.Tests.Repositories
             };
 
             _context.Add(newCheckin);
+
+            await _context.SaveChangesAsync();
+
+            //Act
+            var result = await _repository.InsertCheckInStatus(newCheckin);
+
+            //Assert
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task Insert_ShouldReturnNull_WhenUserDoesNotExist()
+        {
+            //Arrange
+            await _context.Database.EnsureDeletedAsync();
+
+            CheckInStatus newCheckin = new()
+            {
+                Id = 1,
+                ArrivalDate = new(),
+                ArrivalTime = new TimeOnly(),
+                User_Id = "test",
+                Departure = new(),
+            };
 
             await _context.SaveChangesAsync();
 

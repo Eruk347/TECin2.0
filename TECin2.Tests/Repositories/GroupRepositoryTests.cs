@@ -1,9 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TECin2.API.Database.Entities;
 using TECin2.API.Database;
 using TECin2.API.Repositories;
@@ -162,6 +157,32 @@ namespace TECin2.Tests.Repositories
 
             //Assert
             Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task InsertNewGroup_ShouldReturnNull_WhenTryingToInsertWithDeaprtmentId_WhenNoDepartmentWithThatIdExists()
+        {
+            //Arrange
+            await _context.Database.EnsureDeletedAsync();
+
+            Group newGroup = new()
+            {
+                Name = "Data",
+                Deactivated = false,
+                ArrivalTime = new(),
+                DepartmentId = 1,
+                WorkHoursInDayId = 1,
+                FlexibleArrivalEnabled = true,
+                FlexibleAmount = new(),
+                IsLateBuffer = new(),
+                IsLateMessage = "",
+            };
+
+            //Act
+            var result = await _repository.InsertNewGroup(newGroup);
+
+            //Assert
+            Assert.Null(result);           
         }
         #endregion
 

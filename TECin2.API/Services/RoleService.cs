@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using TECin2.API.Database.Entities;
+﻿using TECin2.API.Database.Entities;
 using TECin2.API.DTOs;
 using TECin2.API.Repositories;
 

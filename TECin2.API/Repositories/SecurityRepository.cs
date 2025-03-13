@@ -13,14 +13,9 @@ namespace TECin2.API.Repositories
         Task<SecurityNumb?> SelectSecurityNumbByCPR(string _securityNumb);
     }
 
-    public class SecurityRepository : ISecurityRepository
+    public class SecurityRepository(TECinContext2 context2) : ISecurityRepository
     {
-        private readonly TECinContext2 _context2;
-
-        public SecurityRepository(TECinContext2 context2)
-        {
-            _context2 = context2;
-        }
+        private readonly TECinContext2 _context2 = context2;
 
         private void WriteToLog(string task, Exception e)
         {

@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Moq;
 using TECin2.API.Database;
 using TECin2.API.Database.Entities;
 using TECin2.API.Repositories;

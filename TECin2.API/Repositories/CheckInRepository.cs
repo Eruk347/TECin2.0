@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Diagnostics;
 using TECin2.API.Database;
 using TECin2.API.Database.Entities;
 

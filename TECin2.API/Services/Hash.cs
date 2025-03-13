@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
 using TECin2.API.Repositories;
 

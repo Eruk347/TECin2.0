@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Hosting;
-
 namespace TECin2.API
 {
     public class Program

@@ -14,7 +14,7 @@ namespace TECin2.API.DTOs
         public string? IsLateMessage { get; set; }
         public WorkHoursInDay? WorkHoursInDay { get; set; }
         public required GroupDepartmentResponse Department { get; set; }
-        public List<GroupUsersResponse> Users { get; set; } = [];
+        public List<GroupUsersResponse> Students { get; set; } = [];
     }
 
     public class GroupDepartmentResponse

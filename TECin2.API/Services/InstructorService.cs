@@ -242,7 +242,10 @@ namespace TECin2.API.Services
                     Groups = [.. user.Groups.Select(group => new InstructorGroupResponse
                     {
                         Id = group.Id,
-                        Name = group.Name
+                        Name = group.Name,
+                        ArrivalTime = group.ArrivalTime,
+                        DepartmentId = group.DepartmentId,
+                        IsLateMessage = group.IsLateMessage
                     })],
                     Role = new InstructorRoleResponse
                     {

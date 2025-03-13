@@ -1,6 +1,4 @@
-﻿using TECin2.API.Services;
-
-namespace TECin2.API.DTOs
+﻿namespace TECin2.API.DTOs
 {
     public class DepartmentResponse
     {

@@ -17,7 +17,7 @@ namespace TECin2.API.Services
             , ISecurityRepository securityRepository
             , ICheckInRepository checkInrepository
             , IRoleRepository roleRepository
-            , ILoggerService loggerService) :IStudentService
+            , ILoggerService loggerService) : IStudentService
     {
         private readonly IUserRepository _userRepository = userRepository;
         private readonly ISecurityRepository _securityRepository = securityRepository;
@@ -67,14 +67,14 @@ namespace TECin2.API.Services
             User? user = MapStudentRequestToUser(newStudent, id.ToString());
             SecurityNumb? securityNumb = MapStudentRequestToSecurityNumbAndEncrypt(newStudent, id.ToString());
 
-            if(user==null || securityNumb == null)
+            if (user == null || securityNumb == null)
             {
                 return null;
             }
 
             Role? role = await _roleRepository.SelectRoleByName("Student");
 
-            if(role == null)
+            if (role == null)
             {
                 return null;
             }
@@ -84,10 +84,14 @@ namespace TECin2.API.Services
             if (await _securityRepository.SelectSecurityNumbByCPR(securityNumb.Cipher) == null)
             {
                 User? insertedUser = await _userRepository.InsertNewUser(user);
+                if (insertedUser == null)
+                {
+                    return null;
+                }
+
                 SecurityNumb? insertedSecurityNumb = await _securityRepository.InsertNewSecurityNumb(securityNumb);
 
-
-                if (insertedUser != null && insertedSecurityNumb != null)
+                if (insertedSecurityNumb != null)
                 {
                     _loggerService.WriteLog("Create", accesstoken, insertedUser);
                     return MapUserToStudentResponse(insertedUser);
@@ -169,7 +173,7 @@ namespace TECin2.API.Services
                     Deactivated = studentRequest.Deactivated,
                     RoleId = studentRequest.RoleId,
                     LastCheckin = studentRequest.LastCheckin,
-                    Salt="student"
+                    Salt = "student"
                 };
             }
             catch (Exception e)
@@ -219,6 +223,7 @@ namespace TECin2.API.Services
                     FlexibleArrivalEnabled = user.Groups.ToList()[0].FlexibleArrivalEnabled,
                     WorkHoursInDay = user.Groups.ToList()[0].WorkHoursInDay,
                     ArrivalTime = user.Groups.ToList()[0].ArrivalTime,
+                    DepartmentId = user.Groups.ToList()[0].DepartmentId,
                 };
 
                 StudentResponse response = new()
@@ -260,25 +265,8 @@ namespace TECin2.API.Services
                     FlexibleArrivalEnabled = user.Groups.ToList()[0].FlexibleArrivalEnabled,
                     WorkHoursInDay = user.Groups.ToList()[0].WorkHoursInDay,
                     ArrivalTime = user.Groups.ToList()[0].ArrivalTime,
+                    DepartmentId = user.Groups.ToList()[0].DepartmentId,
                 };
-
-                List<CheckInResponseLong> checkInResponses = [];
-                foreach (var checkIn in checkInStatuses)
-                {
-                    if (checkIn.User != null)
-                        checkInResponses.Add(new()
-                        {
-                            Id = checkIn.Id,
-                            UserId = checkIn.User_Id,
-                            FirstName = checkIn.User.FirstName,
-                            LastName = checkIn.User.LastName,
-                            Email = checkIn.User.Email,
-                            Phonenumber = checkIn.User.Phonenumber,
-                            Arrival = checkIn.ArrivalTime,
-                            LastCheckin = checkIn.User.LastCheckin,
-                            Departure = checkIn.Departure
-                        });
-                }
 
                 StudentResponse response = new()
                 {
@@ -291,7 +279,7 @@ namespace TECin2.API.Services
                     LastCheckin = user.LastCheckin,
                     Deactivated = user.Deactivated,
                     Group = groupResponse,
-                    CheckInResponses = checkInResponses
+                    CheckInResponses = checkInStatuses
                 };
 
                 return response;

@@ -13,12 +13,13 @@ namespace TECin2.API.DTOs
         public DateOnly? LastCheckin { get; set; }
         public bool Deactivated { get; set; }
         public required StudentGroupResponse Group { get; set; }
-        public List<CheckInResponseLong>? CheckInResponses { get; set; }
+        public List<CheckInStatus>? CheckInResponses { get; set; }
     }
     public class StudentGroupResponse
     {
         public int Id { get; set; }
         public required string Name { get; set; }
+        public required int DepartmentId { get; set; }
         public required TimeOnly ArrivalTime { get; set; }
         public TimeOnly? IsLateBuffer { get; set; }
         public WorkHoursInDay? WorkHoursInDay { get; set; }
