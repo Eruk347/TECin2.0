@@ -58,3 +58,30 @@ h1:focus {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
 }
+
+.page {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+header {
+    flex-shrink: 0;
+}
+
+main {
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+.navbar {
+    background-color: #343a40;
+}
+
+.nav-link {
+    color: white;
+}
+
+    .nav-link.active {
+        font-weight: bold;
+    }

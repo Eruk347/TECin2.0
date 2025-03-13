@@ -81,7 +81,7 @@ namespace TECin2.Blazor.Services
 
                 if (response.IsSuccessStatusCode)
                 {
-                    var result = await response.Content.ReadFromJsonAsync<InstructorResponse[]>();
+                    var result = await response.Content.ReadFromJsonAsync<List<InstructorResponse>>();
 
                     if (result == null)
                         return [];
