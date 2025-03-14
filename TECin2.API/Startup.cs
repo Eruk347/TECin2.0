@@ -21,10 +21,10 @@ namespace TECin2.API
                 options.AddPolicy(name: "_CORSRules",
                     builder =>
                     {
-                        builder.WithOrigins("http://localhost:4200")
-                        .AllowAnyOrigin()
+                        builder.WithOrigins("http://localhost:7206")
                         .AllowAnyHeader()
-                        .AllowAnyMethod();
+                               .AllowAnyMethod()
+                               .AllowCredentials();
                     });
             });
 

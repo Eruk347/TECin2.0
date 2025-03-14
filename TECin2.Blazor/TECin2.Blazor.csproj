@@ -7,17 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-	  <Folder Include="Components\Pages\DailyOverview\" />
-    <Folder Include="Components\Pages\Departments\" />
-    <Folder Include="Components\Pages\Groups\" />
-    <Folder Include="Components\Pages\Instructors\" />
-    <Folder Include="Components\Pages\Login\" />
-	  <Folder Include="Components\Pages\Settings\" />
-    <Folder Include="Components\Pages\Schools\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.6.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.0.1" />
   </ItemGroup>
 

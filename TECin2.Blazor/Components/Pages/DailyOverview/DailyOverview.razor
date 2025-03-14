@@ -1,0 +1,54 @@
+﻿@page "/dailyoverview"
+@using TECin2.Blazor.Models
+@using TECin2.Blazor.Models.DTOs
+@using TECin2.Blazor.Services
+@inject IHttpContextAccessor HttpContextAccessor
+@inject NavigationManager NavigationManager
+
+
+<h3>Dagens oversigt</h3>
+
+
+
+
+@code {
+    private readonly IDailyOverviewService _dailyOverviewService;
+
+    List<CheckInResponseLong>? checkIns = [];
+
+
+    public DailyOverview(IDailyOverviewService dailyOverviewService)
+    {
+        _dailyOverviewService = dailyOverviewService;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        NavigationManager.NavigateTo("/login", false);
+
+
+        //control af token
+        var httpContext = HttpContextAccessor.HttpContext;
+        if (httpContext != null)
+        {
+            NavigationManager.NavigateTo("/error");
+            Console.WriteLine("httpContext is null");
+
+            LogInResponse? _currentUserData = httpContext.Session.GetObject<LogInResponse>("CurrentUser");
+
+            if (_currentUserData != null)
+            {
+
+            }
+
+
+
+            checkIns = await _dailyOverviewService.GetCheckInsForToday(1, DateOnly.FromDateTime(DateTime.Now));//skal lave det her check for hver gruppe
+            if (checkIns == null)
+            {
+                Console.WriteLine("No checkins found");
+            }
+        }
+
+    }
+}

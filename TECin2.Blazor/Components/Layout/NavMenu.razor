@@ -1,4 +1,4 @@
-﻿@*  <div class="top-row ps-3 navbar navbar-dark">
+﻿@*   <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">TECin2.Blazor</a>
     </div>
@@ -32,41 +32,51 @@
             </NavLink>
         </div>
     </nav>
-</div>   *@
+</div>    *@
 
 
 
-
-
-<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">TECin2.Blazor</a>
+<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3 sticky-lg-top sticky-top">
+    <div class="container">
+        <a class="navbar-brand" href="">TECin 2</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
+            <ul class="navbar-nav flex-grow-1">
                 <li class="nav-item">
-                    <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                        <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+                    <NavLink class="nav-link text-dark" href="dailyoverview">
+                        <span class="bi" aria-hidden="true"></span> Checket Ind
                     </NavLink>
                 </li>
                 <li class="nav-item">
-                    <NavLink class="nav-link" href="counter">
-                        <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
+                    <NavLink class="nav-link text-dark" href="students/index">
+                        <span class="bi" aria-hidden="true"></span> Lærlinge
                     </NavLink>
                 </li>
                 <li class="nav-item">
-                    <NavLink class="nav-link" href="weather">
-                        <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
+                    <NavLink class="nav-link text-dark" href="instructors/index">
+                        <span class="bi" aria-hidden="true"></span> Instruktører
                     </NavLink>
                 </li>
                 <li class="nav-item">
-                    <NavLink class="nav-link" href="students/index">
-                        <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> Students
+                    <NavLink class="nav-link text-dark" href="departments/index">
+                        <span class="bi" aria-hidden="true"></span> Afdelinger
+                    </NavLink>
+                </li>
+            </ul>
+            <ul class="navbar-nav flex-grow-1">
+                <li class="nav-item">
+                    <NavLink class="nav-link text-dark" href="settings/index">
+                        <span class="bi" aria-hidden="true"></span> Personlige indstillinger
+                    </NavLink>
+                </li>
+                <li class="nav-item">
+                    <NavLink class="nav-link text-dark" href="">
+                        <span class="bi" aria-hidden="true"></span> Log ud
                     </NavLink>
                 </li>
             </ul>
         </div>
     </div>
-</div> 
+</nav>

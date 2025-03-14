@@ -1,0 +1,106 @@
+﻿@page "/departments/index"
+@using TECin2.Blazor.Models
+@using TECin2.Blazor.Services
+<h3>DepartmentsIndex</h3>
+
+@foreach (var _department in departments)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    <h3>
+                        @_department.Name
+                    </h3>
+                </th>
+                <th>
+                    Mødetid
+                </th>
+                <th>
+                    Fremmødt
+                </th>
+                <th>
+                    Forsinket
+                </th>
+                <th>
+                    Fraværende
+                </th>
+                <th>
+                    I alt
+                </th>
+                <th>
+                    <a asp-page="./Details" asp-route-id="@_department.Id">Detaljer</a> |
+                    <a asp-page="./Edit" asp-route-id="@_department.Id">Rediger</a> |
+                    <a asp-page="./Delete" asp-route-id="@_department.Id">Slet</a>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+           @*  @foreach (var _group in GroupHelper)
+            {
+                @if (_group.Department == _department.Id)
+                {
+                    <tr>
+                        <td style="width:300px">
+                            <a asp-page="../CheckedIn/Index" asp-route-id="@_group.GroupId">@_group.GroupName</a>
+                        </td>
+                        <td>
+                            @_group.ArrivalTime
+                        </td>
+                        <td>
+                            @_group.Arrived
+                        </td>
+                        <td>
+                            @_group.Late
+                        </td>
+                        <td>
+                            @_group.Abscent
+                        </td>
+                        <td>
+                            @_group.Total
+                        </td>
+                        <td>
+                            <a asp-page="../Groups/Details" asp-route-id="@_group.GroupId">Detaljer</a> |
+                            <a asp-page="../Groups/Edit" asp-route-id="@_group.GroupId">Rediger</a> |
+                            <a asp-page="../Groups/Delete" asp-route-id="@_group.GroupId">Slet</a>
+                        </td>
+                    </tr>
+                }
+            } *@
+        </tbody>
+    </table>
+    <br />
+}
+
+
+
+@code {
+    private readonly IDepartmentService _departmentService;
+    //static DepartmentService _departmentService = new();
+    List<Department>? departments = [];
+
+    public DepartmentsIndex(IDepartmentService departmentService)
+    {
+        _departmentService = departmentService;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        //check token validation
+
+
+        departments = await _departmentService.GetAllDepartments();
+
+        if (departments == null)
+        {
+            //hvis noget med en fejl at der ikke er nogen list - empty list betyder der er kommet et svar, null, betyder noget er galt
+            departments = new List<Department>();
+        }
+
+        departments = departments.OrderBy(x => x.Name).ToList();
+    }
+
+
+
+
+}

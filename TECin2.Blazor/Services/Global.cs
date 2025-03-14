@@ -9,7 +9,7 @@ namespace TECin2.Blazor.Services
         private static int GroupId;//need this in the _layout.cshtml
         //public const string URL = "http://localhost:8082/api/";// PROD og QA
         //public const string URL = "http://212.60.107.194:8082/api/"; //Test mod prod data
-        public const string URL = "https://localhost:7120/api/"; //Local test
+        public const string URL = "https://localhost:7223/api/"; //Local test
 
         private static long GetTokenExpirationTime(string token)
         {

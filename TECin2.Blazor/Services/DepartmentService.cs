@@ -7,7 +7,7 @@ namespace TECin2.Blazor.Services
     {
         Task<Department?> CreateDepartment(DepartmentRequest newDepartment);
         Task<Department?> DeleteDepartment(int departmentId);
-        Task<List<Department?>> GetAllDepartments();
+        Task<List<Department>?> GetAllDepartments();
         Task<Department?> GetDepartmentById(int departmentId);
         Task<Department?> UpdateDepartment(DepartmentRequest updateDepartment, int departmentId);
     }
@@ -64,7 +64,7 @@ namespace TECin2.Blazor.Services
             return null;
         }
 
-        public async Task<List<Department?>> GetAllDepartments()
+        public async Task<List<Department>?> GetAllDepartments()
         {
             try
             {
@@ -73,10 +73,10 @@ namespace TECin2.Blazor.Services
 
                 if (response.IsSuccessStatusCode)
                 {
-                    var result = await response.Content.ReadFromJsonAsync<List<DepartmentResponse?>>();
+                    var result = await response.Content.ReadFromJsonAsync<List<DepartmentResponse>>();
 
                     if (result == null)
-                        return [];
+                        return null;
 
                     return [.. result.Select(dep => MapDepartmentResponseToDepartment(dep))];
                 }
@@ -84,7 +84,7 @@ namespace TECin2.Blazor.Services
             catch (Exception e)
             {
                 WriteToLog("GetAll", e);
-                return [];
+                return null;
             }
             return [];
         }
