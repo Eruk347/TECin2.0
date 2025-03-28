@@ -10,15 +10,14 @@ namespace TECin2.Blazor.Models.DTOs
         [Required]
         public required string LastName { get; set; }
 
-        [Range(10000000, 99999999, ErrorMessage = "Telefonnumme skal være 8 cifre langt")]
+        [Required]
+        [StringLength(100)]
+        public required string Username { get; set; }
+
         public int? Phonenumber { get; set; }
 
         [StringLength(50)]
         public string? Email { get; set; }
-
-        [Required]
-        [StringLength(100)]
-        public required string Username { get; set; }
 
         public string? Password { get; set; }
 
@@ -26,13 +25,13 @@ namespace TECin2.Blazor.Models.DTOs
 
         [Required]
         public bool IsStudent { get; set; }
-        
+
         [Required]
         public int RoleId { get; set; }
 
         public List<Setting>? Settings { get; set; }
 
-        public bool Deactivated { get; set; }   
+        public bool Deactivated { get; set; }
 
     }
 }

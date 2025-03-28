@@ -1,6 +1,96 @@
 ﻿@page "/instructors/index"
+@using TECin2.Blazor.Models
+@using TECin2.Blazor.Services
 <h3>InstructorsIndex</h3>
+<NavLink class="nav-link text-dark" href="/instructors/create">
+    <span class="bi" aria-hidden="true"></span> Opret
+</NavLink>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th width="200">
+                Fornavn
+            </th>
+            <th width="200">
+                Efternavn
+            </th>
+            <th width="200">
+                Telefonnummer
+            </th>
+            <th width="150">
+                Email
+            </th>
+            <th width="150">
+                Brugernavn
+            </th>
+            <th width="200">
+                Gruppe
+            </th>
+
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var instructor in Instructors)
+        {
+            <tr>
+                <td>
+                    @instructor.FirstName
+                </td>
+                <td>
+                    @instructor.LastName
+                </td>
+                <td>
+                    @instructor.Phonenumber
+                </td>
+                <td>
+                    @instructor.Email
+                </td>
+                <td>
+                    @instructor.UserName
+                </td>
+                @*groups skal med på en måde*@
+                <td>
+                    @foreach (var group in instructor.Groups)
+                        @group.Name
+
+                </td>
+                @*  @if (Global.RoleRank <= 3)
+                    {
+                        <td>
+                            <a asp-page="./Edit" asp-route-id="@item.Id">Rediger</a> |
+
+                            <a asp-page="./Delete" asp-route-id="@item.Id">Slet</a>
+                        </td>
+                    } *@
+            </tr>
+        }
+    </tbody>
+</table>
+<br />
 
 @code {
+    private readonly IInstructorService _instructorService;
+    private readonly IDepartmentService _departmentService;
 
+    public InstructorsIndex(IInstructorService instructorService, IDepartmentService departmentService)
+    {
+        _instructorService = instructorService;
+        _departmentService = departmentService;
+    }
+
+    //public List<List<Instructor>> Instruktors { get; set; } = new();
+    public List<Instructor> Instructors { get; set; } = new();
+    public List<Department> Departments { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await OnGetAsync();
+    }
+
+    private async Task OnGetAsync()
+    {
+        Instructors = await _instructorService.GetAllInstructors();
+    }
 }

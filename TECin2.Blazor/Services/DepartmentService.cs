@@ -152,7 +152,8 @@ namespace TECin2.Blazor.Services
                         Name = departmentResponse.School.Name,
                         Deactivated = departmentResponse.School.Deactivated,
                         Principal = departmentResponse.School.Principal
-                    }
+                    },
+                    Groups = departmentResponse.Groups.Select(group => MapDepartmentGroupResponseToGroup(group, departmentResponse.Id)).ToList() ?? []
                 };
                 return answer;
             }
@@ -163,6 +164,27 @@ namespace TECin2.Blazor.Services
             }
         }
 
-
+        private Group? MapDepartmentGroupResponseToGroup(DepartmentGroupResponse departmentGroupResponse, int departmentId)
+        {
+            if (departmentGroupResponse == null)
+                return null;
+            try
+            {
+                Group answer = new()
+                {
+                    Id = departmentGroupResponse.Id,
+                    ArrivalTime = departmentGroupResponse.ArrivalTime,
+                    Name = departmentGroupResponse.Name,
+                    DepartmentId = departmentId,
+                    IsLateMessage = "",
+                };
+                return answer;
+            }
+            catch (Exception e)
+            {
+                WriteToLog("Update", e);
+                return null;
+            }
+        }
     }
 }

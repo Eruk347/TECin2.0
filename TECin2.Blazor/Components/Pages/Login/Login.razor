@@ -1,6 +1,57 @@
 ﻿@page "/login"
-<h3>Login</h3>
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using Microsoft.AspNetCore.Mvc
+@using TECin2.Blazor.Models.DTOs
+@using TECin2.Blazor.Services
+@inject NavigationManager NavigationManager
+@inject IHttpContextAccessor HttpContextAccessor
+@using SessionExtensions = TECin2.Blazor.Services.SessionExtensions;
+<div style="place-content:center;">
+    <h1>Login</h1>
+    <h3>Velkommen</h3>
+
+    <div class="row">
+        <div class="col-md-4">
+            <EditForm Model="@UserLogin" method="post" OnInvalidSubmit="OnPostAsync" id="LoginForm" FormName="Login">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <div class="form-group">
+                    <label @bind="UserLogin.UserName" class="control-label">Brugernavn</label>
+                    <InputText @bind-value="UserLogin.UserName" class="form-control" />
+                    <span asp-validation-for="UserLogin.UserName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label @bind="UserLogin.Password" class="control-label">Password</label>
+                    <InputText @bind-value="UserLogin.Password" class="form-control" type="password" />
+                    <span asp-validation-for="UserLogin.Password" class="text-danger"></span>
+                </div>
+                <p></p>
+                <input type="submit" value="Log ind" class="btn btn-primary" />
+
+            </EditForm>
+        </div>
+    </div>
+</div>
 
 @code {
+    private readonly ILoginService _loginService;
 
+    [SupplyParameterFromForm]
+    private LogInRequest UserLogin { get; set; } = new LogInRequest { Password = "", UserName = "" };
+
+    public Login(ILoginService loginService)
+    {
+        _loginService = loginService;
+    }
+
+    public async Task<IActionResult?> OnPostAsync()
+    {
+        var result = await _loginService.Login(UserLogin);
+        if (result != null)
+        {
+            HttpContextAccessor.HttpContext?.Session.SetObject("CurrentUser", result);
+            NavigationManager.NavigateTo("/dailyoverview", true);
+        }
+        return null;
+    }
 }

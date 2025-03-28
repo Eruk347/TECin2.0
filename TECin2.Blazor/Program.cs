@@ -13,6 +13,8 @@ namespace TECin2.Blazor
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
 
+            builder.Services.AddBlazorBootstrap();
+
             builder.Services.AddHttpContextAccessor();
 
             builder.Services.AddScoped<IDailyOverviewService, DailyOverviewService>();

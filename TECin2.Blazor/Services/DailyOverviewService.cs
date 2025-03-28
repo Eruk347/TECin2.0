@@ -22,7 +22,7 @@ namespace TECin2.Blazor.Services
             try
             {
                 using var client = new System.Net.Http.HttpClient();
-                string information = groupId.ToString() + "," + today.ToString("yyyyMMdd");
+                string information = groupId.ToString() + "," + today.ToString("yyyyMMDD");
                 var response = await client.GetAsync(_URL + information);
 
                 if (response.IsSuccessStatusCode)

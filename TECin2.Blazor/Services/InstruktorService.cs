@@ -8,9 +8,9 @@ namespace TECin2.Blazor.Services
     {
         Task<Instructor?> CreateInstructor(InstructorRequest newInstructor);
         Task<Instructor?> DeleteInstructor(string InstructorId);
-        Task<List<Instructor?>> GetAllInstructors();
+        Task<List<Instructor>> GetAllInstructors();
         Task<Instructor?> GetInstructorById(string InstructorId);
-        Task<List<Group>> GetGroups();
+        // Task<List<Group>> GetGroups();
         Task<Instructor?> UpdateInstructor(InstructorRequest updateInstructor, string InstructorId);
     }
     public class InstructorService : IInstructorService
@@ -25,6 +25,8 @@ namespace TECin2.Blazor.Services
 
         public async Task<Instructor?> CreateInstructor(InstructorRequest newInstructor)
         {
+            if (newInstructor.Password == null)
+                return null;
             newInstructor.Password = Hash.HashPassword(newInstructor.Password, newInstructor.Password);
             try
             {
@@ -71,7 +73,7 @@ namespace TECin2.Blazor.Services
             return null;
         }
 
-        public async Task<List<Instructor?>> GetAllInstructors()
+        public async Task<List<Instructor>> GetAllInstructors()
         {
             try
             {
@@ -86,7 +88,14 @@ namespace TECin2.Blazor.Services
                     if (result == null)
                         return [];
 
-                    return [.. result.Select(ins => MapInstructorResponseToInstructor(ins))];
+                    List<Instructor> answer = [];
+                    foreach (var instructor in result)
+                    {
+                        var map = MapInstructorResponseToInstructor(instructor);
+                        if (map != null)
+                            answer.Add(map);
+                    }
+                    return answer;
                 }
             }
             catch (Exception e)
@@ -97,28 +106,28 @@ namespace TECin2.Blazor.Services
             return [];
         }
 
-        public async Task<List<Group?>> GetGroups()//skal vi beholde den her?
-        {
-            try
-            {
-                using var client = new HttpClient();
-                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Global.GetToken());
-                var response = await client.GetAsync(_URL2);
+        //public async Task<List<Group?>> GetGroups()//skal vi beholde den her?
+        //{
+        //    try
+        //    {
+        //        using var client = new HttpClient();
+        //        client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", Global.GetToken());
+        //        var response = await client.GetAsync(_URL2);
 
-                if (response.IsSuccessStatusCode)
-                {
-                    var result = await response.Content.ReadFromJsonAsync<List<Group?>>();
+        //        if (response.IsSuccessStatusCode)
+        //        {
+        //            var result = await response.Content.ReadFromJsonAsync<List<Group?>>();
 
-                    return result ?? [];
-                }
-            }
-            catch (Exception e)
-            {
-                WriteToLog("GetGroups", e);
-                return [];
-            }
-            return [];
-        }
+        //            return result ?? [];
+        //        }
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        WriteToLog("GetGroups", e);
+        //        return [];
+        //    }
+        //    return [];
+        //}
 
         public async Task<Instructor?> GetInstructorById(string InstructorId)
         {

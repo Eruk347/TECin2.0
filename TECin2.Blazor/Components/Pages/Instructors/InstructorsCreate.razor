@@ -1,0 +1,170 @@
+﻿ @page "/instructors/create"
+@using Microsoft.AspNetCore.Mvc
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using TECin2.Blazor.Models
+@using TECin2.Blazor.Services
+@using TECin2.Blazor.Models.DTOs
+@inject NavigationManager NavigationManager
+
+<h3>InstructorsCreate</h3>
+<div class="row">
+    <div class="col-md-4">
+        <EditForm Model="@Instructor" method="post" OnValidSubmit="OnPostAsync" Id="instructorForm" FormName="Create">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-group">
+                <label @bind="Instructor.FirstName" class="control-label">Fornavn</label>
+                <label>*</label>
+                <InputText @bind-value="Instructor.FirstName" class="form-control" />
+                <span asp-validation-for="Instructor.FirstName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label @bind="instructor.LastName" class="control-label">Efternavn</label>
+                <label>*</label>
+                <InputText @bind-value="Instructor.LastName" class="form-control" />
+                <span asp-validation-for="Instructor.LastName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label @bind="Instructor.Username" class="control-label">Brugernavn</label>
+                <label>*</label>
+                <InputText @bind-value="Instructor.Username" class="form-control" />
+                <span asp-validation-for="Instructor.Username" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Password" class="control-label">Password</label>
+                <label>*</label>
+                <input asp-for="Password" class="form-control" type="password" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ConfirmPassword" class="control-label">Gentag password</label>
+                <label>*</label>
+                <input asp-for="ConfirmPassword" class="form-control" type="password" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Rolle*</label>
+                <InputSelect id="role" class="form-select" @bind-Value="Instructor.RoleId">
+                    @foreach (var role in RolesForCombobox)
+                    {
+                        <option value="@role.Value">@role.Text</option>
+                    }
+                </InputSelect>
+                <span asp-validation-for="instructor.RoleId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                @foreach (var department in Departments)
+                {
+                    <label>@department.Name</label>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tilmeld?</th>
+                                <th>Gruppenavn</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (department.Groups != null)
+                            {
+                                foreach (var group in department.Groups)
+                                {
+                                    if (group != null)
+                                    {
+                                        <tr>
+                                            <td><InputCheckbox @bind-Value=group.Deactivated /></td>
+                                            <td>@group.Name</td>
+                                        </tr>
+                                    }
+                                }
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+            <p></p>
+            <input type="submit" value="Opret" class="btn btn-primary" />
+
+        </EditForm>
+    </div>
+</div>
+
+
+@code {
+    private readonly IInstructorService _instructorService;
+    private readonly IRoleService _roleService;
+    private readonly IDepartmentService _departmentService;
+
+    [SupplyParameterFromForm]
+    private InstructorRequest Instructor { get; set; } = new InstructorRequest { FirstName = "", LastName = "", Username = "" };
+    private string Password { get; set; } = "";
+    private string ConfirmPassword { get; set; } = "";
+
+    private List<SelectListItem> RolesForCombobox = new List<SelectListItem>();
+    private List<Department> Departments = new List<Department>();
+
+
+    public InstructorsCreate(IInstructorService instructorService, IRoleService roleService, IDepartmentService departmentService)
+    {
+        _instructorService = instructorService;
+        _roleService = roleService;
+        _departmentService = departmentService;
+
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await OnGetAsync();
+    }
+
+    private async Task OnGetAsync()
+    {
+             //hent afdelinger og grupper
+        //find ud af hvad brugerene må se af afdelinger og grupper
+        Departments = await _departmentService.GetAllDepartments() ?? new();
+
+        List<Role?> roles = await _roleService.GetAllRoles();
+
+        foreach (var role in roles)
+        {
+            //skal ahve kontrol på hvilken rolle current user har
+            if (role != null)
+                RolesForCombobox.Add(new SelectListItem { Text = role.Name, Value = role.Id.ToString() });
+        }
+    }
+
+    public async Task<IActionResult?> OnPostAsync()
+    {
+        Instructor.Groups = new();
+        foreach (var department in Departments)
+        {
+            if (department.Groups == null)
+            {
+                break;
+            }
+            foreach (var group in department.Groups)
+            {
+                if (group == null)
+                {
+                    break;
+                }
+                if (group.Deactivated)
+                {
+                    Instructor.Groups.Add(group);
+                }
+            }
+        }
+        if (Password == ConfirmPassword)
+            Instructor.Password = Password;
+
+        Instructor.IsStudent = false;
+        Instructor.Deactivated = false;
+
+        var result = await _instructorService.CreateInstructor(Instructor);
+        if (result != null)
+        {
+            NavigationManager.NavigateTo("/instructors/index", true);
+        }
+        return null;
+    }
+}

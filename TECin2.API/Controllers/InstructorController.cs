@@ -12,7 +12,7 @@ namespace TECin2.API.Controllers
         private readonly IInstructorService _instructorService = instructorService;
 
         [HttpGet]
-        [Authorize]
+        //[Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]

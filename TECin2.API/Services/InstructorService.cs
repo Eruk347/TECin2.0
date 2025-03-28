@@ -54,9 +54,9 @@ namespace TECin2.API.Services
             while (!breakWhile)
             {
                 id = Guid.NewGuid();
-                bool doesExist = await GUIDIsFree(id.ToString());
+                bool isFree = await GUIDIsFree(id.ToString());
 
-                if (!doesExist)
+                if (isFree)
                     breakWhile = true;
             }
 

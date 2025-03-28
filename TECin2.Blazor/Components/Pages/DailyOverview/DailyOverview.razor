@@ -7,14 +7,49 @@
 
 
 <h3>Dagens oversigt</h3>
+<div>
+    <div class="col">
+        <h3>Mødetid: </h3>
+    </div>
+    @if (listOfCheckIns != null)
+    {
+        @foreach (var list in listOfCheckIns)
+        {
+            <table>
+                <tr>
+                    <th>Fornavn</th>
+                    <th>Efternavn</th>
+                    <th>Tlf</th>
+                    <th>Ankomst</th>
+                    <th>Afgang</th>
+                    <th>I alt</th>
+                    <th>Fremmødt</th>
+                </tr>
+                @foreach (var item in list)
+                {
+                    <tr>
+                        <td>@item.FirstName</td>
+                        <td>@item.LastName</td>
+                        <td>@item.Phonenumber</td>
+                        <td>@item.Email</td>
+                        <td>@item.Arrival</td>
+                        <td>@item.Departure</td>
+                    </tr>
+                }
+            </table>
+        }
+    }
+</div>
+mødetid
+dato
 
-
+vælg dato og hold
 
 
 @code {
     private readonly IDailyOverviewService _dailyOverviewService;
 
-    List<CheckInResponseLong>? checkIns = [];
+    List<List<CheckInResponseLong>> listOfCheckIns = [];
 
 
     public DailyOverview(IDailyOverviewService dailyOverviewService)
@@ -24,30 +59,33 @@
 
     protected override async Task OnInitializedAsync()
     {
-        NavigationManager.NavigateTo("/login", false);
+        //NavigationManager.NavigateTo("/login", false);
 
 
         //control af token
         var httpContext = HttpContextAccessor.HttpContext;
         if (httpContext != null)
         {
-            NavigationManager.NavigateTo("/error");
-            Console.WriteLine("httpContext is null");
+
 
             LogInResponse? _currentUserData = httpContext.Session.GetObject<LogInResponse>("CurrentUser");
 
-            if (_currentUserData != null)
+            if (_currentUserData == null)
             {
+                NavigationManager.NavigateTo("/login", true);
+                return;
+            }
 
+            foreach (var group in _currentUserData.Groups)
+            {
+                var checkIns = await _dailyOverviewService.GetCheckInsForToday(group.Id, DateOnly.FromDateTime(DateTime.Now));
+                if (checkIns != null)
+                {
+                    listOfCheckIns.Add(checkIns);
+                }
             }
 
 
-
-            checkIns = await _dailyOverviewService.GetCheckInsForToday(1, DateOnly.FromDateTime(DateTime.Now));//skal lave det her check for hver gruppe
-            if (checkIns == null)
-            {
-                Console.WriteLine("No checkins found");
-            }
         }
 
     }
