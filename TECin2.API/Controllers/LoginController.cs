@@ -5,8 +5,8 @@ using TECin2.API.Services;
 
 namespace TECin2.API.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class LoginController(ILoginService loginService) : Controller
     {
         private readonly ILoginService _loginService = loginService;

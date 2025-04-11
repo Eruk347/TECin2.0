@@ -59,15 +59,9 @@ vælg dato og hold
 
     protected override async Task OnInitializedAsync()
     {
-        //NavigationManager.NavigateTo("/login", false);
-
-
-        //control af token
         var httpContext = HttpContextAccessor.HttpContext;
         if (httpContext != null)
         {
-
-
             LogInResponse? _currentUserData = httpContext.Session.GetObject<LogInResponse>("CurrentUser");
 
             if (_currentUserData == null)

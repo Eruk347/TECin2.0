@@ -17,13 +17,15 @@ namespace TECin2.API.Services
             , ISecurityRepository securityRepository
             , ICheckInRepository checkInrepository
             , IRoleRepository roleRepository
-            , ILoggerService loggerService) : IStudentService
+            , ILoggerService loggerService
+            , IGroupRepository groupRepository) : IStudentService
     {
         private readonly IUserRepository _userRepository = userRepository;
         private readonly ISecurityRepository _securityRepository = securityRepository;
         private readonly ICheckInRepository _checkInrepository = checkInrepository;
         private readonly IRoleRepository _roleRepository = roleRepository;
         private readonly ILoggerService _loggerService = loggerService;
+        private readonly IGroupRepository _groupRepository = groupRepository;
         private Guid id;
 
         private void WriteToLog(string task, Exception e)
@@ -64,7 +66,15 @@ namespace TECin2.API.Services
             }
             newStudent.IsStudent = true;
 
-            User? user = MapStudentRequestToUser(newStudent, id.ToString());
+            List<Group> groups = await _groupRepository.SelectAllGroups();
+            if (groups == null)
+            {
+                return null;
+            }
+
+            List<Group> groupForStudent = [.. groups.Select(g => g).Where(g => g.Id == newStudent.GroupId)];
+
+            User? user = MapStudentRequestToUser(newStudent, id.ToString(), groupForStudent);
             SecurityNumb? securityNumb = MapStudentRequestToSecurityNumbAndEncrypt(newStudent, id.ToString());
 
             if (user == null || securityNumb == null)
@@ -93,7 +103,7 @@ namespace TECin2.API.Services
 
                 if (insertedSecurityNumb != null)
                 {
-                    _loggerService.WriteLog("Create", accesstoken, insertedUser);
+                    //await _loggerService.WriteLog("Create", accesstoken, insertedUser);
                     return MapUserToStudentResponse(insertedUser);
                 }
             }
@@ -108,7 +118,7 @@ namespace TECin2.API.Services
             SecurityNumb? deletedSecurityNumb = await _securityRepository.DeleteSecurityNumb(studentId);
             if (deletedUser != null && deletedSecurityNumb != null)
             {
-                _loggerService.WriteLog("Delete", accesstoken, deletedUser);
+                await _loggerService.WriteLog("Delete", accesstoken, deletedUser);
                 return MapUserToStudentResponse(deletedUser);
             }
             return null;
@@ -141,8 +151,15 @@ namespace TECin2.API.Services
 
         public async Task<StudentResponse?> UpdateStudent(string studentId, StudentRequest updateStudent, string accesstoken)
         {
+            List<Group> groups = await _groupRepository.SelectAllGroups();
+            if (groups == null)
+            {
+                return null;
+            }
+
+            List<Group> groupForStudent = [.. groups.Select(g => g).Where(g => g.Id == updateStudent.GroupId)];
             User? originalUser = await _userRepository.SelectUserById(studentId);
-            User? user = MapStudentRequestToUser(updateStudent, studentId);
+            User? user = MapStudentRequestToUser(updateStudent, studentId, groupForStudent);
 
             if (user != null)
             {
@@ -150,18 +167,18 @@ namespace TECin2.API.Services
 
                 if (updatedUser != null && originalUser != null)
                 {
-                    _loggerService.WriteLog(accesstoken, originalUser, updatedUser);
+                    await _loggerService.WriteLog(accesstoken, originalUser, updatedUser);
                     return MapUserToStudentResponse(updatedUser);
                 }
             }
             return null;
         }
 
-        private User? MapStudentRequestToUser(StudentRequest studentRequest, string _id)
+        private User? MapStudentRequestToUser(StudentRequest studentRequest, string _id, List<Group> _groups)
         {
             try
             {
-                return new User
+                User student = new()
                 {
                     Id = _id,
                     Username = studentRequest.Username,
@@ -173,8 +190,11 @@ namespace TECin2.API.Services
                     Deactivated = studentRequest.Deactivated,
                     RoleId = studentRequest.RoleId,
                     LastCheckin = studentRequest.LastCheckin,
-                    Salt = "student"
+                    Salt = "student",
+                    Groups = _groups,
                 };
+
+                return student;
             }
             catch (Exception e)
             {

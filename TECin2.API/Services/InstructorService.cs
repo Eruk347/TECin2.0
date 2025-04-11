@@ -50,6 +50,10 @@ namespace TECin2.API.Services
 
         public async Task<InstructorResponse?> CreateInstructor(InstructorRequest newInstructor, string accesstoken)
         {
+            if (newInstructor.Password == null)
+            {
+                return null;
+            }
             bool breakWhile = false;
             while (!breakWhile)
             {
@@ -72,7 +76,7 @@ namespace TECin2.API.Services
 
                 if (insertedUser != null && insertedPassword != null)
                 {
-                    _loggerService.WriteLog("Create", accesstoken, insertedUser);
+                    await _loggerService.WriteLog("Create", accesstoken, insertedUser);
                     return MapUserToInstructorResponse(insertedUser);
                 }
             }
@@ -87,7 +91,7 @@ namespace TECin2.API.Services
 
             if (deletedUser != null && deletedPassword != null)
             {
-                _loggerService.WriteLog("Delete", accesstoken, deletedUser);
+                await _loggerService.WriteLog("Delete", accesstoken, deletedUser);
                 return MapUserToInstructorResponse(deletedUser);
             }
             return null;
@@ -139,7 +143,7 @@ namespace TECin2.API.Services
 
                 if (updatedUser != null)
                 {
-                    _loggerService.WriteLog(accesstoken, originalUser, updatedUser);
+                    await _loggerService.WriteLog(accesstoken, originalUser, updatedUser);
                     return MapUserToInstructorResponse(updatedUser);
                 }
             }

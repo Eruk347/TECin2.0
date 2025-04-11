@@ -60,7 +60,7 @@ namespace TECin2.API.Services
             {
                 User? user = await _userRepository.SelectUserByUsername(username);
 
-                if (user != null)
+                if (user != null && user.Role != null)
                 {
                     Password? selectedPassword = await _passwordRepository.SelectPassword(user.Id);
                     if (selectedPassword != null)

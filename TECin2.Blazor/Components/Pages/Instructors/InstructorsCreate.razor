@@ -34,13 +34,13 @@
             <div class="form-group">
                 <label asp-for="Password" class="control-label">Password</label>
                 <label>*</label>
-                <input asp-for="Password" class="form-control" type="password" />
+                <InputText @bind-value="Password" class="form-control" type="password" />
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="ConfirmPassword" class="control-label">Gentag password</label>
                 <label>*</label>
-                <input asp-for="ConfirmPassword" class="form-control" type="password" />
+                <InputText @bind-value="ConfirmPassword" class="form-control" type="password" />
                 <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -97,7 +97,9 @@
 
     [SupplyParameterFromForm]
     private InstructorRequest Instructor { get; set; } = new InstructorRequest { FirstName = "", LastName = "", Username = "" };
+    [SupplyParameterFromForm]
     private string Password { get; set; } = "";
+    [SupplyParameterFromForm]
     private string ConfirmPassword { get; set; } = "";
 
     private List<SelectListItem> RolesForCombobox = new List<SelectListItem>();

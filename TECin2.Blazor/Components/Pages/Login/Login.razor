@@ -1,18 +1,22 @@
 ﻿@page "/login"
+@layout HiddenLayout
 @using Microsoft.AspNetCore.Mvc.Rendering
 @using Microsoft.AspNetCore.Mvc
 @using TECin2.Blazor.Models.DTOs
 @using TECin2.Blazor.Services
+@using SessionExtensions = TECin2.Blazor.Services.SessionExtensions;
 @inject NavigationManager NavigationManager
 @inject IHttpContextAccessor HttpContextAccessor
-@using SessionExtensions = TECin2.Blazor.Services.SessionExtensions;
+
+<PageTitle>Login</PageTitle>
+
 <div style="place-content:center;">
     <h1>Login</h1>
     <h3>Velkommen</h3>
 
     <div class="row">
         <div class="col-md-4">
-            <EditForm Model="@UserLogin" method="post" OnInvalidSubmit="OnPostAsync" id="LoginForm" FormName="Login">
+            <EditForm Model="@UserLogin" method="post" OnValidSubmit="OnPostAsync" id="LoginForm" FormName="Login">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
                 <div class="form-group">

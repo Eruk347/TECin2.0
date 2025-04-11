@@ -9,7 +9,7 @@ namespace TECin2.Blazor.Services
     }
     public class LoginService : ILoginService
     {
-        private const string _URL = Global.URL + "login/";
+        private const string _URL = Global.URL + "Login/";
 
         private void WriteToLog(string task, Exception e)
         {

@@ -33,7 +33,7 @@ namespace TECin2.API.Services
                     School? insertedSchool = await _schoolRepository.InsertNewSchool(school);
                     if (insertedSchool != null)
                     {
-                        _loggerService.WriteLog("Create", accesstoken, insertedSchool);
+                        await _loggerService.WriteLog("Create", accesstoken, insertedSchool);
                         return MapSchoolToSchoolResponse(insertedSchool);
                     }
                 }
@@ -53,7 +53,7 @@ namespace TECin2.API.Services
                 School? deletedSchool = await _schoolRepository.DeleteSchool(schoolId);
                 if (deletedSchool != null)
                 {
-                    _loggerService.WriteLog("Delete", accesstoken, deletedSchool);
+                    await _loggerService.WriteLog("Delete", accesstoken, deletedSchool);
                     return MapSchoolToSchoolResponse(deletedSchool);
                 }
                 return null;
@@ -125,7 +125,7 @@ namespace TECin2.API.Services
                     School? updatedSchool = await _schoolRepository.UpdateSchool(schoolId, school);
                     if (updatedSchool != null)
                     {
-                        _loggerService.WriteLog("Update", accesstoken, updatedSchool);
+                        await _loggerService.WriteLog("Update", accesstoken, updatedSchool);
                         return MapSchoolToSchoolResponse(updatedSchool);
                     }
                 }

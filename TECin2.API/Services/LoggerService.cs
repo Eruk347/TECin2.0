@@ -5,16 +5,16 @@ namespace TECin2.API.Services
 {
     public interface ILoggerService
     {
-        void WriteLog(string _action, string _accessToken, School _entity);
-        void WriteLog(string _accessToken, School _originalEntity, School _updatedEntity);
-        void WriteLog(string _action, string _accessToken, Department _entity);
-        void WriteLog(string _accessToken, Department _originalEntity, Department _updatedEntity);
-        void WriteLog(string _action, string _accessToken, Group _entity);
+        Task<bool> WriteLog(string _action, string _accessToken, School _entity);
+        Task<bool> WriteLog(string _accessToken, School _originalEntity, School _updatedEntity);
+        Task<bool> WriteLog(string _action, string _accessToken, Department _entity);
+        Task<bool> WriteLog(string _accessToken, Department _originalEntity, Department _updatedEntity);
+        Task<bool> WriteLog(string _action, string _accessToken, Group _entity);
         Task<bool> WriteLog(string _accessToken, Group _originalEntity, Group _updatedEntity);
-        void WriteLog(string _action, string _accessToken, User _entity);
-        void WriteLog(string _accessToken, User _originalEntity, User _updatedEntity);
-        void WriteLog(string _action, string _accessToken, Role _entity);
-        void WriteLog(string _accessToken, Role _originalEntity, Role _updatedEntity);
+        Task<bool> WriteLog(string _action, string _accessToken, User _entity);
+        Task<bool> WriteLog(string _accessToken, User _originalEntity, User _updatedEntity);
+        Task<bool> WriteLog(string _action, string _accessToken, Role _entity);
+        Task<bool> WriteLog(string _accessToken, Role _originalEntity, Role _updatedEntity);
     }
     public class LoggerService(LoggerRepository loggerRepository) : ILoggerService
     {
@@ -22,9 +22,30 @@ namespace TECin2.API.Services
 
         //public async void WriteLog(string _action, string _accessToken, Object _entity)
         //{
-           
-        //}
 
+        //}
+        private static string GetUserIdFromAccessToken(string _accessToken)
+        {
+            foreach (var item in Global.Tokens)
+            {
+                if (item.Split(',')[0] == _accessToken)
+                    return item.Split(',')[1];
+            }
+            return string.Empty;
+        }
+
+        private async Task<bool> WriteLog(string _message, string _accessToken)
+        {
+            Log log = new()
+            {
+                DateAndTime = DateTime.Now,
+                Message = _message,
+                User = GetUserIdFromAccessToken(_accessToken)
+            };
+
+            await _loggerRepository.WriteLog(log);
+            return true;
+        }
 
 
         /// <summary>
@@ -33,7 +54,7 @@ namespace TECin2.API.Services
         /// <param name="_action"></param>
         /// <param name="_accessToken"></param>
         /// <param name="_entity"></param>
-        public async void WriteLog(string _action, string _accessToken, Department _entity)
+        public async Task<bool> WriteLog(string _action, string _accessToken, Department _entity)
         {
             string _message = "Department";
             if (_action == "Create")
@@ -46,6 +67,7 @@ namespace TECin2.API.Services
             }
 
             await WriteLog(_message, _accessToken);
+            return true;
         }
 
         /// <summary>
@@ -54,7 +76,7 @@ namespace TECin2.API.Services
         /// <param name="_accessToken"></param>
         /// <param name="_originalEntity"></param>
         /// <param name="_updatedEntity"></param>
-        public async void WriteLog(string _accessToken, Department _originalEntity, Department _updatedEntity)
+        public async Task<bool> WriteLog(string _accessToken, Department _originalEntity, Department _updatedEntity)
         {
             string _message = "Department";
             _message += " " + _originalEntity.Name;
@@ -69,6 +91,7 @@ namespace TECin2.API.Services
             }
 
             await WriteLog(_message, _accessToken);
+            return true;
         }
 
         /// <summary>
@@ -77,21 +100,24 @@ namespace TECin2.API.Services
         /// <param name="_action"></param>
         /// <param name="_accessToken"></param>
         /// <param name="_entity"></param>
-        public async void WriteLog(string _action, string _accessToken, Group _entity)
+        public async Task<bool> WriteLog(string _action, string _accessToken, Group _entity)
         {
             string _message = "Group";
             if (_action == "Create")
             {
                 _message += " " + _entity.Name;
-                _message += " was created in " + _entity.Department.Name;
+                if (_entity.Department != null)
+                    _message += " was created in " + _entity.Department.Name;
             }
             else if (_action == "Delete")
             {
                 _message += " " + _entity.Name;
-                _message += " was deleted from " + _entity.Department.Name;
+                if (_entity.Department != null)
+                    _message += " was deleted from " + _entity.Department.Name;
             }
 
             await WriteLog(_message, _accessToken);
+            return true;
         }
 
         /// <summary>
@@ -109,7 +135,7 @@ namespace TECin2.API.Services
             {
                 _message += ", changed its name to " + _updatedEntity.Name;
             }
-            if (_originalEntity.Department.Id != _updatedEntity.Department.Id)
+            if (_originalEntity.Department != null && _updatedEntity.Department != null && _originalEntity.Department.Id != _updatedEntity.Department.Id)
             {
                 _message += ", changed its department from " + _originalEntity.Department.Name + " to " + _updatedEntity.Department.Name;
             }
@@ -140,7 +166,7 @@ namespace TECin2.API.Services
         /// <param name="_action"></param>
         /// <param name="_accessToken"></param>
         /// <param name="_entity"></param>
-        public async void WriteLog(string _action, string _accessToken, User _entity)
+        public async Task<bool> WriteLog(string _action, string _accessToken, User _entity)
         {
             string _message;
             if (_entity.IsStudent)
@@ -160,6 +186,7 @@ namespace TECin2.API.Services
             }
 
             await WriteLog(_message, _accessToken);
+            return true;
         }
 
         /// <summary>
@@ -168,7 +195,7 @@ namespace TECin2.API.Services
         /// <param name="_accessToken"></param>
         /// <param name="_originalEntity"></param>
         /// <param name="_updatedEntity"></param>
-        public async void WriteLog(string _accessToken, User _originalEntity, User _updatedEntity)
+        public async Task<bool> WriteLog(string _accessToken, User _originalEntity, User _updatedEntity)
         {
             string _message;
             if (_originalEntity.IsStudent)
@@ -198,7 +225,8 @@ namespace TECin2.API.Services
             //{
             //    _message += ", has moved group from " + _originalEntity.Group.Name + " to " + _updatedEntity.Group.Name;
             //}
-            if (_originalEntity.Role.Id != _updatedEntity.Role.Id)
+
+            if (_originalEntity.Role != null && _updatedEntity.Role != null && _originalEntity.Role.Id != _updatedEntity.Role.Id)
             {
                 _message += ", has changed role from " + _originalEntity.Role.Name + " to " + _updatedEntity.Role.Name;
             }
@@ -208,6 +236,7 @@ namespace TECin2.API.Services
             }
 
             await WriteLog(_message, _accessToken);
+            return true;
         }
 
         /// <summary>
@@ -216,7 +245,7 @@ namespace TECin2.API.Services
         /// <param name="_action"></param>
         /// <param name="_accessToken"></param>
         /// <param name="_entity"></param>
-        public async void WriteLog(string _action, string _accessToken, Role _entity)
+        public async Task<bool> WriteLog(string _action, string _accessToken, Role _entity)
         {
             string _message = "Role";
             if (_action == "Create")
@@ -231,6 +260,7 @@ namespace TECin2.API.Services
             }
 
             await WriteLog(_message, _accessToken);
+            return true;
         }
 
         /// <summary>
@@ -239,7 +269,7 @@ namespace TECin2.API.Services
         /// <param name="_accessToken"></param>
         /// <param name="_originalEntity"></param>
         /// <param name="_updatedEntity"></param>
-        public async void WriteLog(string _accessToken, Role _originalEntity, Role _updatedEntity)
+        public async Task<bool> WriteLog(string _accessToken, Role _originalEntity, Role _updatedEntity)
         {
             string _message = "Role";
             _message += " " + _originalEntity.Name;
@@ -257,33 +287,10 @@ namespace TECin2.API.Services
                 _message += ", changed its Description from " + _originalEntity.Description + " to " + _updatedEntity.Description;
             }
             await WriteLog(_message, _accessToken);
-        }
-
-
-        private async Task<bool> WriteLog(string _message, string _accessToken)
-        {
-            Log log = new()
-            {
-                DateAndTime = DateTime.Now,
-                Message = _message,
-                User = GetUserIdFromAccessToken(_accessToken)
-            };
-
-            await _loggerRepository.WriteLog(log);
             return true;
         }
 
-        private static string GetUserIdFromAccessToken(string _accessToken)
-        {
-            foreach (var item in Global.Tokens)
-            {
-                if (item.Split(',')[0] == _accessToken)
-                    return item.Split(',')[1];
-            }
-            return string.Empty;
-        }
-
-        public async void WriteLog(string _action, string _accessToken, School _entity)
+        public async Task<bool> WriteLog(string _action, string _accessToken, School _entity)
         {
             string _message = "School";
             if (_action == "Create")
@@ -296,9 +303,10 @@ namespace TECin2.API.Services
             }
 
             await WriteLog(_message, _accessToken);
+            return true;
         }
 
-        public async void WriteLog(string _accessToken, School _originalEntity, School _updatedEntity)
+        public async Task<bool> WriteLog(string _accessToken, School _originalEntity, School _updatedEntity)
         {
             string _message = "School";
             _message += " " + _originalEntity.Name;
@@ -313,6 +321,7 @@ namespace TECin2.API.Services
             }
 
             await WriteLog(_message, _accessToken);
+            return true;
         }
     }
 }

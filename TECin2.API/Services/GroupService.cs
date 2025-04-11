@@ -33,7 +33,7 @@ namespace TECin2.API.Services
 
                 if (insertedGroup != null)
                 {
-                    _loggerService.WriteLog("Create", accessToken, insertedGroup);
+                    await _loggerService.WriteLog("Create", accessToken, insertedGroup);
                     return MapGroupToGroupResponse(insertedGroup);
                 }
             }
@@ -69,7 +69,7 @@ namespace TECin2.API.Services
 
                 if (deletedGroup != null)
                 {
-                    _loggerService.WriteLog("Delete", accessToken, deletedGroup);
+                    await _loggerService.WriteLog("Delete", accessToken, deletedGroup);
                     return MapGroupToGroupResponse(deletedGroup);
                 }
             }

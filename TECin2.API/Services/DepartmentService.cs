@@ -32,7 +32,7 @@ namespace TECin2.API.Services
 
                 if (insertedDepartment != null)
                 {
-                    _loggerService.WriteLog("Create", accesstoken, insertedDepartment);
+                    await _loggerService.WriteLog("Create", accesstoken, insertedDepartment);
                     return MapDepartmentToDepartmentResponse(insertedDepartment);
                 }
             }
@@ -45,7 +45,7 @@ namespace TECin2.API.Services
 
             if (deletedDepartment != null)
             {
-                _loggerService.WriteLog("Delete", accesstoken, deletedDepartment);
+                await _loggerService.WriteLog("Delete", accesstoken, deletedDepartment);
                 return MapDepartmentToDepartmentResponse(deletedDepartment);
             }
             return null;
@@ -79,7 +79,7 @@ namespace TECin2.API.Services
 
                 if (updatedDepartment != null && originalDepartment != null)
                 {
-                    _loggerService.WriteLog(accesstoken, originalDepartment, updatedDepartment);
+                    await _loggerService.WriteLog(accesstoken, originalDepartment, updatedDepartment);
                     return MapDepartmentToDepartmentResponse(updatedDepartment);
                 }
             }

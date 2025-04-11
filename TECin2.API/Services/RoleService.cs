@@ -31,7 +31,7 @@ namespace TECin2.API.Services
                 Role? inserted = await _roleRepository.InsertNewRole(newRole);
                 if (inserted != null)
                 {
-                    _loggerService.WriteLog("Create", accesstoken, inserted);
+                    await _loggerService.WriteLog("Create", accesstoken, inserted);
                     return MapRoleToRoleResponse(inserted);
                 }
             }
@@ -44,7 +44,7 @@ namespace TECin2.API.Services
 
             if (deletedRole != null)
             {
-                _loggerService.WriteLog("Delete", accesstoken, deletedRole);
+                await _loggerService.WriteLog("Delete", accesstoken, deletedRole);
                 return MapRoleToRoleResponse(deletedRole);
             }
             return null;
@@ -78,7 +78,7 @@ namespace TECin2.API.Services
                 Role? updatedRole = await _roleRepository.UpdateRole(roleId, role);
                 if (updatedRole != null && originalRole != null)
                 {
-                    _loggerService.WriteLog(accesstoken, originalRole, updatedRole);
+                    await _loggerService.WriteLog(accesstoken, originalRole, updatedRole);
                     return MapRoleToRoleResponse(updatedRole);
                 }
             }
