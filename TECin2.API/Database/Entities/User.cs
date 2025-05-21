@@ -31,7 +31,7 @@ namespace TECin2.API.Database.Entities
         [Column(TypeName = "bit")]
         public bool Deactivated { get; set; }
 
-        public virtual ICollection<Group>? Groups { get; set; }
+        public ICollection<Group>? Groups { get; set; }
 
         public List<Setting>? Settings { get; set; }
 

@@ -1,0 +1,31 @@
+﻿@using TECin2.Blazor.Models.DTOs
+@inject IHttpContextAccessor HttpContextAccessor
+<h3>GroupOverviewTable</h3>
+<table class="table">
+    <tr>
+        <th>Fornavn</th>
+        <th>Efternavn</th>
+        <th>Tlf</th>
+        <th>Email</th>
+        <th>Ankomst</th>
+        <th>Afgang</th>
+    </tr>
+    @foreach (var item in CheckIns)
+    {
+        <tr style="background-color:@TableColor.Color(item,httpContext)">
+            <td>@item.FirstName</td>
+            <td>@item.LastName</td>
+            <td>@item.Phonenumber</td>
+            <td>@item.Email</td>
+            <td>@item.Arrival</td>
+            <td>@item.Departure</td>
+        </tr>
+    }
+</table>
+@code {
+    [Parameter]
+    public List<CheckInResponseLong> CheckIns { get; set; } = [];
+
+    [Parameter]
+    public HttpContext httpContext { get; set; } = null!;
+}

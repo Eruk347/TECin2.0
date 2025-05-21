@@ -31,7 +31,7 @@ namespace TECin2.API.Database.Entities
         public bool FlexibleArrivalEnabled { get; set; }
 
         [Column(TypeName = "time")]
-        public TimeOnly? FlexibleAmount { get; set; }
+        public TimeSpan? FlexibleAmount { get; set; }
 
         [Column(TypeName = "time")]
         public TimeOnly? IsLateBuffer { get; set; }
@@ -39,6 +39,6 @@ namespace TECin2.API.Database.Entities
         [Column(TypeName = "nvarchar(100)")]
         public required string IsLateMessage { get; set; }
 
-        public virtual ICollection<User>? Users { get; set; }
+        public ICollection<User>? Users { get; set; }
     }
 }

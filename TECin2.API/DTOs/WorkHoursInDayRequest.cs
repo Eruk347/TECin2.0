@@ -2,10 +2,10 @@
 {
     public class WorkHoursInDayRequest
     {
-        public required TimeOnly Monday { get; set; }
-        public required TimeOnly Tuesday { get; set; }
-        public required TimeOnly Wednesday { get; set; }
-        public required TimeOnly Thursday { get; set; }
-        public required TimeOnly Friday { get; set; }
-    }
+        public required TimeSpan Monday { get; set; }
+        public required TimeSpan Tuesday { get; set; }
+        public required TimeSpan Wednesday { get; set; }
+        public required TimeSpan Thursday { get; set; }
+        public required TimeSpan Friday { get; set; }
+    }   
 }

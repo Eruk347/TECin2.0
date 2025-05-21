@@ -26,6 +26,6 @@ namespace TECin2.API.DTOs
 
         public bool FlexibleArrivalEnabled { get; set; }
 
-        public TimeOnly? FlexibleAmount { get; set; }
+        public TimeSpan? FlexibleAmount { get; set; }
     }
 }

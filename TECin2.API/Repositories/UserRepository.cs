@@ -134,9 +134,9 @@ namespace TECin2.API.Repositories
             try
             {
                 return await _context.User
-                .Include(g => g.Groups)
                 .Include(r => r.Role)
                 .Include(s => s.Settings)
+                .Include(g => g.Groups)
                 .FirstOrDefaultAsync(user => user.Username == userName);
             }
             catch (Exception e)

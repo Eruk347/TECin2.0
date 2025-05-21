@@ -9,18 +9,18 @@ namespace TECin2.Blazor.Models
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
         [Column(TypeName = "time")]
-        public required TimeOnly Monday { get; set; }
+        public required TimeSpan Monday { get; set; }
 
         [Column(TypeName = "time")]
-        public required TimeOnly Tuesday { get; set; }
+        public required TimeSpan Tuesday { get; set; }
 
         [Column(TypeName = "time")]
-        public required TimeOnly Wednesday { get; set; }
+        public required TimeSpan Wednesday { get; set; }
 
         [Column(TypeName = "time")]
-        public required TimeOnly Thursday { get; set; }
+        public required TimeSpan Thursday { get; set; }
 
         [Column(TypeName = "time")]
-        public required TimeOnly Friday { get; set; }
+        public required TimeSpan Friday { get; set; }
     }
 }

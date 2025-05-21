@@ -13,11 +13,13 @@ namespace TECin2.API.Services
     }
     public class LoginService(IConfiguration config,
         IUserRepository userRepository,
-        IPasswordRepository passwordRepository) : ILoginService
+        IPasswordRepository passwordRepository,
+        IGroupRepository groupRepository) : ILoginService
     {
         private readonly IConfiguration _config = config;
         private readonly IUserRepository _userRepository = userRepository;
         private readonly IPasswordRepository _passwordRepository = passwordRepository;
+        private readonly IGroupRepository _groupRepository = groupRepository;
 
         private void WriteToLog(string task, Exception e)
         {
@@ -86,17 +88,26 @@ namespace TECin2.API.Services
 
                             if (user.Groups != null)
                             {
-                                response.Groups = [.. user.Groups.Select(group => new LogInGroupResponse
+                                foreach (Group _group in user.Groups)
                                 {
-                                    Id = group.Id,
-                                    Name = group.Name,
-                                    ArrivalTime = group.ArrivalTime,
-                                    FlexibleAmount = group.FlexibleAmount,
-                                    FlexibleArrivalEnabled = group.FlexibleArrivalEnabled,
-                                    IsLateBuffer = group.IsLateBuffer,
-                                    IsLateMessage = group.IsLateMessage,
-                                    WorkHoursInDay = group.WorkHoursInDay,
-                                })];
+                                    Group? group = await _groupRepository.SelectGroupById(_group.Id);
+
+                                    if(group != null)
+                                    {
+                                        response.Groups.Add(new LogInGroupResponse
+                                        {
+                                            Id = group.Id,
+                                            Name = group.Name,
+                                            ArrivalTime = group.ArrivalTime,
+                                            FlexibleAmount = group.FlexibleAmount,
+                                            FlexibleArrivalEnabled = group.FlexibleArrivalEnabled,
+                                            IsLateBuffer = group.IsLateBuffer,
+                                            IsLateMessage = group.IsLateMessage,
+                                            WorkHoursInDay = group.WorkHoursInDay,
+                                            Deactivated = group.Deactivated
+                                        });
+                                    }
+                                }
                             }
                             else
                                 response.Groups = [];

@@ -29,7 +29,7 @@
         public bool Deactivated { get; set; }
         public required TimeOnly ArrivalTime { get; set; }
         public bool FlexibleArrivalEnabled { get; set; }
-        public TimeOnly? FlexibleAmount { get; set; }
+        public TimeSpan? FlexibleAmount { get; set; }
         public TimeOnly? IsLateBuffer { get; set; }
         public string? IsLateMessage { get; set; }
         public WorkHoursInDay? WorkHoursInDay { get; set; }

@@ -11,5 +11,6 @@
         public required TimeOnly Arrival { get; set; }
         public DateOnly? LastCheckin { get; set; }
         public TimeOnly? Departure { get; set; }
+        public int GroupId { get; set; } = 0;
     }
 }

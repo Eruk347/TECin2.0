@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TECin2.API.Database;
 
@@ -11,9 +12,11 @@ using TECin2.API.Database;
 namespace TECin2.API.Migrations
 {
     [DbContext(typeof(TECinContext))]
-    partial class TECinContextModelSnapshot : ModelSnapshot
+    [Migration("20250423115550_Update_user_group_relation")]
+    partial class Update_user_group_relation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

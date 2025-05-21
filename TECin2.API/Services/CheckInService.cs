@@ -114,6 +114,7 @@ namespace TECin2.API.Services
                         Phonenumber = user.Phonenumber,
                         LastCheckin = user.LastCheckin,
                         Departure = checkInStatus.Departure,
+                        GroupId = groupId,
                     });
                 }
             }
@@ -149,8 +150,7 @@ namespace TECin2.API.Services
         {
             if (group.FlexibleAmount != null)
             {
-                TimeSpan flexSpan = new(group.FlexibleAmount.Value.Hour, group.FlexibleAmount.Value.Minute, 0);
-                if (checkinTime > group.ArrivalTime.Add(flexSpan))
+                if (checkinTime > group.ArrivalTime.Add(group.FlexibleAmount ?? new()))
                 {
                     return true;
                 }
@@ -183,13 +183,12 @@ namespace TECin2.API.Services
             {
                 if (group.FlexibleAmount == null)
                 {
-                    group.FlexibleAmount = new TimeOnly(0, 0, 0);
+                    group.FlexibleAmount = new TimeSpan(0, 0, 0);
                 }
 
-                TimeSpan flexSpan = new(group.FlexibleAmount.Value.Hour, group.FlexibleAmount.Value.Minute, 0);
-                if (group.FlexibleArrivalEnabled && arrivalTime > group.ArrivalTime.Add(flexSpan))
+                if (group.FlexibleArrivalEnabled && arrivalTime > group.ArrivalTime.Add(group.FlexibleAmount ?? new()))
                 {
-                    arrivalTime = group.ArrivalTime.Add(flexSpan);
+                    arrivalTime = group.ArrivalTime.Add(group.FlexibleAmount ?? new());
                 }
             }
             group.WorkHoursInDay ??= new()
@@ -206,23 +205,23 @@ namespace TECin2.API.Services
                 case 0:
                     return Global.LeavingEarly.No;
                 case 1:
-                    if (checkOutTime < arrivalTime.Add(group.WorkHoursInDay.Monday.ToTimeSpan()))
+                    if (checkOutTime < arrivalTime.Add(group.WorkHoursInDay.Monday))
                         return Global.LeavingEarly.Yes;
                     break;
                 case 2:
-                    if (checkOutTime < arrivalTime.Add(group.WorkHoursInDay.Tuesday.ToTimeSpan()))
+                    if (checkOutTime < arrivalTime.Add(group.WorkHoursInDay.Tuesday))
                         return Global.LeavingEarly.Yes;
                     break;
                 case 3:
-                    if (checkOutTime < arrivalTime.Add(group.WorkHoursInDay.Wednesday.ToTimeSpan()))
+                    if (checkOutTime < arrivalTime.Add(group.WorkHoursInDay.Wednesday))
                         return Global.LeavingEarly.Yes;
                     break;
                 case 4:
-                    if (checkOutTime < arrivalTime.Add(group.WorkHoursInDay.Thursday.ToTimeSpan()))
+                    if (checkOutTime < arrivalTime.Add(group.WorkHoursInDay.Thursday))
                         return Global.LeavingEarly.Yes;
                     break;
                 case 5:
-                    if (checkOutTime < arrivalTime.Add(group.WorkHoursInDay.Friday.ToTimeSpan()))
+                    if (checkOutTime < arrivalTime.Add(group.WorkHoursInDay.Friday))
                         return Global.LeavingEarly.Yes;
                     break;
                 case 6: return Global.LeavingEarly.No;
@@ -248,24 +247,24 @@ namespace TECin2.API.Services
                 switch ((int)DateTime.Now.DayOfWeek)
                 {
                     case 1:
-                        if (checkOutTime < arrivalTime.Add(group.WorkHoursInDay.Monday.ToTimeSpan()))
-                            return firstName + ",\ndu tjekkede ind " + arrivalTime.ToString() + ",\ndu har først fri kl. " + arrivalTime.Add(group.WorkHoursInDay.Monday.ToTimeSpan());
+                        if (checkOutTime < arrivalTime.Add(group.WorkHoursInDay.Monday))    
+                            return firstName + ",\ndu tjekkede ind " + arrivalTime.ToString() + ",\ndu har først fri kl. " + arrivalTime.Add(group.WorkHoursInDay.Monday);
                         break;
                     case 2:
-                        if (checkOutTime < arrivalTime.Add(group.WorkHoursInDay.Tuesday.ToTimeSpan()))
-                            return firstName + ",\ndu tjekkede ind " + arrivalTime.ToString() + ",\ndu har først fri kl. " + arrivalTime.Add(group.WorkHoursInDay.Tuesday.ToTimeSpan());
+                        if (checkOutTime < arrivalTime.Add(group.WorkHoursInDay.Tuesday))
+                            return firstName + ",\ndu tjekkede ind " + arrivalTime.ToString() + ",\ndu har først fri kl. " + arrivalTime.Add(group.WorkHoursInDay.Tuesday);
                         break;
                     case 3:
-                        if (checkOutTime < arrivalTime.Add(group.WorkHoursInDay.Wednesday.ToTimeSpan()))
-                            return firstName + ",\ndu tjekkede ind " + arrivalTime.ToString() + ",\ndu har først fri kl. " + arrivalTime.Add(group.WorkHoursInDay.Wednesday.ToTimeSpan());
+                        if (checkOutTime < arrivalTime.Add(group.WorkHoursInDay.Wednesday))
+                            return firstName + ",\ndu tjekkede ind " + arrivalTime.ToString() + ",\ndu har først fri kl. " + arrivalTime.Add(group.WorkHoursInDay.Wednesday);
                         break;
                     case 4:
-                        if (checkOutTime < arrivalTime.Add(group.WorkHoursInDay.Thursday.ToTimeSpan()))
-                            return firstName + ",\ndu tjekkede ind " + arrivalTime.ToString() + ",\ndu har først fri kl. " + arrivalTime.Add(group.WorkHoursInDay.Thursday.ToTimeSpan());
+                        if (checkOutTime < arrivalTime.Add(group.WorkHoursInDay.Thursday))
+                            return firstName + ",\ndu tjekkede ind " + arrivalTime.ToString() + ",\ndu har først fri kl. " + arrivalTime.Add(group.WorkHoursInDay.Thursday);
                         break;
                     case 5:
-                        if (checkOutTime < arrivalTime.Add(group.WorkHoursInDay.Friday.ToTimeSpan()))
-                            return firstName + ",\ndu tjekkede ind " + arrivalTime.ToString() + ",\ndu har først fri kl. " + arrivalTime.Add(group.WorkHoursInDay.Friday.ToTimeSpan());
+                        if (checkOutTime < arrivalTime.Add(group.WorkHoursInDay.Friday))
+                            return firstName + ",\ndu tjekkede ind " + arrivalTime.ToString() + ",\ndu har først fri kl. " + arrivalTime.Add(group.WorkHoursInDay.Friday);
                         break;
 
                 }
@@ -273,24 +272,24 @@ namespace TECin2.API.Services
             switch ((int)DateTime.Now.DayOfWeek)
             {
                 case 1:
-                    if (checkOutTime < group.ArrivalTime.Add(group.WorkHoursInDay.Monday.ToTimeSpan()))
-                        return "Du har først fri kl. " + group.ArrivalTime.Add(group.WorkHoursInDay.Monday.ToTimeSpan());
+                    if (checkOutTime < group.ArrivalTime.Add(group.WorkHoursInDay.Monday))
+                        return "Du har først fri kl. " + group.ArrivalTime.Add(group.WorkHoursInDay.Monday);
                     break;
                 case 2:
-                    if (checkOutTime < group.ArrivalTime.Add(group.WorkHoursInDay.Tuesday.ToTimeSpan()))
-                        return "Du har først fri kl. " + group.ArrivalTime.Add(group.WorkHoursInDay.Tuesday.ToTimeSpan());
+                    if (checkOutTime < group.ArrivalTime.Add(group.WorkHoursInDay.Tuesday))
+                        return "Du har først fri kl. " + group.ArrivalTime.Add(group.WorkHoursInDay.Tuesday);
                     break;
                 case 3:
-                    if (checkOutTime < group.ArrivalTime.Add(group.WorkHoursInDay.Wednesday.ToTimeSpan()))
-                        return "Du har først fri kl. " + group.ArrivalTime.Add(group.WorkHoursInDay.Wednesday.ToTimeSpan());
+                    if (checkOutTime < group.ArrivalTime.Add(group.WorkHoursInDay.Wednesday))
+                        return "Du har først fri kl. " + group.ArrivalTime.Add(group.WorkHoursInDay.Wednesday);
                     break;
                 case 4:
-                    if (checkOutTime < group.ArrivalTime.Add(group.WorkHoursInDay.Thursday.ToTimeSpan()))
-                        return "Du har først fri kl. " + group.ArrivalTime.Add(group.WorkHoursInDay.Thursday.ToTimeSpan());
+                    if (checkOutTime < group.ArrivalTime.Add(group.WorkHoursInDay.Thursday))
+                        return "Du har først fri kl. " + group.ArrivalTime.Add(group.WorkHoursInDay.Thursday);
                     break;
                 case 5:
-                    if (checkOutTime < group.ArrivalTime.Add(group.WorkHoursInDay.Friday.ToTimeSpan()))
-                        return "Du har først fri kl. " + group.ArrivalTime.Add(group.WorkHoursInDay.Friday.ToTimeSpan());
+                    if (checkOutTime < group.ArrivalTime.Add(group.WorkHoursInDay.Friday))
+                        return "Du har først fri kl. " + group.ArrivalTime.Add(group.WorkHoursInDay.Friday);
                     break;
             }
             return "Farvel " + firstName;

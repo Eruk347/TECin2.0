@@ -27,8 +27,10 @@ namespace TECin2.API.Repositories
         {
             try
             {
-                Department? deletedDepartment = await _context.Department.
-                    FirstOrDefaultAsync(department => department.Id == departmentId);
+                Department? deletedDepartment = await _context.Department
+                    .Include(a => a.Groups)
+                    .Include(d => d.School)
+                    .FirstOrDefaultAsync(department => department.Id == departmentId);
                 if (deletedDepartment != null)
                 {
                     _context.Department.Remove(deletedDepartment);
@@ -99,6 +101,7 @@ namespace TECin2.API.Repositories
             {
                 return await _context.Department
                     .Include(a => a.Groups)
+                    .Include(d => d.School)
                     .FirstOrDefaultAsync(department => department.Name == departmentName);
             }
             catch (Exception e)
@@ -112,7 +115,10 @@ namespace TECin2.API.Repositories
         {
             try
             {
-                Department? updatedDepartment = await _context.Department.FirstOrDefaultAsync(department => department.Id == departmentId);
+                Department? updatedDepartment = await _context.Department
+                    .Include(a => a.Groups)
+                    .Include(d => d.School)
+                    .FirstOrDefaultAsync(department => department.Id == departmentId);
                 if (updatedDepartment != null)
                 {
                     updatedDepartment.Name = department.Name;

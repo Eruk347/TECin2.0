@@ -8,6 +8,8 @@ namespace TECin2.API.Database
         public TECinContext() { }
         public TECinContext(DbContextOptions<TECinContext> options) : base(options) { }
 
+        public DbSet<ApprovedComputer> ApprovedComputers { get; set; }
+        public DbSet<ComputerLocation> ComputerLocation { get; set; }
         public DbSet<CheckInStatus> CheckInStatus { get; set; }
         public DbSet<Department> Department { get; set; }
         public DbSet<WorkHoursInDay> WorkHoursInDay { get; set; }
@@ -21,6 +23,10 @@ namespace TECin2.API.Database
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<User>()
+                                .HasMany(u => u.Groups)
+                .WithMany(g => g.Users)
+                .UsingEntity(j => j.ToTable("GroupUser"));
             base.OnModelCreating(modelBuilder);
         }
     }

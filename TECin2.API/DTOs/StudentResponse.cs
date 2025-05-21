@@ -24,6 +24,6 @@ namespace TECin2.API.DTOs
         public TimeOnly? IsLateBuffer { get; set; }
         public WorkHoursInDay? WorkHoursInDay { get; set; }
         public bool FlexibleArrivalEnabled { get; set; }
-        public TimeOnly? FlexibleAmount { get; set; }
+        public TimeSpan? FlexibleAmount { get; set; }
     }
 }
