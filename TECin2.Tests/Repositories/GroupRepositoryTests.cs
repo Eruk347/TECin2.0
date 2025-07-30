@@ -369,7 +369,7 @@ namespace TECin2.Tests.Repositories
                 DepartmentId = 2,
                 WorkHoursInDayId = 1,
                 FlexibleArrivalEnabled = false,
-                FlexibleAmount = TimeOnly.FromDateTime(DateTime.Now),
+                FlexibleAmount = new TimeSpan(7,5,0),
                 IsLateBuffer = TimeOnly.FromDateTime(DateTime.Now),
                 IsLateMessage = "2",
             };

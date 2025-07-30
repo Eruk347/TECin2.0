@@ -25,7 +25,7 @@ namespace TECin2.Blazor.Services
 
         public async Task<Student?> CreateStudent(StudentRequest newStudent)
         {
-            newStudent.CPR = Hash.HashPassword(newStudent.CPR, newStudent.CPR);
+            newStudent.CPR = Hash.HashPassword(newStudent.CPR!, newStudent.CPR!);
             try
             {
                 using var client = new System.Net.Http.HttpClient();
@@ -242,7 +242,14 @@ namespace TECin2.Blazor.Services
                         FlexibleArrivalEnabled = _studentResponse.Group.FlexibleArrivalEnabled,
                         FlexibleAmount = _studentResponse.Group.FlexibleAmount,
                     },
-                    CheckInStatuses = _studentResponse.CheckInResponses ?? []
+                    CheckInStatuses = [.. _studentResponse.CheckInResponses!.Select(checkin => new CheckInStatus
+                    {
+                        Id = checkin.Id,
+                        User_Id = _studentResponse.Id,
+                        ArrivalDate = checkin.ArrivalDate,
+                        ArrivalTime = checkin.ArrivalTime,
+                        Departure = checkin.Departure
+                    })]
                 };
             }
             catch (Exception e)

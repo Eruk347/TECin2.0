@@ -106,11 +106,11 @@ namespace TECin2.Tests.Services
             user.Groups.ToList()[0].WorkHoursInDay = new WorkHoursInDay()
             {
                 Id = 1,
-                Monday = new TimeOnly(0, 30, 0),
-                Tuesday = new TimeOnly(0, 30, 0),
-                Wednesday = new TimeOnly(0, 30, 0),
-                Thursday = new TimeOnly(0, 30, 0),
-                Friday = new TimeOnly(0, 30, 0),
+                Monday = new TimeSpan(0, 30, 0),
+                Tuesday = new TimeSpan(0, 30, 0),
+                Wednesday = new TimeSpan(0, 30, 0),
+                Thursday = new TimeSpan(0, 30, 0),
+                Friday = new TimeSpan(0, 30, 0),
             };
 
             _mockUserRepository
@@ -388,7 +388,7 @@ namespace TECin2.Tests.Services
             user.Groups.Add(TestData.TestData.GetGroupTestData());
 
             user.Groups.ToList()[0].FlexibleArrivalEnabled = true;
-            user.Groups.ToList()[0].FlexibleAmount = new(0, 30);
+            user.Groups.ToList()[0].FlexibleAmount = new(0, 30, 0);
 
             _mockUserRepository
                 .Setup(x => x.SelectUserById(It.IsAny<string>()))
@@ -451,7 +451,7 @@ namespace TECin2.Tests.Services
             user.Groups.Add(TestData.TestData.GetGroupTestData());
 
             user.Groups.ToList()[0].FlexibleArrivalEnabled = true;
-            user.Groups.ToList()[0].FlexibleAmount = new(0, 30);
+            user.Groups.ToList()[0].FlexibleAmount = new(0, 30, 0);
 
             _mockUserRepository
                 .Setup(x => x.SelectUserById(It.IsAny<string>()))
@@ -514,15 +514,15 @@ namespace TECin2.Tests.Services
             user.Groups.Add(TestData.TestData.GetGroupTestData());
 
             user.Groups.ToList()[0].FlexibleArrivalEnabled = true;
-            user.Groups.ToList()[0].FlexibleAmount = new(0, 30);
+            user.Groups.ToList()[0].FlexibleAmount = new(0, 30, 0);
             user.Groups.ToList()[0].WorkHoursInDay = new WorkHoursInDay()
             {
                 Id = 1,
-                Monday = new TimeOnly(7, 0, 0),
-                Tuesday = new TimeOnly(7, 0, 0),
-                Wednesday = new TimeOnly(7, 0, 0),
-                Thursday = new TimeOnly(7, 0, 0),
-                Friday = new TimeOnly(6, 30, 0),
+                Monday = new TimeSpan(7, 0, 0),
+                Tuesday = new TimeSpan(7, 0, 0),
+                Wednesday = new TimeSpan(7, 0, 0),
+                Thursday = new TimeSpan(7, 0, 0),
+                Friday = new TimeSpan(6, 30, 0),
             };
 
             _mockUserRepository
@@ -596,15 +596,15 @@ namespace TECin2.Tests.Services
             user.Groups.Add(TestData.TestData.GetGroupTestData());
 
             user.Groups.ToList()[0].FlexibleArrivalEnabled = true;
-            user.Groups.ToList()[0].FlexibleAmount = new(0, 30);
+            user.Groups.ToList()[0].FlexibleAmount = new(0, 30, 0);
             user.Groups.ToList()[0].WorkHoursInDay = new WorkHoursInDay()
             {
                 Id = 1,
-                Monday = new TimeOnly(7, 0, 0),
-                Tuesday = new TimeOnly(7, 0, 0),
-                Wednesday = new TimeOnly(7, 0, 0),
-                Thursday = new TimeOnly(7, 0, 0),
-                Friday = new TimeOnly(6, 30, 0),
+                Monday = new TimeSpan(7, 0, 0),
+                Tuesday = new TimeSpan(7, 0, 0),
+                Wednesday = new TimeSpan(7, 0, 0),
+                Thursday = new TimeSpan(7, 0, 0),
+                Friday = new TimeSpan(6, 30, 0),
             };
 
             _mockUserRepository
@@ -861,9 +861,9 @@ namespace TECin2.Tests.Services
             _mockGroupRepository
                 .Setup(x => x.SelectGroupById(It.IsAny<int>()))
                 .ReturnsAsync(group);
-            
+
             _mockCheckInRepository
-                .Setup(x=>x.SelectCheckInForUserOnDate(It.IsAny<string>(), It.IsAny<DateOnly>()))
+                .Setup(x => x.SelectCheckInForUserOnDate(It.IsAny<string>(), It.IsAny<DateOnly>()))
                 .ReturnsAsync(() => null);
 
             //Act

@@ -1,6 +1,29 @@
 ﻿@using TECin2.Blazor.Models.DTOs
-@inject IHttpContextAccessor HttpContextAccessor
-<h3>GroupOverviewTable</h3>
+@using TECin2.Blazor.Services
+<div class="row">
+    <div class="col">
+        <h3>@GroupResponse.Name</h3>
+        <h4>Mødetid: @GroupResponse.ArrivalTime</h4>
+    </div>
+    <div class="col">
+        <div class="row">
+            <div class="col">
+                <h4>Mødt i dag: </h4>
+            </div>
+            <div class="col">
+                <h4>@arrivedStudents</h4>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <h4>Ud af: </h4>
+            </div>
+            <div class="col">
+                <h4>@CheckIns.Count</h4>
+            </div>
+        </div>
+    </div>
+</div>
 <table class="table">
     <tr>
         <th>Fornavn</th>
@@ -12,8 +35,10 @@
     </tr>
     @foreach (var item in CheckIns)
     {
-        <tr style="background-color:@TableColor.Color(item,httpContext)">
-            <td>@item.FirstName</td>
+        <tr style="background-color:@TableColor.Color(item,CurrentUserData,Date)">
+            <td>
+                <a href="/students/details/@item.UserId">@item.FirstName</a>
+            </td>
             <td>@item.LastName</td>
             <td>@item.Phonenumber</td>
             <td>@item.Email</td>
@@ -27,5 +52,32 @@
     public List<CheckInResponseLong> CheckIns { get; set; } = [];
 
     [Parameter]
-    public HttpContext httpContext { get; set; } = null!;
+    public LogInResponse CurrentUserData { get; set; } = null!;
+
+    [Parameter]
+    public DateOnly Date { get; set; }
+
+    public required LogInGroupResponse GroupResponse { get; set; }
+
+    public int arrivedStudents { get; set; }
+
+
+
+    protected override void OnInitialized()
+    {
+        //tag id fra checkin[0] og fra listen af grupper i login, for at finde gruppenavn
+        foreach (var group in CurrentUserData.Groups)
+        {
+            if (group.Id == CheckIns[0].GroupId)
+            {
+                GroupResponse = group;
+            }
+        }
+        foreach (var checkIn in CheckIns)
+        {
+            if (checkIn.Arrival != new TimeOnly())
+                arrivedStudents++;
+        }
+
+    }
 }

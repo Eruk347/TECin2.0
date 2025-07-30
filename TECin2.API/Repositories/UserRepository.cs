@@ -50,6 +50,14 @@ namespace TECin2.API.Repositories
         {
             try
             {
+                // Attach each Group in user.Groups to the context if not already tracked
+                if (user.Groups != null)
+                {
+                    var groupIds = user.Groups.Select(g => g.Id).ToList();
+                    var trackedGroups = await _context.Group.Where(g => groupIds.Contains(g.Id)).ToListAsync();
+                    user.Groups = trackedGroups;
+                }
+
                 _context.User.Add(user);
                 await _context.SaveChangesAsync();
                 return await _context.User
@@ -151,6 +159,16 @@ namespace TECin2.API.Repositories
             try
             {
                 User? updatedUser = await _context.User
+                    .Include(g => g.Groups)
+                    .Include(r => r.Role)
+                    .Include(s => s.Settings)
+                    .FirstOrDefaultAsync(user => user.Id == userId);
+                if (updatedUser != null)
+                {
+                    updatedUser.Groups = [];
+                    await _context.SaveChangesAsync();
+                }
+                updatedUser = await _context.User
                     .Include(g => g.Groups)
                     .Include(r => r.Role)
                     .Include(s => s.Settings)

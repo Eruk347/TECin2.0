@@ -1,0 +1,231 @@
+﻿@page "/instructors/details/{Id}"
+@rendermode InteractiveServer
+@using Microsoft.AspNetCore.Mvc
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using TECin2.Blazor.Models
+@using TECin2.Blazor.Services
+@using TECin2.Blazor.Models.DTOs
+@inject NavigationManager NavigationManager
+@inject IHttpContextAccessor HttpContextAccessor
+
+<h3>Detaljer for Instruktør: @Instructor.FirstName @Instructor.LastName</h3>
+
+<div class="row">
+    @if (IsLoading)
+    {
+        <p>Indlæser data...</p>
+    }
+    else
+    {
+        <div class="col-md-4">
+            <div class="form-group">
+                <label @bind="Instructor.FirstName" class="control-label">Fornavn</label>
+                <span class="form-control">@Instructor.FirstName</span>
+            </div>
+            <div class="form-group">
+                <label @bind="Instructor.LastName" class="control-label">Efternavn</label>
+                <label>*</label>
+                <span class="form-control">@Instructor.LastName</span>
+            </div>
+            <div class="form-group">
+                <label @bind="Instructor.Username" class="control-label">Brugernavn</label>
+                <label>*</label>
+                <span class="form-control">@Instructor.UserName</span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Rolle*</label>
+                @* <InputSelect id="role" class="form-select" @bind-Value="Instructor.RoleId">
+                    @foreach (var role in RolesForCombobox)
+                    {
+                        <option value="@role.Value">@role.Text</option>
+                    }
+                </InputSelect> *@
+                <span class="form-control">@Instructor.Role.Name</span>
+            </div>
+            <br />
+            <h3>
+                Grupper:
+            </h3>
+            <div class="form-group">
+                @foreach (var department in Departments)
+                {
+                    <h5> Afdeling: @department.Name</h5>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Tilmeld</th>
+                                <th>Gruppenavn</th>
+                                <th>Primær gruppe</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (ListOfGroups != null)
+                            {
+                                @foreach (var group in ListOfGroups[0])
+                                {
+                                    if (group != null)
+                                    {
+
+                                        <InputRadioGroup @bind-Value="group.PrimaryGroup" class="form-check-input">
+                                            <tr>
+                                                <td><input id="group.id" type="checkbox" @bind=group.IsMember disabled="disabled" /></td>
+                                                <td>@group.Name</td>
+
+                                                <td><InputRadio @bind-Value="group.PrimaryGroup" disabled="disabled" /></td>
+                                            </tr>
+                                        </InputRadioGroup>
+                                    }
+                                }
+                            }
+
+                        </tbody>
+                    </table>
+                }
+            </div>
+            <p></p>
+            <button class="btn btn-warning" @onclick="GoToEdit">Rediger</button>
+            <button class="btn btn-secondary" @onclick="GoToIndex">Tilbage til listen</button>
+        </div>
+    }
+</div>
+
+@code {
+    private readonly IInstructorService _instructorService;
+    private readonly IRoleService _roleService;
+    private readonly IDepartmentService _departmentService;
+    private bool IsLoading = true;
+
+    [Parameter]
+    public required string Id { get; set; }
+
+    [SupplyParameterFromForm]
+    private Instructor Instructor { get; set; } = new Instructor { Id = "", FirstName = "", LastName = "", UserName = "", Groups = [], Role = new() { Id = 0, Description = "", Name = "" } };
+    
+    public List<List<GroupHelper>> ListOfGroups { get; set; } = [];
+
+    private List<SelectListItem> RolesForCombobox = [];
+    private List<Department> Departments = [];
+    private LogInResponse? CurrentUserData { get; set; }
+
+
+    public InstructorsDetails(IInstructorService instructorService, IRoleService roleService, IDepartmentService departmentService)
+    {
+        _instructorService = instructorService;
+        _roleService = roleService;
+        _departmentService = departmentService;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var httpContext = HttpContextAccessor.HttpContext;
+        if (httpContext != null)
+            CurrentUserData = httpContext.Session.GetObject<LogInResponse>("CurrentUser");
+
+        if (CurrentUserData == null)
+        {
+            NavigationManager.NavigateTo("/login", true);
+            return;
+        }
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        IsLoading = true;
+        try
+        {
+            var _instructor = await _instructorService.GetInstructorById(Id);
+
+            if (_instructor == null)
+            {
+                NavigationManager.NavigateTo("/instructors/index", true);
+                return;
+            }
+
+            Instructor = new Instructor
+                {
+                    Id = Id,
+                    FirstName = _instructor.FirstName,
+                    LastName = _instructor.LastName,
+                    UserName = _instructor.UserName,
+                    Email = _instructor.Email,
+                    Phonenumber = _instructor.Phonenumber,
+                    Role = _instructor.Role,
+                    Groups = _instructor.Groups,
+                    PrimaryGroupId = _instructor.PrimaryGroupId
+                };
+
+            Departments = await _departmentService.GetAllDepartments() ?? new();
+
+            foreach (var department in Departments)
+            {
+                if (department.Groups == null)
+                    continue;
+                List<GroupHelper> groupHelpers = [];
+                foreach (var group in department.Groups)
+                {
+                    if (group == null)
+                        continue;
+                    GroupHelper _group = new()
+                        {
+                            Id = group.Id,
+                            Name = group.Name,
+                            DepartmentId = group.DepartmentId,
+                            ArrivalTime = group.ArrivalTime,
+                            WorkHoursInDayId = group.WorkHoursInDayId,
+                            FlexibleArrivalEnabled = group.FlexibleArrivalEnabled,
+                            FlexibleAmount = group.FlexibleAmount,
+                            IsLateMessage = group.IsLateMessage,
+                            IsLateBuffer = group.IsLateBuffer,
+                            PrimaryGroup = false,
+                            IsMember = false
+                        };
+
+                    if (_instructor.Groups != null && _instructor.Groups.Any(g => g.Id == _group.Id))
+                    {
+                        _group.IsMember = true;
+                    }
+                    if (_instructor.PrimaryGroupId == _group.Id)
+                    {
+                        _group.PrimaryGroup = true;
+                    }
+                    groupHelpers.Add(_group);
+                }
+                ListOfGroups.Add(groupHelpers);
+            }
+
+            List<Role?> roles = await _roleService.GetAllRoles();
+
+            foreach (var role in roles)
+            {
+                if (role != null)
+                    if (role.Rank >= CurrentUserData!.RoleRank)
+                        RolesForCombobox.Add(new SelectListItem { Text = role.Name, Value = role.Id.ToString() });
+            }
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private void GoToIndex()
+    {
+        NavigationManager.NavigateTo("/instructors/index", true);
+    }
+
+    private void GoToEdit()
+    {
+        NavigationManager.NavigateTo("/instructors/edit/" + Id, true);
+    }
+
+    public class GroupHelper : Group
+    {
+        public bool PrimaryGroup { get; set; }
+        public bool IsMember { get; set; }
+    }
+}

@@ -117,6 +117,20 @@ namespace TECin2.API.Services
                         GroupId = groupId,
                     });
                 }
+                else if (user.IsStudent)
+                {
+                    checkInResponses.Add(new CheckInResponseLong
+                    {
+                        Arrival = new(),
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
+                        UserId = user.Id,
+                        Email = user.Email,
+                        Phonenumber = user.Phonenumber,
+                        LastCheckin = user.LastCheckin,
+                        GroupId = groupId,
+                    });
+                }
             }
             return checkInResponses;
         }
@@ -247,7 +261,7 @@ namespace TECin2.API.Services
                 switch ((int)DateTime.Now.DayOfWeek)
                 {
                     case 1:
-                        if (checkOutTime < arrivalTime.Add(group.WorkHoursInDay.Monday))    
+                        if (checkOutTime < arrivalTime.Add(group.WorkHoursInDay.Monday))
                             return firstName + ",\ndu tjekkede ind " + arrivalTime.ToString() + ",\ndu har først fri kl. " + arrivalTime.Add(group.WorkHoursInDay.Monday);
                         break;
                     case 2:

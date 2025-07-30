@@ -31,7 +31,7 @@ namespace TECin2.API.Services
             try
             {
                 //var key = _config["Jwt:Key"];
-                var key = System.Environment.GetEnvironmentVariable("TECin2 - JWT", EnvironmentVariableTarget.User);
+                var key = System.Environment.GetEnvironmentVariable("TECin2-JWT", EnvironmentVariableTarget.User);
                 if (key != null)
                 {
                     var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));

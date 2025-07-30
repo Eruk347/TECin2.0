@@ -1,12 +1,14 @@
-﻿ @page "/instructors/create"
+﻿@page "/instructors/create"
+@rendermode InteractiveServer
 @using Microsoft.AspNetCore.Mvc
 @using Microsoft.AspNetCore.Mvc.Rendering
 @using TECin2.Blazor.Models
 @using TECin2.Blazor.Services
 @using TECin2.Blazor.Models.DTOs
 @inject NavigationManager NavigationManager
+@inject IHttpContextAccessor HttpContextAccessor
 
-<h3>InstructorsCreate</h3>
+<h3>Opret Instruktør</h3>
 <div class="row">
     <div class="col-md-4">
         <EditForm Model="@Instructor" method="post" OnValidSubmit="OnPostAsync" Id="instructorForm" FormName="Create">
@@ -28,8 +30,8 @@
             <div class="form-group">
                 <label @bind="Instructor.Username" class="control-label">Brugernavn</label>
                 <label>*</label>
-                <InputText @bind-value="Instructor.Username" class="form-control" />
-                <span asp-validation-for="Instructor.Username" class="text-danger"></span>
+                <InputText @bind-value="Instructor.UserName" class="form-control" />
+                <span asp-validation-for="Instructor.UserName" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Password" class="control-label">Password</label>
@@ -53,28 +55,37 @@
                 </InputSelect>
                 <span asp-validation-for="instructor.RoleId" class="text-danger"></span>
             </div>
+            <br />
+            <h3>
+                Tilmeld grupper:
+            </h3>
             <div class="form-group">
                 @foreach (var department in Departments)
                 {
-                    <label>@department.Name</label>
-                    <table>
+                    <h5> Afdeling: @department.Name</h5>
+                    <table class="table">
                         <thead>
                             <tr>
-                                <th>Tilmeld?</th>
+                                <th>Tilmeld</th>
                                 <th>Gruppenavn</th>
+                                <th>Primær gruppe</th>
                             </tr>
                         </thead>
                         <tbody>
                             @if (department.Groups != null)
                             {
-                                foreach (var group in department.Groups)
+                                @foreach (var group in department.Groups)
                                 {
+
                                     if (group != null)
                                     {
-                                        <tr>
-                                            <td><InputCheckbox @bind-Value=group.Deactivated /></td>
-                                            <td>@group.Name</td>
-                                        </tr>
+                                        <InputRadioGroup @bind-Value="group.FlexibleArrivalEnabled" class="form-check-input">
+                                            <tr>
+                                                <td><InputCheckbox @bind-Value=group.Deactivated /></td>
+                                                <td>@group.Name</td>
+                                                <td><InputRadio @bind-Value=group.FlexibleArrivalEnabled /></td>
+                                            </tr>
+                                        </InputRadioGroup>
                                     }
                                 }
                             }
@@ -84,7 +95,6 @@
             </div>
             <p></p>
             <input type="submit" value="Opret" class="btn btn-primary" />
-
         </EditForm>
     </div>
 </div>
@@ -96,7 +106,7 @@
     private readonly IDepartmentService _departmentService;
 
     [SupplyParameterFromForm]
-    private InstructorRequest Instructor { get; set; } = new InstructorRequest { FirstName = "", LastName = "", Username = "" };
+    private InstructorRequest Instructor { get; set; } = new InstructorRequest { FirstName = "", LastName = "", UserName = "" };
     [SupplyParameterFromForm]
     private string Password { get; set; } = "";
     [SupplyParameterFromForm]
@@ -104,14 +114,13 @@
 
     private List<SelectListItem> RolesForCombobox = new List<SelectListItem>();
     private List<Department> Departments = new List<Department>();
-
+    private LogInResponse? CurrentUserData { get; set; }
 
     public InstructorsCreate(IInstructorService instructorService, IRoleService roleService, IDepartmentService departmentService)
     {
         _instructorService = instructorService;
         _roleService = roleService;
         _departmentService = departmentService;
-
     }
 
     protected override async Task OnInitializedAsync()
@@ -121,17 +130,28 @@
 
     private async Task OnGetAsync()
     {
-             //hent afdelinger og grupper
+        var httpContext = HttpContextAccessor.HttpContext;
+        if (httpContext != null)
+            CurrentUserData = httpContext.Session.GetObject<LogInResponse>("CurrentUser");
+
+        if (CurrentUserData == null)
+        {
+            NavigationManager.NavigateTo("/login", true);
+            return;
+        }
         //find ud af hvad brugerene må se af afdelinger og grupper
+
+
+
         Departments = await _departmentService.GetAllDepartments() ?? new();
 
         List<Role?> roles = await _roleService.GetAllRoles();
 
         foreach (var role in roles)
         {
-            //skal ahve kontrol på hvilken rolle current user har
             if (role != null)
-                RolesForCombobox.Add(new SelectListItem { Text = role.Name, Value = role.Id.ToString() });
+                if (role.Rank >= CurrentUserData.RoleRank)
+                    RolesForCombobox.Add(new SelectListItem { Text = role.Name, Value = role.Id.ToString() });
         }
     }
 
@@ -153,6 +173,10 @@
                 if (group.Deactivated)
                 {
                     Instructor.Groups.Add(group);
+                }
+                if (group.FlexibleArrivalEnabled)
+                {
+                    Instructor.PrimaryGroupId = group.Id;
                 }
             }
         }

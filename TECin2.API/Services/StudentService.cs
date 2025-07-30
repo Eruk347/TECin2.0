@@ -159,6 +159,7 @@ namespace TECin2.API.Services
 
             List<Group> groupForStudent = [.. groups.Select(g => g).Where(g => g.Id == updateStudent.GroupId)];
             User? originalUser = await _userRepository.SelectUserById(studentId);
+            updateStudent.RoleId = originalUser!.Role!.Id;
             User? user = MapStudentRequestToUser(updateStudent, studentId, groupForStudent);
 
             if (user != null)
@@ -186,12 +187,12 @@ namespace TECin2.API.Services
                     LastName = studentRequest.LastName,
                     Phonenumber = studentRequest.Phonenumber,
                     Email = studentRequest.Email,
-                    IsStudent = studentRequest.IsStudent,
+                    IsStudent = true,
                     Deactivated = studentRequest.Deactivated,
-                    RoleId = studentRequest.RoleId,
                     LastCheckin = studentRequest.LastCheckin,
                     Salt = "student",
                     Groups = _groups,
+                    RoleId = studentRequest.RoleId,
                 };
 
                 return student;
@@ -288,6 +289,14 @@ namespace TECin2.API.Services
                     DepartmentId = user.Groups.ToList()[0].DepartmentId,
                 };
 
+                List<StudentCheckInStatusResponse> checkInResponses = [.. checkInStatuses.Select(checkIn => new StudentCheckInStatusResponse
+                {
+                    Id = checkIn.Id,
+                    ArrivalDate = checkIn.ArrivalDate,
+                    ArrivalTime = checkIn.ArrivalTime,
+                    Departure = checkIn.Departure
+                })];
+
                 StudentResponse response = new()
                 {
                     Id = user.Id,
@@ -299,7 +308,7 @@ namespace TECin2.API.Services
                     LastCheckin = user.LastCheckin,
                     Deactivated = user.Deactivated,
                     Group = groupResponse,
-                    CheckInResponses = checkInStatuses
+                    CheckInResponses = checkInResponses
                 };
 
                 return response;

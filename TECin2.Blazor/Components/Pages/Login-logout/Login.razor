@@ -10,7 +10,7 @@
 
 <PageTitle>Login</PageTitle>
 
-<div style="place-content:center;">
+<div style="place-content:center;" class="container">
     <h1>Login</h1>
     <h3>Velkommen</h3>
 
@@ -53,6 +53,7 @@
         var result = await _loginService.Login(UserLogin);
         if (result != null)
         {
+            Global.SetToken(result.Token);
             HttpContextAccessor.HttpContext?.Session.SetObject("CurrentUser", result);
             NavigationManager.NavigateTo("/dailyoverview", true);
         }

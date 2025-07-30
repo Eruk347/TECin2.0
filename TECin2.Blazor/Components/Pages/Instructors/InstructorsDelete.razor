@@ -1,0 +1,152 @@
+﻿@page "/instructors/delete/{Id}"
+@using Microsoft.AspNetCore.Mvc
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using TECin2.Blazor.Models
+@using TECin2.Blazor.Services
+@using TECin2.Blazor.Models.DTOs
+@rendermode InteractiveServer
+@inject NavigationManager NavigationManager
+@inject IHttpContextAccessor HttpContextAccessor
+
+
+<h3>Slet instruktør: @Instructor.FirstName @Instructor.LastName</h3>
+
+<div class="row">
+    @if (IsLoading)
+    {
+        <p>Indlæser data...</p>
+    }
+    else
+    {
+        <div class="col-md-4">
+            <table>
+                <thead>
+                    <tr>
+                        <th width="200" />
+                        <th width="200" />
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            Brugernavn:
+                        </td>
+                        <td>
+                            @Instructor.UserName
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Rolle:
+                        </td>
+                        <td>
+                            @Instructor.Role.Name
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Grupper:
+                        </td>
+                        <td>
+                            @foreach (var group in Instructor.Groups)
+                            {
+                                @group.Name
+                            }
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <p></p>
+            <button class="btn btn-danger" @onclick="DeleteInstructor">Slet</button>
+            <button class="btn btn-secondary" @onclick="GoToIndex">Annuler</button>
+            
+        </div>
+    }
+</div>
+@code {
+    private readonly IInstructorService _instructorService;
+    private LogInResponse? CurrentUserData { get; set; }
+    private bool IsLoading = true;
+
+    [Parameter]
+    public required string Id { get; set; }
+    private Instructor Instructor { get; set; } = new Instructor { Id = "", FirstName = "", LastName = "", UserName = "", Role = new Role { Name = "", Description = "" }, Groups = [], };
+
+    public InstructorsDelete(IInstructorService instructorService)
+    {
+        _instructorService = instructorService;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var httpContext = HttpContextAccessor.HttpContext;
+        if (httpContext != null)
+            CurrentUserData = httpContext.Session.GetObject<LogInResponse>("CurrentUser");
+
+        if (CurrentUserData == null)
+        {
+            NavigationManager.NavigateTo("/login", true);
+            return;
+        }
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        IsLoading = true;
+        try
+        {
+            var _instructor = await _instructorService.GetInstructorById(Id);
+            if (_instructor == null)
+            {
+                NavigationManager.NavigateTo("/instructors/index", true);
+                return;
+            }
+
+            Instructor = _instructor;
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private async Task OnPostAsync(string id)
+    {
+        var instruktor = await _instructorService.DeleteInstructor(id);
+
+        if (instruktor == null)
+        {
+
+        }
+        else if (instruktor != null)
+        {
+            NavigationManager.NavigateTo("/instructors/index", true);
+            return;
+        }
+    }
+
+    private void GoToIndex()
+    {
+        NavigationManager.NavigateTo("/instructors/index", true);
+    }
+
+    private async Task DeleteInstructor()
+    {
+        var instruktor = await _instructorService.DeleteInstructor(Instructor.Id);
+
+        if (instruktor == null)
+        {
+
+        }
+        else if (instruktor != null)
+        {
+            NavigationManager.NavigateTo("/instructors/index", true);
+
+        }
+    }
+}

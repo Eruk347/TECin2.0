@@ -1,9 +1,12 @@
 ﻿@page "/departments/index"
 @using TECin2.Blazor.Models
 @using TECin2.Blazor.Services
-<h3>DepartmentsIndex</h3>
+<h3>Afdelinger</h3>
 
-@foreach (var _department in departments)
+<a href="/departments/create">Ny afdeling</a>
+<a href="/groups/create">Ny gruppe</a>
+
+@foreach (var _department in departments!)
 {
     <table class="table">
         <thead>

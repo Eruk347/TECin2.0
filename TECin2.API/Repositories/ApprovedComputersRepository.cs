@@ -45,6 +45,7 @@ namespace TECin2.API.Repositories
                 await _context.SaveChangesAsync();
                 return _context.ApprovedComputers
                     .Include(a => a.ComputerLocation)
+                    .Include(a => a.Department)
                     .FirstOrDefault(computer => computer.Id == approvedComputer.Id);
             }
             catch (Exception e)
@@ -61,6 +62,7 @@ namespace TECin2.API.Repositories
             {
                 return await _context.ApprovedComputers
                     .Include(a => a.ComputerLocation)
+                    .Include(a => a.Department)
                     .ToListAsync();
             }
             catch (Exception e)
@@ -76,6 +78,7 @@ namespace TECin2.API.Repositories
             {
                 return await _context.ApprovedComputers
                     .Include(a => a.ComputerLocation)
+                    .Include(a => a.Department)
                     .FirstOrDefaultAsync(approvedComputer => approvedComputer.Id == approvedComputerId);
             }
             catch (Exception e)
@@ -91,6 +94,7 @@ namespace TECin2.API.Repositories
             {
                 ApprovedComputer? updatedComputer = await _context.ApprovedComputers
                     .Include(a => a.ComputerLocation)
+                    .Include(a => a.Department)
                     .FirstOrDefaultAsync(computer => computer.Id == approvedComputerId);
                 if (updatedComputer != null)
                 {

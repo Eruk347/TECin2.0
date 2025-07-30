@@ -13,5 +13,5 @@ namespace TECin2.API.DTOs
     {
         public int Id { get; set; }
         public required string MACaddress { get; set; }
-    }
+    }    
 }

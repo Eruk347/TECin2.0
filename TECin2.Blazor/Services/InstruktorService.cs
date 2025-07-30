@@ -25,6 +25,9 @@ namespace TECin2.Blazor.Services
 
         public async Task<Instructor?> CreateInstructor(InstructorRequest newInstructor)
         {
+            newInstructor.Email = "";
+            newInstructor.Settings = [];
+            newInstructor.Phonenumber = 0;
             if (newInstructor.Password == null)
                 return null;
             newInstructor.Password = Hash.HashPassword(newInstructor.Password, newInstructor.Password);
@@ -191,8 +194,9 @@ namespace TECin2.Blazor.Services
                     FirstName = InstructorResponse.FirstName,
                     LastName = InstructorResponse.LastName,
                     Email = InstructorResponse.Email,
-                    UserName = InstructorResponse.Username,
+                    UserName = InstructorResponse.UserName,
                     Phonenumber = InstructorResponse.Phonenumber,
+                    PrimaryGroupId = InstructorResponse.PrimaryGroupId,
                     Groups = [.. InstructorResponse.Groups.Select(gr => MapInstructorGroupResponseToGroup(gr))],
                     Role = new Role
                     {
@@ -221,7 +225,6 @@ namespace TECin2.Blazor.Services
                     ArrivalTime = instructorGroupResponse.ArrivalTime,
                     DepartmentId = instructorGroupResponse.DepartmentId,
                     IsLateMessage = instructorGroupResponse.IsLateMessage,
-
                 };
             }
             catch (Exception e)

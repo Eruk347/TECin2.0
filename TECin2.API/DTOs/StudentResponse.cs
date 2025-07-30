@@ -13,7 +13,7 @@ namespace TECin2.API.DTOs
         public DateOnly? LastCheckin { get; set; }
         public bool Deactivated { get; set; }
         public required StudentGroupResponse Group { get; set; }
-        public List<CheckInStatus>? CheckInResponses { get; set; }
+        public List<StudentCheckInStatusResponse>? CheckInResponses { get; set; }
     }
     public class StudentGroupResponse
     {
@@ -25,5 +25,13 @@ namespace TECin2.API.DTOs
         public WorkHoursInDay? WorkHoursInDay { get; set; }
         public bool FlexibleArrivalEnabled { get; set; }
         public TimeSpan? FlexibleAmount { get; set; }
+    }
+
+    public class StudentCheckInStatusResponse
+    {
+        public required int Id { get; set; }
+        public required DateOnly ArrivalDate { get; set; }
+        public required TimeOnly ArrivalTime { get; set; }
+        public TimeOnly? Departure { get; set; }
     }
 }

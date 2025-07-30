@@ -13,6 +13,8 @@ namespace TECin2.API.Database.Entities
 
         public ICollection<Group>? Groups { get; set; }
 
+        public ICollection<ApprovedComputer>? ApprovedComputers { get; set; }
+
         [Column(TypeName = "bit")]
         public bool Deactivated { get; set; }
 

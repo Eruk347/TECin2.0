@@ -164,6 +164,7 @@ namespace TECin2.API.Services
                     LastName = instructorRequest.LastName,
                     Phonenumber = instructorRequest.Phonenumber,
                     Email = instructorRequest.Email,
+                    PrimaryGroupId = instructorRequest.PrimaryGroupId,
                     Groups = instructorRequest.Groups,
                     RoleId = instructorRequest.RoleId,
                     Settings = instructorRequest.Settings,
@@ -243,6 +244,7 @@ namespace TECin2.API.Services
                     Email = user.Email,
                     Phonenumber = user.Phonenumber,
                     Username = user.Username,
+                    PrimaryGroupId = user.PrimaryGroupId,
                     Groups = [.. user.Groups.Select(group => new InstructorGroupResponse
                     {
                         Id = group.Id,

@@ -11,7 +11,6 @@ namespace TECin2.API.DTOs
         [Required]
         public required string LastName { get; set; }
 
-        [Range(10000000, 99999999, ErrorMessage = "Telefonnumme skal være 8 cifre langt")]
         public int? Phonenumber { get; set; }
 
         [StringLength(50)]
@@ -23,17 +22,19 @@ namespace TECin2.API.DTOs
 
         public string? Password { get; set; }
 
+        public int PrimaryGroupId { get; set; }
+
         public List<Group>? Groups { get; set; }
 
         [Required]
-        public bool IsStudent { get; set; }
-        
+        public bool IsStudent { get; set; } = false;
+
         [Required]
         public int RoleId { get; set; }
 
         public List<Setting>? Settings { get; set; }
 
-        public bool Deactivated { get; set; }   
+        public bool Deactivated { get; set; }
 
     }
 }

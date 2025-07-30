@@ -1,0 +1,89 @@
+﻿@page "/departments/create"
+@using Microsoft.AspNetCore.Mvc
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using TECin2.Blazor.Models
+@using TECin2.Blazor.Services
+@using TECin2.Blazor.Models.DTOs
+@inject NavigationManager NavigationManager
+
+<h3>DepartmentCreate</h3>
+<div class="row">
+    <div class="col-md-4">
+        <EditForm Model="@Department" method="post" OnValidSubmit="OnPostAsync" Id="instructorForm" FormName="Create">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-group">
+                <label @bind="Department.Name" class="control-label">Navn</label>
+                <label>*</label>
+                <InputText @bind-value="Department.Name" class="form-control" />
+                <span asp-validation-for="Department.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Afdelingsleder</label>
+                <InputSelect id="departmentHead" class="form-select" @bind-Value="Department.DepartmentHead">
+                    @foreach (var _instructor in Instructors)
+                    {
+                        <option value="@_instructor.Value">@_instructor.Text</option>
+                    }
+                </InputSelect>
+                <span asp-validation-for="instructor.RoleId" class="text-danger"></span>
+            </div>
+            <p></p>
+            <input type="submit" value="Opret" class="btn btn-primary" />
+
+        </EditForm>
+    </div>
+</div>
+
+
+@code {
+    private readonly IDepartmentService _departmentService;
+    private readonly IInstructorService _instructorService;
+
+    [SupplyParameterFromForm]
+    private DepartmentRequest Department { get; set; } = new DepartmentRequest { Name = "" };
+
+    private List<SelectListItem> Instructors { get; set; } = [];
+
+
+    public DepartmentsCreate(IDepartmentService departmentService, IInstructorService instructorService)
+    {
+        _departmentService = departmentService;
+        _instructorService = instructorService;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await OnGetAsync();
+    }
+
+    private async Task OnGetAsync()
+    {
+        List<Instructor> instructors = await _instructorService.GetAllInstructors();
+        foreach (var _instructor in instructors)
+        {
+            if (_instructor != null)
+            {
+                Instructors.Add(new SelectListItem
+                    {
+                        Value = _instructor.Id.ToString(),
+                        Text = $"{_instructor.FirstName} {_instructor.LastName}"
+                    });
+            }
+        }
+    }
+
+    public async Task<IActionResult?> OnPostAsync()
+    {
+        //school selection
+        Department.Deactivated = false;
+        var result = await _departmentService.CreateDepartment(Department);
+        if (result != null)
+        {
+            NavigationManager.NavigateTo("/departments", true);
+            return new OkResult();
+        }
+        return null;
+    }
+}

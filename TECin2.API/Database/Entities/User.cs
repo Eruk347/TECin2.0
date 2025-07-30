@@ -31,6 +31,9 @@ namespace TECin2.API.Database.Entities
         [Column(TypeName = "bit")]
         public bool Deactivated { get; set; }
 
+        [Column(TypeName = "int")]
+        public int PrimaryGroupId { get; set; }
+
         public ICollection<Group>? Groups { get; set; }
 
         public List<Setting>? Settings { get; set; }

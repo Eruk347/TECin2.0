@@ -1,4 +1,5 @@
 ﻿@page "/instructors/index"
+@inject NavigationManager NavigationManager
 @using TECin2.Blazor.Models
 @using TECin2.Blazor.Services
 <h3>InstructorsIndex</h3>
@@ -36,7 +37,7 @@
         {
             <tr>
                 <td>
-                    @instructor.FirstName
+                    <a href="/instructors/details/@instructor.Id">@instructor.FirstName</a>
                 </td>
                 <td>
                     @instructor.LastName
@@ -50,20 +51,16 @@
                 <td>
                     @instructor.UserName
                 </td>
-                @*groups skal med på en måde*@
                 <td>
                     @foreach (var group in instructor.Groups)
                         @group.Name
 
-                </td>
-                @*  @if (Global.RoleRank <= 3)
-                    {
-                        <td>
-                            <a asp-page="./Edit" asp-route-id="@item.Id">Rediger</a> |
 
-                            <a asp-page="./Delete" asp-route-id="@item.Id">Slet</a>
-                        </td>
-                    } *@
+                </td>
+                <td>
+                    <a href="/instructors/edit/@instructor.Id">Rediger</a> |
+                    <a href="/instructors/delete/@instructor.Id">Slet</a>
+                </td>
             </tr>
         }
     </tbody>
@@ -80,9 +77,13 @@
         _departmentService = departmentService;
     }
 
-    //public List<List<Instructor>> Instruktors { get; set; } = new();
     public List<Instructor> Instructors { get; set; } = new();
     public List<Department> Departments { get; set; } = new();
+
+    public void NavigateToEdit(string id)
+    {
+        NavigationManager.NavigateTo($"/instructors/edit/{id}");
+    }
 
     protected override async Task OnInitializedAsync()
     {

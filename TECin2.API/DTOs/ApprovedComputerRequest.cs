@@ -4,5 +4,6 @@
     {
         public required string MACaddress { get; set; }
         public int ComputerLocationId { get; set; }
+        public int DepartmentId { get; set; }
     }
 }

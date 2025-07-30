@@ -7,7 +7,8 @@
         public required string LastName { get; set; }
         public int? Phonenumber { get; set; }
         public string? Email { get; set; }
-        public required string Username { get; set; }
+        public required string UserName { get; set; }
+        public int PrimaryGroupId { get; set; }
         public required List<InstructorGroupResponse> Groups { get; set; }
         public required InstructorRoleResponse Role { get; set; }
     }

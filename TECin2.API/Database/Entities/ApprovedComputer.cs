@@ -16,5 +16,10 @@ namespace TECin2.API.Database.Entities
         public int ComputerLocationId { get; set; }
 
         public ComputerLocation? ComputerLocation { get; set; }
+        
+        [Column(TypeName = "int")]
+        public int DepartmentId { get; set; }
+
+        public Department? Department { get; set; }
     }
 }

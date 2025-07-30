@@ -1,0 +1,134 @@
+﻿@page "/students/details/{StudentId}"
+@using System.Globalization
+@using TECin2.Blazor.Models
+@using TECin2.Blazor.Models.DTOs
+@using TECin2.Blazor.Services
+@inject IHttpContextAccessor HttpContextAccessor
+@inject NavigationManager NavigationManager
+@inject IStudentService studentService
+
+@if (IsLoading)
+{
+    <div>Loading...></div>
+}
+else
+{
+    <div>
+        <h3>Detaljer for @student.FirstName @student.LastName</h3>
+
+        <div class="row">
+            <div class="col">
+                <a href="/student/edit/@StudentId">Rediger</a>
+            </div>
+            <div class="col">
+                <div class="row">
+                    Gruppe: @student.Group.Name
+                </div>
+                <div class="row">
+                    Mødetid: @student.Group.ArrivalTime
+                </div>
+                @if (student.Group.FlexibleArrivalEnabled)
+                {
+                    <div class="row">
+                        Fleksibel tid: @student.Group.FlexibleAmount
+                    </div>
+                }
+            </div>
+            <div class="col">
+                <div class="row">
+                    Sidste 30 dage
+                </div>
+                <div class="row">
+                    Kommet for sent:
+                </div>
+                <div class="row">
+                    Ikke mødt
+                </div>
+            </div>
+        </div>
+
+        <div>
+            @foreach (var item in Weeks)
+            {
+                <@StudentDetailsWeek week="item" CurrentUserData="CurrentUserData" Group="student.Group" />
+            }
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public required string StudentId { get; set; }
+
+    public required Student student { get; set; }
+
+    private bool IsLoading = true;
+    private LogInResponse? CurrentUserData { get; set; }
+    List<Week> Weeks { get; set; } = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        var httpContext = HttpContextAccessor.HttpContext;
+        if (httpContext != null)
+            CurrentUserData = httpContext.Session.GetObject<LogInResponse>("CurrentUser");
+
+        if (CurrentUserData == null)
+        {
+            NavigationManager.NavigateTo("/login", true);
+            return;
+        }
+
+        int thisWeek = CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+
+        for (int i = thisWeek; i >= thisWeek - 4; i--)
+        {
+            Weeks.Add(new Week(i));
+        }
+
+        await LoadDataAsync(StudentId);
+
+
+
+
+        for (int i = 0; i < 30; i++)
+        {
+            DateOnly date = DateOnly.FromDateTime(DateTime.Now.AddDays(-i));
+            if (date.DayOfWeek != DayOfWeek.Saturday && date.DayOfWeek != DayOfWeek.Sunday)
+            {
+                thisWeek = CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(date.ToDateTime(new TimeOnly()), CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+                Weeks.FirstOrDefault(w => w.WeekNumber == thisWeek)?.CheckIns.Add(new CheckInStatus
+                    {
+                        User_Id = student.Id,
+                        ArrivalDate = date,
+                        ArrivalTime = student.CheckInStatuses
+                                                        .FirstOrDefault(c => c.ArrivalDate == date)?.ArrivalTime ?? new TimeOnly(0, 0),
+                        Departure = student.CheckInStatuses
+                                                        .FirstOrDefault(c => c.ArrivalDate == date)?.Departure ?? null
+                    });
+            }
+        }
+
+    }
+
+    private async Task LoadDataAsync(string _studentId)
+    {
+        IsLoading = true;
+
+        try
+        {
+            var _student = await studentService.GetStudentById(_studentId);
+
+            if (_student != null)
+                student = _student;
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+}

@@ -10,47 +10,54 @@
 @inject NavigationManager NavigationManager
 @inject IDailyOverviewService dailyOverviewService
 
-<div class="container">
-
-    <h3>Dagens oversigt</h3>
-
-    <EditForm Model=@listOfCheckIns>
-        <input type="date" id="datePicker" @onchange="OnDateChanged" value="@SelectedDate" runat="server" />
+<div>
+    <div class="row">
+        <dir class="col">
+            <h2>Dagens oversigt</h2>
+        </dir>
+        <dir class="col" con>
+            <EditForm Model=@listOfCheckIns>
+                <input type="date" id="datePicker" @onchange="OnDateChanged" value="@SelectedDate" runat="server" />
+            </EditForm>
+        </dir>
+    </div>
+    <hr size="5" />
+    <div>
         @if (IsLoading)
         {
             <p>Indlæser data</p>
         }
         @if (listOfCheckIns != null)
         {
-            <div class="col">
-                <h3>Mødetid </h3>
-            </div>
             @foreach (var list in listOfCheckIns)
             {
-                <GroupOverviewTable CheckIns="list" httpContext="HttpContextAccessor.HttpContext" />
+                <GroupOverviewTable CheckIns="list" CurrentUserData="CurrentUserData" Date="SelectedDate" />
+                <hr size="5"/>
             }
         }
-    </EditForm>
+    </div>
 </div>
-mødetid
-dato
-
-vælg hold
-
-i alt
-fremmødt
 
 @code {
 
     private DateOnly SelectedDate = DateOnly.FromDateTime(DateTime.Now);
     private bool IsLoading = true;
-
+    private LogInResponse? CurrentUserData { get; set; }
     List<List<CheckInResponseLong>> listOfCheckIns = [];
 
 
 
     protected override async Task OnInitializedAsync()
     {
+        var httpContext = HttpContextAccessor.HttpContext;
+        if (httpContext != null)
+            CurrentUserData = httpContext.Session.GetObject<LogInResponse>("CurrentUser");
+
+        if (CurrentUserData == null)
+        {
+            NavigationManager.NavigateTo("/login", true);
+            return;
+        }
         await LoadDataAsync(SelectedDate);
     }
 
@@ -60,32 +67,25 @@ fremmødt
 
         listOfCheckIns.Clear();
 
+        if (CurrentUserData == null)
+        {
+            NavigationManager.NavigateTo("/login", true);
+            return;
+        }
+
         try
         {
-            var httpContext = HttpContextAccessor.HttpContext;
-            if (httpContext != null)
+            foreach (var group in CurrentUserData.Groups)
             {
-                LogInResponse? _currentUserData = httpContext.Session.GetObject<LogInResponse>("CurrentUser");
-
-                if (_currentUserData == null)
+                var checkIns = await dailyOverviewService.GetCheckInsForToday(group.Id, SelectedDate);
+                if (checkIns != null)
                 {
-                    NavigationManager.NavigateTo("/login", true);
-                    return;
-                }
-
-                foreach (var group in _currentUserData.Groups)
-                {
-                    var checkIns = await dailyOverviewService.GetCheckInsForToday(group.Id, SelectedDate);
-                    if (checkIns != null)
-                    {
-                        listOfCheckIns.Add(checkIns);
-                    }
+                    listOfCheckIns.Add(checkIns);
                 }
             }
         }
         catch (Exception)
         {
-
             throw;
         }
         finally
@@ -96,109 +96,10 @@ fremmødt
 
     private async Task OnDateChanged(ChangeEventArgs e)
     {
-        SelectedDate = DateOnly.Parse(e.Value.ToString() ?? string.Empty);
-        if (SelectedDate != null)
-        {
-            await LoadDataAsync(SelectedDate);
-        }
-    }
-
-
-
-    public string Color(CheckInResponseLong checkInResponse)//husk SeeAll setting
-    {
-        string red = "#FF0000";
-        string yellow = "#CDA01E";
-
-        if (checkInResponse.Arrival == new TimeOnly())
-        {
-            return red;
-        }
-
-        var httpContext = HttpContextAccessor.HttpContext;
-        if (httpContext != null)
-        {
-            LogInGroupResponse? group = null;
-            LogInResponse? _currentUserData = httpContext.Session.GetObject<LogInResponse>("CurrentUser");
-            if (_currentUserData == null)
-            {
-                NavigationManager.NavigateTo("/login", true);
-                return red;
-            }
-
-            foreach (var item in _currentUserData.Groups)
-            {
-                if (item.Id == checkInResponse.GroupId)
-                {
-                    group = item;
-                    break;
-                }
-            }
-
-            if (group == null)
-            {
-                return red;
-            }
-
-            //group flex
-            if (group.FlexibleArrivalEnabled)
-            {
-                if (checkInResponse.Arrival > group.ArrivalTime.Add(group.FlexibleAmount ?? new()))
-                {
-                    return yellow;
-                }
-            }
-
-            //group arrivaltime
-            if (checkInResponse.Arrival > group.ArrivalTime)
-            {
-                return yellow;
-            }
-
-            //group departure
-            if (checkInResponse.Departure != new TimeOnly())
-            {
-                if (group.FlexibleArrivalEnabled)
-                {
-                    group.ArrivalTime = group.ArrivalTime.Add(group.FlexibleAmount ?? new());
-                }
-
-                TimeSpan time;
-
-                switch ((int)DateTime.Now.DayOfWeek)
-                {
-                    case 1:
-                        time = group.WorkHoursInDay.Monday;
-                        break;
-                    case 2:
-                        time = group.WorkHoursInDay.Tuesday;
-                        break;
-                    case 3:
-                        time = group.WorkHoursInDay.Wednesday;
-                        break;
-                    case 4:
-                        time = group.WorkHoursInDay.Thursday;
-                        break;
-                    case 5:
-                        time = group.WorkHoursInDay.Friday;
-                        break;
-                    default:
-                        return red;
-                }
-                TimeSpan? timeWorked = checkInResponse.Departure - checkInResponse.Arrival;
-
-                if (timeWorked != null)
-                {
-                    if (timeWorked < time)
-                    {
-                        return red;
-                    }
-                }
-
-            }
-
-            return "#FFFFFF";
-        }
-        return red;
+        if (e.Value != null)
+            SelectedDate = DateOnly.Parse(e.Value.ToString() ?? string.Empty);
+        else
+            SelectedDate = DateOnly.FromDateTime(DateTime.Now);
+        await LoadDataAsync(SelectedDate);
     }
 }

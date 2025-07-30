@@ -12,7 +12,6 @@ namespace TECin2.Blazor.Models.DTOs
         [StringLength(50)]
         public required string LastName { get; set; }
 
-        //[Range(10000000,99999999,ErrorMessage ="Telefonnumme skal være 8 cifre langt")]
         public int? Phonenumber { get; set; }
 
         [StringLength(50)]

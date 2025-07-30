@@ -46,7 +46,7 @@ namespace TECin2.Tests.TestData
                 ArrivalTime = new TimeOnly(7, 30, 0),
                 WorkHoursInDayId = 1,
                 FlexibleArrivalEnabled = false,
-                FlexibleAmount = new TimeOnly(0, 0, 0),
+                FlexibleAmount = new TimeSpan(0, 0, 0),
                 IsLateBuffer = new TimeOnly(0, 0, 0),
                 IsLateMessage = "Du er forsinket",
                 Users = [],
@@ -59,11 +59,11 @@ namespace TECin2.Tests.TestData
             return new WorkHoursInDay()
             {
                 Id = 1,
-                Monday = new TimeOnly(7, 30, 0),
-                Tuesday = new TimeOnly(7, 30, 0),
-                Wednesday = new TimeOnly(7, 30, 0),
-                Thursday = new TimeOnly(7, 30, 0),
-                Friday = new TimeOnly(7, 0, 0),
+                Monday = new TimeSpan(7, 30, 0),
+                Tuesday = new TimeSpan(7, 30, 0),
+                Wednesday = new TimeSpan(7, 30, 0),
+                Thursday = new TimeSpan(7, 30, 0),
+                Friday = new TimeSpan(7, 0, 0),
             };
         }
 

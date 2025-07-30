@@ -12,7 +12,7 @@ namespace TECin2.Blazor.Models.DTOs
 
         [Required]
         [StringLength(100)]
-        public required string Username { get; set; }
+        public required string UserName { get; set; }
 
         public int? Phonenumber { get; set; }
 
@@ -20,6 +20,8 @@ namespace TECin2.Blazor.Models.DTOs
         public string? Email { get; set; }
 
         public string? Password { get; set; }
+
+        public int PrimaryGroupId { get; set; }
 
         public List<Group>? Groups { get; set; }
 

@@ -12,6 +12,6 @@
         public string? CPR { get; set; }
         public Group Group { get; set; }//måske
         public bool Deactivated { get; set; }
-        public List<CheckInStatus> CheckInStatuses { get; set; }
+        public List<CheckInStatus> CheckInStatuses { get; set; } = [];
     }
 }

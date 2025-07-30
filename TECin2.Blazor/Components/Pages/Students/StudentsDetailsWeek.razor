@@ -1,0 +1,66 @@
+﻿@using TECin2.Blazor.Components.Pages.DailyOverview
+@using TECin2.Blazor.Models
+@using TECin2.Blazor.Models.DTOs
+@using TECin2.Blazor.Services
+<h3>Ugenr. @week.WeekNumber</h3>
+
+<table class="table">
+    <tr>
+        <th>
+            Dato
+        </th>
+        <th>
+            Checkin
+        </th>
+        <th>
+            Checkout
+        </th>
+        <th>
+            Arbejdstid
+        </th>
+    </tr>
+
+    @foreach (var item in week.CheckIns)
+    {
+        <tr style="background:@TableColor.Color(item,CurrentUserData,item.ArrivalDate,Group)">
+            <td>
+                @item.ArrivalDate
+            </td>
+            <td>
+                @item.ArrivalTime
+            </td>
+            <td>
+                @item.Departure
+            </td>
+            <td>
+                @TimeWorked(item.ArrivalTime, item.Departure)
+            </td>
+        </tr>
+    }
+</table>
+
+@code {
+    [Parameter]
+    public required Week week { get; set; } //public required List<CheckInStatus> CheckIns { get; set; } = [];
+
+    [Parameter]
+    public LogInResponse CurrentUserData { get; set; } = null!;
+
+    [Parameter]
+    public required Group Group { get; set; }
+
+    protected override void OnInitialized()
+    {
+
+
+    }
+
+    private TimeSpan? TimeWorked(TimeOnly _arrival, TimeOnly? _departure)
+    {
+        if (_departure == null)
+        {
+            return TimeSpan.Zero;
+        }
+        return _departure - _arrival;
+    }
+}

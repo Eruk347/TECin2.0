@@ -25,6 +25,8 @@ namespace TECin2.Blazor.Models.DTOs
         //[Compare("Password", ErrorMessage = "Passwords skal være ens")]
         public string? ConfirmPassword { get; set; }
 
+        public int PrimaryGroupId { get; set; }
+
         public List<Group>? Groups { get; set; }
 
         [Required]

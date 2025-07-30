@@ -90,6 +90,7 @@ namespace TECin2.API.Services
                 {
                     ComputerLocationId = approvedComputerRequest.ComputerLocationId,
                     MACaddress = approvedComputerRequest.MACaddress,
+                    DepartmentId = approvedComputerRequest.DepartmentId
                 };
                 return approvedComputer;
             }
@@ -116,8 +117,13 @@ namespace TECin2.API.Services
 
                     Location = new()
                     {
-                        Location = approvedComputer.ComputerLocation.Location ?? "",
+                        Location = approvedComputer.ComputerLocation.Location ?? "Error",
                         Id = approvedComputer.ComputerLocationId
+                    },
+                    Department = new()
+                    {
+                        Id = approvedComputer.DepartmentId,
+                        Name = approvedComputer.Department?.Name ?? "Error"
                     }
                 };
 
