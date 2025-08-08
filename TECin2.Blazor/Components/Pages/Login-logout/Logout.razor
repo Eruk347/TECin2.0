@@ -1,5 +1,19 @@
-﻿<h3>Logout</h3>
+﻿@page "/logout"
+@using TECin2.Blazor.Models.DTOs
+@using TECin2.Blazor.Services
+@rendermode InteractiveServer
+@inject IHttpContextAccessor HttpContextAccessor
+@inject NavigationManager NavigationManager
+<h3>Logout</h3>
 
 @code {
-
+    protected override void OnInitialized()
+    {
+        LogInResponse empty = new LogInResponse { Username = "", FirstName = "", LastName = "", Id = "", Token = "" };
+        HttpContextAccessor.HttpContext?.Session.SetObject("CurrentUser", null);
+        Global.SetRoleRank(0);
+        Global.SetGroupId(0);
+        Global.SetToken(null);
+        NavigationManager.NavigateTo("/login", true);
+    }
 }

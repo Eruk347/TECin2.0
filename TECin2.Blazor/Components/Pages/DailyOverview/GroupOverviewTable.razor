@@ -1,4 +1,5 @@
-﻿@using TECin2.Blazor.Models.DTOs
+﻿@inject NavigationManager NavigationManager
+@using TECin2.Blazor.Models.DTOs
 @using TECin2.Blazor.Services
 <div class="row">
     <div class="col">
@@ -25,27 +26,31 @@
     </div>
 </div>
 <table class="table">
-    <tr>
-        <th>Fornavn</th>
-        <th>Efternavn</th>
-        <th>Tlf</th>
-        <th>Email</th>
-        <th>Ankomst</th>
-        <th>Afgang</th>
-    </tr>
-    @foreach (var item in CheckIns)
-    {
-        <tr style="background-color:@TableColor.Color(item,CurrentUserData,Date)">
-            <td>
-                <a href="/students/details/@item.UserId">@item.FirstName</a>
-            </td>
-            <td>@item.LastName</td>
-            <td>@item.Phonenumber</td>
-            <td>@item.Email</td>
-            <td>@item.Arrival</td>
-            <td>@item.Departure</td>
+    <thead>
+        <tr>
+            <th>Fornavn</th>
+            <th>Efternavn</th>
+            <th>Tlf</th>
+            <th>Email</th>
+            <th>Ankomst</th>
+            <th>Afgang</th>
         </tr>
-    }
+    </thead>
+    <tbody>
+        @foreach (var item in CheckIns)
+        {
+            <tr style="background-color:@TableColor.Color(item, CurrentUserData, Date)">
+                <td>
+                    <button class="btn-link2" @onclick="() => GoToStudent(item.UserId)" style="background:@TableColor.Color(item, CurrentUserData, Date)">@item.FirstName</button>
+                </td>
+                <td>@item.LastName</td>
+                <td>@item.Phonenumber</td>
+                <td>@item.Email</td>
+                <td>@item.Arrival</td>
+                <td>@item.Departure</td>
+            </tr>
+        }
+    </tbody>
 </table>
 @code {
     [Parameter]
@@ -79,5 +84,10 @@
                 arrivedStudents++;
         }
 
+    }
+
+    private void GoToStudent(string _id)
+    {
+        NavigationManager.NavigateTo("/students/details/" + _id, true);
     }
 }

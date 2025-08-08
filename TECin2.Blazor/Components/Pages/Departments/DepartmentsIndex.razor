@@ -1,19 +1,22 @@
 ﻿@page "/departments/index"
 @using TECin2.Blazor.Models
+@using TECin2.Blazor.Models.DTOs
 @using TECin2.Blazor.Services
+@inject NavigationManager NavigationManager
+@inject IHttpContextAccessor HttpContextAccessor
 <h3>Afdelinger</h3>
 
 <a href="/departments/create">Ny afdeling</a>
 <a href="/groups/create">Ny gruppe</a>
 
-@foreach (var _department in departments!)
+@foreach (var _department in Departments!)
 {
     <table class="table">
         <thead>
             <tr>
-                <th>
+                <th width="200px">
                     <h3>
-                        @_department.Name
+                        <a href="/departments/details/@_department.Id">@_department.Name</a>
                     </h3>
                 </th>
                 <th>
@@ -32,14 +35,32 @@
                     I alt
                 </th>
                 <th>
-                    <a asp-page="./Details" asp-route-id="@_department.Id">Detaljer</a> |
-                    <a asp-page="./Edit" asp-route-id="@_department.Id">Rediger</a> |
-                    <a asp-page="./Delete" asp-route-id="@_department.Id">Slet</a>
+                    <a href="/departments/edit/@_department.Id">Rediger</a> |
+                    <a href="/departments/delete/@_department.Id">Slet</a>
                 </th>
             </tr>
         </thead>
         <tbody>
-           @*  @foreach (var _group in GroupHelper)
+            @foreach (Group _group in _department.Groups!)
+            {
+                <tr>
+                    <td>
+                        <a href="/groups/details/@_group.Id">@_group.Name</a>
+                    </td>
+                    <td>
+                        @_group.ArrivalTime
+                    </td>
+                    <td />
+                    <td />
+                    <td />
+                    <td />
+                    <td>
+                        <a href="/groups/edit/@_group.Id">Rediger</a> |
+                        <a href="/groups/delete/@_group.Id">Slet</a>
+                    </td>
+                </tr>
+            }
+            @*  @foreach (var _group in GroupHelper)
             {
                 @if (_group.Department == _department.Id)
                 {
@@ -79,8 +100,8 @@
 
 @code {
     private readonly IDepartmentService _departmentService;
-    //static DepartmentService _departmentService = new();
-    List<Department>? departments = [];
+    private LogInResponse? CurrentUserData { get; set; }
+    List<Department>? Departments = [];
 
     public DepartmentsIndex(IDepartmentService departmentService)
     {
@@ -89,21 +110,28 @@
 
     protected override async Task OnInitializedAsync()
     {
-        //check token validation
+        var httpContext = HttpContextAccessor.HttpContext;
+        if (httpContext != null)
+            CurrentUserData = httpContext.Session.GetObject<LogInResponse>("CurrentUser");
+
+        if (CurrentUserData == null)
+        {
+            NavigationManager.NavigateTo("/login", true);
+            return;
+        }
+       // await LoadDataAsync();
 
 
-        departments = await _departmentService.GetAllDepartments();
+        Departments = await _departmentService.GetAllDepartments();
 
-        if (departments == null)
+        if (Departments == null)
         {
             //hvis noget med en fejl at der ikke er nogen list - empty list betyder der er kommet et svar, null, betyder noget er galt
-            departments = new List<Department>();
+            Departments = new List<Department>();
         }
 
-        departments = departments.OrderBy(x => x.Name).ToList();
+        Departments = Departments.OrderBy(x => x.Name).ToList();
+
+
     }
-
-
-
-
 }

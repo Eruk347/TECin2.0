@@ -1,5 +1,131 @@
-﻿<h3>DepartmentsDelete</h3>
+﻿@page "/departments/delete/{Id:int}"
+@using Microsoft.AspNetCore.Mvc
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using TECin2.Blazor.Models
+@using TECin2.Blazor.Services
+@using TECin2.Blazor.Models.DTOs
+@rendermode InteractiveServer
+@inject NavigationManager NavigationManager
+@inject IHttpContextAccessor HttpContextAccessor
+
+
+<h3>Slet afdeling: @Department.Name</h3>
+<div class="row">
+    @if (IsLoading)
+    {
+        <p>Indlæser data...</p>
+    }
+    else
+    {
+        <div class="col-md-4">
+            <table>
+                <thead>
+                    <tr>
+                        <th width="200" />
+                        <th width="200" />
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            Afdelingsleder:
+                        </td>
+                        <td>
+                            @DepartmentHead.FirstName @DepartmentHead.LastName
+                        </td>
+                    </tr>
+                    <tr />
+                    <tr>
+                        Groups
+                    </tr>
+                    @foreach (Group _group in Department.Groups!)
+                    {
+                        <tr>
+                            @_group.Name
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <p></p>
+            <button class="btn btn-danger" @onclick="DeleteDepartment">Slet</button>
+            <button class="btn btn-secondary" @onclick="GoToIndex">Annuller</button>
+        </div>
+    }
+</div>
 
 @code {
+    private readonly IDepartmentService _departmentService;
+    private readonly IInstructorService _instructorService;
+    private LogInResponse? CurrentUserData { get; set; }
+    private bool IsLoading = true;
 
+    [Parameter]
+    public required int Id { get; set; }
+    private Department Department { get; set; } = new Department { Name = "" };
+    private Instructor DepartmentHead { get; set; } = new Instructor { Id = "", FirstName = "", LastName = "", UserName = "", Role = new Role { Name = "", Description = "" }, Groups = [], };
+
+    public DepartmentsDelete(IDepartmentService departmentService, IInstructorService instructorService)
+    {
+        _departmentService = departmentService;
+        _instructorService = instructorService;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var httpContext = HttpContextAccessor.HttpContext;
+        if (httpContext != null)
+            CurrentUserData = httpContext.Session.GetObject<LogInResponse>("CurrentUser");
+
+        if (CurrentUserData == null)
+        {
+            NavigationManager.NavigateTo("/login", true);
+            return;
+        }
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        IsLoading = true;
+        try
+        {
+            var department = await _departmentService.GetDepartmentById(Id);
+            if (department == null)
+            {
+                NavigationManager.NavigateTo("/departments/index", true);
+                return;
+            }
+            Department = department;
+
+            var departmentHead = await _instructorService.GetInstructorById(department.DepartmentHead!);
+            if (departmentHead == null)
+            {
+                NavigationManager.NavigateTo("/departments/index", true);
+                return;
+            }
+            DepartmentHead = departmentHead;
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private void GoToIndex()
+    {
+        NavigationManager.NavigateTo("/departments/index", true);
+    }
+
+    private async Task DeleteDepartment()
+    {
+        var department = await _departmentService.DeleteDepartment(Id);
+        if (department != null)
+        {
+            NavigationManager.NavigateTo("/departments/index", true);
+        }
+    }
 }

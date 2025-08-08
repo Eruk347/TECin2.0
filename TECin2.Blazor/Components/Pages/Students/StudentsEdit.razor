@@ -1,12 +1,13 @@
 ﻿@page "/students/edit/{StudentId}"
 @rendermode InteractiveServer
 @using System.Globalization
+@using Microsoft.AspNetCore.Mvc
 @using TECin2.Blazor.Models
 @using TECin2.Blazor.Models.DTOs
 @using TECin2.Blazor.Services
 @inject IHttpContextAccessor HttpContextAccessor
 @inject NavigationManager NavigationManager
-@inject IStudentService studentService
+@inject IStudentService _studentService
 
 @if (IsLoading)
 {
@@ -14,27 +15,35 @@
 }
 else
 {
-    <h3>Redigering af @student.FirstName @student.LastName</h3>
+    <h3>Redigering af @Student.FirstName @Student.LastName</h3>
     <div class="row">
         <div class="col-md-4">
-            <EditForm Model="@student" OnValidSubmit="UpdateStudent" FormName="EditStudent">
+            <EditForm Model="@Student" OnValidSubmit="UpdateStudent" FormName="EditStudent">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
                 <label for="FirstName">Fornavn</label>
-                <input type="text" class="form-control" id="FirstName" @bind="student.FirstName" />
+                <input type="text" class="form-control" id="FirstName" @bind="Student.FirstName" />
                 <label for="LastName">Efternavn</label>
-                <input type="text" class="form-control" id="LastName" @bind="student.LastName" />
+                <input type="text" class="form-control" id="LastName" @bind="Student.LastName" />
                 <label for="Phonenumber">Telefonnummer</label>
-                <input type="text" class="form-control" id="Phonenumber" @bind="student.Phonenumber" />
+                <input type="text" class="form-control" id="Phonenumber" @bind="Student.Phonenumber" />
                 <label for="Email">Email</label>
-                <input type="text" class="form-control" @bind="student.Email" />
+                <input type="text" class="form-control" @bind="Student.Email" />
                 <label for="Group">Gruppe</label>
-
+                <InputSelect class="form-select" id="Group" @bind-Value="Student.GroupId">
+                    @foreach (var group in CurrentUserData!.Groups)
+                    {
+                        <option value="@group.Id">@group.Name</option>
+                    }
+                </InputSelect>
                 <br />
                 <br />
                 <label for="Deactivate">Deaktiver indtil lærling tjekker ind igen?</label>
-                <input type="checkbox" id="Deactivate" @bind="student.Deactivated" />
+                <input type="checkbox" id="Deactivate" @bind="Student.Deactivated" />
                 <br />
                 <br />
-                <button class="btn btn-primary mt-3" type="submit">Gem</button>
+                <button class="btn btn-primary" type="submit">Udfør</button>
+                <button class="btn btn-secondary" @onclick="GoToIndex">Annuller</button>
             </EditForm>
         </div>
     </div>
@@ -43,7 +52,9 @@ else
 @code {
     [Parameter]
     public required string StudentId { get; set; }
-    public required StudentRequest student { get; set; }
+
+    [SupplyParameterFromForm]
+    public required StudentRequest Student { get; set; }
 
     private bool IsLoading = true;
     private LogInResponse? CurrentUserData { get; set; }
@@ -68,22 +79,22 @@ else
 
         try
         {
-            var _student = await studentService.GetStudentById(_studentId);
+            var _student = await _studentService.GetStudentById(_studentId);
 
             if (_student != null)
             {
-                student = new()
-                    {
-                        FirstName = _student.FirstName,
-                        LastName = _student.LastName,
-                        Username = _student.Username,
-                        Phonenumber = _student.Phonenumber,
-                        Email = _student.Email,
-                        Deactivated = _student.Deactivated,
-                        LastCheckin = _student.LastCheckIn,
-                        GroupId = _student.Group.Id
+                Student = new()
+                {
+                    FirstName = _student.FirstName,
+                    LastName = _student.LastName,
+                    Username = _student.Username,
+                    Phonenumber = _student.Phonenumber,
+                    Email = _student.Email,
+                    Deactivated = _student.Deactivated,
+                    LastCheckin = _student.LastCheckIn,
+                    GroupId = _student.Group.Id
 
-                    };
+                };
             }
         }
         catch (Exception)
@@ -96,14 +107,18 @@ else
         }
     }
 
-
-
     private async Task UpdateStudent()
     {
-        if (student != null)
+        if (Student != null)
         {
-            await studentService.UpdateStudent(student, StudentId);
-            NavigationManager.NavigateTo("/students/index");
+            var result = await _studentService.UpdateStudent(Student, StudentId);
+            if (result != null)
+                NavigationManager.NavigateTo("/students/index");
         }
+    }
+
+    private void GoToIndex()
+    {
+        NavigationManager.NavigateTo("/students/index", true);
     }
 }

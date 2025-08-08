@@ -1,5 +1,135 @@
-﻿<h3>GroupsCreate</h3>
+﻿@page "/groups/create"
+@using Microsoft.AspNetCore.Mvc
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using TECin2.Blazor.Models
+@using TECin2.Blazor.Services
+@using TECin2.Blazor.Models.DTOs
+@inject NavigationManager NavigationManager
+@inject IHttpContextAccessor HttpContextAccessor
+@inject IGroupService _groupService
+@inject IDepartmentService _departmentService
+
+
+<h3>Opret gruppe</h3>
+<div class="row">
+    <div class="col-md-5">
+        <EditForm Model="@Group" method="post" OnValidSubmit="OnPostAsync" id="groupForm" FormName="Create">
+            <div class="form-group">
+                <label>Navn*</label>
+                <InputText @bind-Value="Group.Name" class="form-control" />
+            </div>
+            <br />
+            <div class="form-group col-md-3">
+                <label class="control-label">Afdeling</label>
+                <InputSelect id="departmentId" class="form-select " @bind-Value="Group.DepartmentId">
+                    @foreach (var _department in Departments)
+                    {
+                        <option value="@_department.Value">@_department.Text</option>
+                    }
+                </InputSelect>
+                <span asp-validation-for="instructor.RoleId" class="text-danger"></span>
+            </div><br />
+            <div class="form-group col-md-3">
+                <label>Ankomsttidspunkt*</label>
+                <TimeInput @bind-Value="Group.ArrivalTime" class="form-control" />
+            </div>
+            <br />
+            <div>
+                Besked ved forsinkelse?
+                <InputCheckbox @bind-Value="DelayMessage" class="form-check-input" />
+                <div id="LateMessage">
+                    <div>
+                        <label>Hvis lærlingene checker in senere end mødetid+buffertid, vil de blive mødt af en besked om at de skal finde deres instruktør.</label>
+                        <label>Eks. hvis mødetiden er 7.30 og buffertiden er 15 minutter, vil alle lærlinge, der møder senere end 7.45, blive mødt med beskeden som defineres nedenfor.</label>
+                        <label>Systemet registrerer ankomsttidpunktet, som normalt.</label>
+                    </div>
+                    <div class="col-md-3">
+                        <TimeInput @bind-Value="Group.IsLatebuffer" class="form-control" />
+                    </div>
+                    <br />
+                    <div class="col-md-5">
+                        <label> Besked til lærlingene: </label>
+                        <InputText @bind-Value="Group.IsLateMessage" class="form-control" />
+                        <label>(standard er "Indtjek er lukket. Kontakt instruktør.")</label>
+                    </div>
+                </div>
+            </div>
+            <br />
+            <div>
+                <label class="form-check-label" for="departureTimeEnabled">aktiver afgangstider</label>
+                <InputCheckbox @bind-Value="DepartureTimeEnabled" class="form-check-input" />
+                <div>DepartureTimeEnabled: @DepartureTimeEnabled</div>
+                @if (DepartureTimeEnabled)
+                {
+                    <div id="Departure">
+                        <label>Sæt fyraften for fredag eftermiddag.</label>
+                        <div class="form-check">
+                            <InputRadioGroup @bind-Value="DepartureTime">
+                                <div>
+                                    <InputRadio Value="0" />
+                                    <label>Fredag til kl. 12:00</label>
+                                </div>
+                                <div>
+                                    <InputRadio Value="1" />
+                                    <label>Fredag til kl. 14:30</label>
+                                </div>
+                                <div>
+                                    <InputRadio Value="2" />
+                                    <label>Redigere alle dage</label>
+                                </div>
+                            </InputRadioGroup>
+                        </div>
+                    </div>
+                }
+            </div>
+        </EditForm>
+    </div>
+</div>
+
 
 @code {
+    private LogInResponse? CurrentUserData { get; set; }
 
+    [SupplyParameterFromForm]
+    private GroupRequest Group { get; set; } = new GroupRequest { Name = "", ArrivalTime = new() };
+
+    private bool DelayMessage { get; set; } = false;
+    private bool DepartureTimeEnabled { get; set; }
+    private int DepartureTime { get; set; } = 0;
+
+    private List<SelectListItem> Departments { get; set; } = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        var httpContext = HttpContextAccessor.HttpContext;
+        if (httpContext != null)
+            CurrentUserData = httpContext.Session.GetObject<LogInResponse>("CurrentUser");
+
+        if (CurrentUserData == null)
+        {
+            NavigationManager.NavigateTo("/login", true);
+            return;
+        }
+
+        await OnGetAsync();
+    }
+    private async Task OnGetAsync()
+    {
+        List<Department> _departments = await _departmentService.GetAllDepartments();
+        foreach (var _department in _departments)
+        {
+            if (_department != null)
+                Departments.Add(new SelectListItem
+                {
+                    Value = _department.Id.ToString(),
+                    Text = $"{_department.Name}"
+                });
+        }
+    }
+
+    public async Task<IActionResult?> OnPostAsync()
+    {
+        Group.Deactivated = false;
+        return null;
+    }
 }

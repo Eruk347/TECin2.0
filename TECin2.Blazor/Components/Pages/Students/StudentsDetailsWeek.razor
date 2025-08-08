@@ -21,8 +21,8 @@
     </tr>
 
     @foreach (var item in week.CheckIns)
-    {
-        <tr style="background:@TableColor.Color(item,CurrentUserData,item.ArrivalDate,Group)">
+    {        
+        <tr style="background-color:@TableColor.Color(item,CurrentUserData,item.ArrivalDate,Group)">
             <td>
                 @item.ArrivalDate
             </td>

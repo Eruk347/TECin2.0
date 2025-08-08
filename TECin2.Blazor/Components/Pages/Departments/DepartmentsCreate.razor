@@ -5,8 +5,10 @@
 @using TECin2.Blazor.Services
 @using TECin2.Blazor.Models.DTOs
 @inject NavigationManager NavigationManager
+@inject IHttpContextAccessor HttpContextAccessor
 
-<h3>DepartmentCreate</h3>
+<h3>Opret afdeling</h3>
+
 <div class="row">
     <div class="col-md-4">
         <EditForm Model="@Department" method="post" OnValidSubmit="OnPostAsync" Id="instructorForm" FormName="Create">
@@ -40,6 +42,7 @@
 @code {
     private readonly IDepartmentService _departmentService;
     private readonly IInstructorService _instructorService;
+    private LogInResponse? CurrentUserData { get; set; }
 
     [SupplyParameterFromForm]
     private DepartmentRequest Department { get; set; } = new DepartmentRequest { Name = "" };
@@ -55,6 +58,16 @@
 
     protected override async Task OnInitializedAsync()
     {
+        var httpContext = HttpContextAccessor.HttpContext;
+        if (httpContext != null)
+            CurrentUserData = httpContext.Session.GetObject<LogInResponse>("CurrentUser");
+
+        if (CurrentUserData == null)
+        {
+            NavigationManager.NavigateTo("/login", true);
+            return;
+        }
+
         await OnGetAsync();
     }
 
@@ -78,10 +91,11 @@
     {
         //school selection
         Department.Deactivated = false;
+        Department.SchoolId = 1;
         var result = await _departmentService.CreateDepartment(Department);
         if (result != null)
         {
-            NavigationManager.NavigateTo("/departments", true);
+            NavigationManager.NavigateTo("/departments/index", true);
             return new OkResult();
         }
         return null;

@@ -163,7 +163,8 @@ namespace TECin2.API.Services
                         Id = group.Department.Id,
                         Name = group.Department.Name,
                         Deactivated = group.Department.Deactivated
-                    }
+                    },
+                    Students = group.Users!.Select(u=> MapUserToGroupUserResponse(u)).ToList() ?? []
                 };
             }
             catch (Exception e)
@@ -172,5 +173,31 @@ namespace TECin2.API.Services
                 return null;
             }
         }
+
+        private GroupUsersResponse? MapUserToGroupUserResponse(User user)
+        {
+            try
+            {
+                if (user == null)
+                    return null;
+
+                return new GroupUsersResponse
+                {
+                    Id = user.Id,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Deactivated = user.Deactivated,
+                    Email = user.Email,
+                    Phonenumber = user.Phonenumber,
+                    LastCheckin = user.LastCheckin,
+                };
+            }
+            catch (Exception e)
+            {
+                WriteToLog("MapGroupToGroupResponse", e);
+                return null;
+            }
+        }
+
     }
 }

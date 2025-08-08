@@ -18,7 +18,7 @@ else
 
         <div class="row">
             <div class="col">
-                <a href="/student/edit/@StudentId">Rediger</a>
+                <a href="/students/edit/@StudentId">Rediger</a>
             </div>
             <div class="col">
                 <div class="row">
@@ -50,7 +50,7 @@ else
         <div>
             @foreach (var item in Weeks)
             {
-                <@StudentDetailsWeek week="item" CurrentUserData="CurrentUserData" Group="student.Group" />
+                <StudentsDetailsWeek week="item" CurrentUserData="CurrentUserData" Group="student.Group" />
             }
         </div>
     </div>
@@ -78,35 +78,14 @@ else
             return;
         }
 
-        int thisWeek = CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-
-        for (int i = thisWeek; i >= thisWeek - 4; i--)
-        {
-            Weeks.Add(new Week(i));
-        }
+        
 
         await LoadDataAsync(StudentId);
 
 
 
 
-        for (int i = 0; i < 30; i++)
-        {
-            DateOnly date = DateOnly.FromDateTime(DateTime.Now.AddDays(-i));
-            if (date.DayOfWeek != DayOfWeek.Saturday && date.DayOfWeek != DayOfWeek.Sunday)
-            {
-                thisWeek = CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(date.ToDateTime(new TimeOnly()), CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-                Weeks.FirstOrDefault(w => w.WeekNumber == thisWeek)?.CheckIns.Add(new CheckInStatus
-                    {
-                        User_Id = student.Id,
-                        ArrivalDate = date,
-                        ArrivalTime = student.CheckInStatuses
-                                                        .FirstOrDefault(c => c.ArrivalDate == date)?.ArrivalTime ?? new TimeOnly(0, 0),
-                        Departure = student.CheckInStatuses
-                                                        .FirstOrDefault(c => c.ArrivalDate == date)?.Departure ?? null
-                    });
-            }
-        }
+        
 
     }
 
@@ -116,10 +95,34 @@ else
 
         try
         {
+            int thisWeek = CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+
+            for (int i = thisWeek; i >= thisWeek - 4; i--)
+            {
+                Weeks.Add(new Week(i));
+            }
             var _student = await studentService.GetStudentById(_studentId);
 
             if (_student != null)
                 student = _student;
+
+            for (int i = 0; i < 30; i++)
+            {
+                DateOnly date = DateOnly.FromDateTime(DateTime.Now.AddDays(-i));
+                if (date.DayOfWeek != DayOfWeek.Saturday && date.DayOfWeek != DayOfWeek.Sunday)
+                {
+                    thisWeek = CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(date.ToDateTime(new TimeOnly()), CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+                    Weeks.FirstOrDefault(w => w.WeekNumber == thisWeek)?.CheckIns.Add(new CheckInStatus
+                    {
+                        User_Id = student.Id,
+                        ArrivalDate = date,
+                        ArrivalTime = student.CheckInStatuses
+                                                            .FirstOrDefault(c => c.ArrivalDate == date)?.ArrivalTime ?? new TimeOnly(0, 0),
+                        Departure = student.CheckInStatuses
+                                                            .FirstOrDefault(c => c.ArrivalDate == date)?.Departure ?? null
+                    });
+                }
+            }
         }
         catch (Exception)
         {

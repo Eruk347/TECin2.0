@@ -169,7 +169,8 @@ namespace TECin2.API.Services
                 if (updatedUser != null && originalUser != null)
                 {
                     await _loggerService.WriteLog(accesstoken, originalUser, updatedUser);
-                    return MapUserToStudentResponse(updatedUser);
+                    List<CheckInStatus> checkInStatuses = await _checkInrepository.SelectCheckInForUser(studentId);
+                    return MapUserToStudentResponse(updatedUser, checkInStatuses);
                 }
             }
             return null;

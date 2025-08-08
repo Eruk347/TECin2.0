@@ -55,6 +55,11 @@ namespace TECin2.API.Services
         {
             List<Department> departments = await _departmentRepository.SelectAllDepartments();
 
+            foreach (Department _department in departments)
+            {
+                _department.Groups = [.. _department.Groups!.OrderBy(x => x.Name)];
+            }
+
             return departments.Select(department => MapDepartmentToDepartmentResponse(department)).ToList() ?? [];
         }
 

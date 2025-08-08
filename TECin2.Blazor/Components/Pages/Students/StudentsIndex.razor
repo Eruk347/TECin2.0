@@ -1,9 +1,81 @@
 ﻿@page "/students/index"
-<h3>Students</h3>
-
-
+@rendermode InteractiveServer
+@using System.Globalization
+@using TECin2.Blazor.Models
+@using TECin2.Blazor.Models.DTOs
+@using TECin2.Blazor.Services
+@inject IHttpContextAccessor HttpContextAccessor
+@inject NavigationManager NavigationManager
+@inject IStudentService _studentService
+@inject IGroupService _groupService
+<div style="height:90px">
+    <h3>Lærlinge</h3>
+    <div>
+        @if (IsLoading)
+        {
+            <p>Indlæser data...</p>
+        }
+        else
+        {
+            <a href="/students/create">Opret lærling</a>            
+            @foreach (var group in Groups)
+            {
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h5>@group.Name</h5>
+                    </div>
+                    <div class="card-body">
+                        <StudentsInGroup CurrentUserData="@CurrentUserData" Group="@group" />
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
 
 
 @code {
+    private bool IsLoading = true;
+    private LogInResponse? CurrentUserData { get; set; }
+    private List<Group> Groups { get; set; } = [];
 
+    protected override async Task OnInitializedAsync()
+    {
+        var httpContext = HttpContextAccessor.HttpContext;
+        if (httpContext != null)
+            CurrentUserData = httpContext.Session.GetObject<LogInResponse>("CurrentUser");
+
+        if (CurrentUserData == null)
+        {
+            NavigationManager.NavigateTo("/login", true);
+            return;
+        }
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        IsLoading = true;
+
+        try
+        {
+            foreach (var group in CurrentUserData!.Groups)
+            {
+                var _group = await _groupService.GetGroupById(group.Id);
+                if (_group != null)
+                {
+                    Groups.Add(_group);
+                }
+            }
+            Groups = Groups.OrderBy(g => g.Name).ToList();
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
 }

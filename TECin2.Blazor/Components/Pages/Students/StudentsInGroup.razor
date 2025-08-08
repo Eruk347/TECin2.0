@@ -1,0 +1,57 @@
+﻿@using TECin2.Blazor.Models
+@using TECin2.Blazor.Models.DTOs
+@inject NavigationManager NavigationManager
+
+<div class="row">
+    <div >
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Fornavn</th>
+                    <th>Efternavn</th>
+                    <th>Tlf</th>
+                    <th>Email</th>
+                    <th>Sidste checkin</th>
+                    <th>I alt: @TotalStudents</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Group.Students!)
+                {
+                    <tr>
+                        <td>                            
+                            <a href="/students/details/@item.Id">@item.FirstName</a> 
+                        </td>
+                        <td>@item.LastName</td>
+                        <td>@item.Phonenumber</td>
+                        <td>@item.Email</td>
+                        <td>@item.LastCheckIn</td>
+                        <td>
+                            <a href="/students/edit/@item.Id">Rediger</a> |
+                            <a href="/students/delete/@item.Id">Slet</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+@code {
+    [Parameter]
+    public LogInResponse CurrentUserData { get; set; } = null!;
+
+    [Parameter]
+    public required Group Group { get; set; }
+
+    public int TotalStudents { get; set; } = 0;
+
+    protected override void OnInitialized()
+    {
+        for (int i = 0; i < Group.Students!.Count; i++)
+            TotalStudents++;
+    }
+
+    
+}

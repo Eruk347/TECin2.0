@@ -1,5 +1,141 @@
-﻿<h3>StudentsDelete</h3>
+﻿@page "/students/delete/{Id}"
+@using Microsoft.AspNetCore.Mvc
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using TECin2.Blazor.Models
+@using TECin2.Blazor.Services
+@using TECin2.Blazor.Models.DTOs
+@rendermode InteractiveServer
+@inject NavigationManager NavigationManager
+@inject IHttpContextAccessor HttpContextAccessor
+@inject IStudentService _studentService
 
+<h3>Slet lærling: </h3>
+<h3>@Student.FirstName @Student.LastName</h3>
+<div class="row">
+    @if (IsLoading)
+    {
+        <p>Indlæser data...</p>
+    }
+    else
+    {
+        <div class="col-md-4">
+            <table>
+                <thead>
+                    <tr>
+                        <th width="200" />
+                        <th width="200" />
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            Telefonnummer:
+                        </td>
+                        <td>
+                            @Student.Phonenumber
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Email:
+                        </td>
+                        <td>
+                            @Student.Email
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Gruppe:
+                        </td>
+                        <td>
+                            @Student.Group.Name
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <p></p>
+            <button class="btn btn-danger" @onclick="DeleteInstructor">Slet</button>
+            <button class="btn btn-secondary" @onclick="GoToIndex">Annuler</button>
+
+        </div>
+    }
+</div>
 @code {
+    private LogInResponse? CurrentUserData { get; set; }
+    private bool IsLoading = true;
 
+    [Parameter]
+    public required string Id { get; set; }
+    private Student Student { get; set; } = new Student { Id = "", FirstName = "", LastName = "", Username = "" };
+
+    protected override async Task OnInitializedAsync()
+    {
+        var httpContext = HttpContextAccessor.HttpContext;
+        if (httpContext != null)
+            CurrentUserData = httpContext.Session.GetObject<LogInResponse>("CurrentUser");
+
+        if (CurrentUserData == null)
+        {
+            NavigationManager.NavigateTo("/login", true);
+            return;
+        }
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        IsLoading = true;
+        try
+        {
+            var student = await _studentService.GetStudentById(Id);
+            if (student == null)
+            {
+                NavigationManager.NavigateTo("/students/index", true);
+                return;
+            }
+            Student = student;
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+    private async Task OnPostAsync(string id)
+    {
+        var student = await _studentService.DeleteStudent(id);
+
+        if (student == null)
+        {
+
+        }
+        else if (student != null)
+        {
+            NavigationManager.NavigateTo("/students/index", true);
+            return;
+        }
+    }
+
+    private void GoToIndex()
+    {
+        NavigationManager.NavigateTo("/students/index", true);
+    }
+
+    private async Task DeleteInstructor()
+    {
+        var instruktor = await _studentService.DeleteStudent(Student.Id);
+
+        if (instruktor == null)
+        {
+
+        }
+        else if (instruktor != null)
+        {
+            NavigationManager.NavigateTo("/students/index", true);
+
+        }
+    }
 }

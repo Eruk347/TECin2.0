@@ -1,6 +1,15 @@
 ﻿@page "/groups/index"
-<h3>GroupsIndex</h3>
+@using TECin2.Blazor.Models
+@using TECin2.Blazor.Models.DTOs
+@using TECin2.Blazor.Services
+@inject NavigationManager NavigationManager
 
 @code {
 
+    protected override  void OnInitialized()
+    {
+                
+            NavigationManager.NavigateTo("/departments/index", true);
+        
+    }
 }

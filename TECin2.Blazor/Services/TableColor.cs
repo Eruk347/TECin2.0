@@ -54,10 +54,10 @@ namespace TECin2.Blazor.Services
             }
 
             if (group == null)
-                return red;
+                return "#FFFFFF";
 
             if (group.WorkHoursInDay == null)
-                return red;
+                return "#FFFFFF";
 
             //group flex
             if (group.FlexibleArrivalEnabled)

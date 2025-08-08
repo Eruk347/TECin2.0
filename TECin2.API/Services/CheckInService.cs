@@ -35,6 +35,7 @@ namespace TECin2.API.Services
                     WriteToLog("CheckIn", new Exception("CPR findes, men ingen bruger tilknyttet."));
                     return new CheckInResponse { FirstName = "", Message = "Lærling findes ikke", Color = FindColor(Global.CheckInStatus.Error) };
                 }
+                user.LastCheckin = DateOnly.FromDateTime(checkInRequest.CheckinTime);
 
                 TimeOnly checkinTimeFromRequest = TimeOnly.FromDateTime(checkInRequest.CheckinTime);
                 CheckInStatus? firstCheckIn = await _checkInRepository.SelectCheckInForUserOnDate(securityNumb.Id, DateOnly.FromDateTime(DateTime.Now));
@@ -42,6 +43,7 @@ namespace TECin2.API.Services
                 {
                     CheckInStatus newCheckInStatus = MapCheckInRequestToCheckInStatus(checkInRequest, user.Id);
                     CheckInStatus? insertedCheckInStatus = await _checkInRepository.InsertCheckInStatus(newCheckInStatus);
+                    await _userRepository.UpdateUser(securityNumb.Id, user);
                     if (insertedCheckInStatus == null)
                     {
                         WriteToLog("CheckIn", new Exception("Der skete en fejl ved indsættelse af checkin"));
