@@ -25,7 +25,7 @@
         </div>
     </div>
 </div>
-<table class="table">
+<table class="bg-transparent table2 table-hover ">
     <thead>
         <tr>
             <th>Fornavn</th>
@@ -39,9 +39,13 @@
     <tbody>
         @foreach (var item in CheckIns)
         {
-            <tr style="background-color:@TableColor.Color(item, CurrentUserData, Date)">
+            <tr style="background:@TableColor.Color(item, CurrentUserData, Date)">
                 <td>
-                    <button class="btn-link2" @onclick="() => GoToStudent(item.UserId)" style="background:@TableColor.Color(item, CurrentUserData, Date)">@item.FirstName</button>
+                    <button class="btn "
+                            @onclick="() => GoToStudent(item.UserId)"
+                            style="--bs-btn-padding-y: .1rem; --bs-btn-padding-x: .1rem; ">
+                        @item.FirstName
+                    </button>
                 </td>
                 <td>@item.LastName</td>
                 <td>@item.Phonenumber</td>

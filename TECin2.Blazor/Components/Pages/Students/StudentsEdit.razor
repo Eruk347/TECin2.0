@@ -8,6 +8,7 @@
 @inject IHttpContextAccessor HttpContextAccessor
 @inject NavigationManager NavigationManager
 @inject IStudentService _studentService
+@inject IDepartmentService _departmentService
 
 @if (IsLoading)
 {
@@ -16,36 +17,66 @@
 else
 {
     <h3>Redigering af @Student.FirstName @Student.LastName</h3>
-    <div class="row">
-        <div class="col-md-4">
-            <EditForm Model="@Student" OnValidSubmit="UpdateStudent" FormName="EditStudent">
-                <DataAnnotationsValidator />
-                <ValidationSummary />
-                <label for="FirstName">Fornavn</label>
-                <input type="text" class="form-control" id="FirstName" @bind="Student.FirstName" />
-                <label for="LastName">Efternavn</label>
-                <input type="text" class="form-control" id="LastName" @bind="Student.LastName" />
-                <label for="Phonenumber">Telefonnummer</label>
-                <input type="text" class="form-control" id="Phonenumber" @bind="Student.Phonenumber" />
-                <label for="Email">Email</label>
-                <input type="text" class="form-control" @bind="Student.Email" />
-                <label for="Group">Gruppe</label>
-                <InputSelect class="form-select" id="Group" @bind-Value="Student.GroupId">
-                    @foreach (var group in CurrentUserData!.Groups)
-                    {
-                        <option value="@group.Id">@group.Name</option>
-                    }
-                </InputSelect>
-                <br />
-                <br />
-                <label for="Deactivate">Deaktiver indtil lærling tjekker ind igen?</label>
-                <input type="checkbox" id="Deactivate" @bind="Student.Deactivated" />
-                <br />
-                <br />
-                <button class="btn btn-primary" type="submit">Udfør</button>
-                <button class="btn btn-secondary" @onclick="GoToIndex">Annuller</button>
-            </EditForm>
-        </div>
+
+    <div>
+        <EditForm Model="@Student" OnValidSubmit="UpdateStudent" FormName="EditStudent">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <div class="row">
+                <div class="col-md-4">
+                    <label for="FirstName">Fornavn</label>
+                    <input type="text" class="form-control" id="FirstName" @bind="Student.FirstName" />
+                    <label for="LastName">Efternavn</label>
+                    <input type="text" class="form-control" id="LastName" @bind="Student.LastName" />
+                    <label for="Phonenumber">Telefonnummer</label>
+                    <input type="text" class="form-control" id="Phonenumber" @bind="Student.Phonenumber" />
+                    <label for="Email">Email</label>
+                    <input type="text" class="form-control" @bind="Student.Email" />
+                    <br />
+                    <label for="Deactivate">Deaktiver indtil lærling tjekker ind igen?</label>
+                    <input type="checkbox" id="Deactivate" @bind="Student.Deactivated" />
+                </div>
+                <div class="col-md-4">
+                    <label for="Group" class="h5">Gruppe</label>
+                    <div class="form-group">
+                        <InputRadioGroup @bind-Value="Student.GroupId" class="form-check-input">
+                            @foreach (var department in Departments)
+                            {
+                                <h6> Afdeling: @department.Name</h6>
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Tilmeld</th>
+                                            <th>Gruppenavn</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (department.Groups != null)
+                                        {
+                                            @foreach (var group in department.Groups)
+                                            {
+                                                if (group != null)
+                                                {
+                                                    <tr>
+                                                        <td><InputRadio Value="@group.Id" id="@group.Id" /></td>
+                                                        <td>@group.Name</td>
+
+                                                    </tr>
+                                                }
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            }
+                        </InputRadioGroup>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="btn btn-primary" type="submit">Udfør</button>
+            <button class="btn btn-secondary" @onclick="GoToIndex">Annuller</button>
+        </EditForm>
+
     </div>
 }
 
@@ -58,6 +89,7 @@ else
 
     private bool IsLoading = true;
     private LogInResponse? CurrentUserData { get; set; }
+    private List<Department> Departments = [];
 
     protected override async Task OnInitializedAsync()
     {
@@ -95,6 +127,43 @@ else
                     GroupId = _student.Group.Id
 
                 };
+            }
+            List<Department> _departments = await _departmentService.GetAllDepartments() ?? new();
+            if (CurrentUserData!.RoleRank < 2)
+            {
+                Departments = _departments;
+            }
+            else if (CurrentUserData.RoleRank == 2)
+            {
+                foreach (var department in _departments)
+                {
+                    if (department.DepartmentHead == CurrentUserData.Id)
+                    {
+                        Departments.Add(department);
+                    }
+                }
+            }
+            else
+            {
+                foreach (var _group in CurrentUserData.Groups)
+                {
+                    foreach (var _department in _departments)
+                    {
+                        if (_department.Groups != null)
+                        {
+                            foreach (var group in _department.Groups)
+                            {
+                                if (group != null && group.Id == _group.Id)
+                                {
+                                    if (!Departments.Contains(_department))
+                                    {
+                                        Departments.Add(_department);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
         catch (Exception)

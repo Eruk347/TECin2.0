@@ -4,6 +4,7 @@
 @using TECin2.Blazor.Models
 @using TECin2.Blazor.Services
 @using TECin2.Blazor.Models.DTOs
+@rendermode InteractiveServer
 @inject NavigationManager NavigationManager
 @inject IHttpContextAccessor HttpContextAccessor
 @inject IGroupService _groupService
@@ -14,14 +15,18 @@
 <div class="row">
     <div class="col-md-5">
         <EditForm Model="@Group" method="post" OnValidSubmit="OnPostAsync" id="groupForm" FormName="Create">
+
+
             <div class="form-group">
                 <label>Navn*</label>
                 <InputText @bind-Value="Group.Name" class="form-control" />
             </div>
             <br />
-            <div class="form-group col-md-3">
+
+
+            <div class="form-group col-md-4">
                 <label class="control-label">Afdeling</label>
-                <InputSelect id="departmentId" class="form-select " @bind-Value="Group.DepartmentId">
+                <InputSelect id="departmentId" class="form-select" @bind-Value="Group.DepartmentId">
                     @foreach (var _department in Departments)
                     {
                         <option value="@_department.Value">@_department.Text</option>
@@ -29,60 +34,123 @@
                 </InputSelect>
                 <span asp-validation-for="instructor.RoleId" class="text-danger"></span>
             </div><br />
+
+
             <div class="form-group col-md-3">
-                <label>Ankomsttidspunkt*</label>
-                <TimeInput @bind-Value="Group.ArrivalTime" class="form-control" />
+                <label>Mødetid*</label>
+                <InputDate Type="InputDateType.Time" @bind-Value="Group.ArrivalTime" class="form-control" />
             </div>
             <br />
+
+
             <div>
-                Besked ved forsinkelse?
-                <InputCheckbox @bind-Value="DelayMessage" class="form-check-input" />
-                <div id="LateMessage">
-                    <div>
-                        <label>Hvis lærlingene checker in senere end mødetid+buffertid, vil de blive mødt af en besked om at de skal finde deres instruktør.</label>
-                        <label>Eks. hvis mødetiden er 7.30 og buffertiden er 15 minutter, vil alle lærlinge, der møder senere end 7.45, blive mødt med beskeden som defineres nedenfor.</label>
-                        <label>Systemet registrerer ankomsttidpunktet, som normalt.</label>
-                    </div>
-                    <div class="col-md-3">
-                        <TimeInput @bind-Value="Group.IsLatebuffer" class="form-control" />
-                    </div>
-                    <br />
-                    <div class="col-md-5">
-                        <label> Besked til lærlingene: </label>
-                        <InputText @bind-Value="Group.IsLateMessage" class="form-control" />
-                        <label>(standard er "Indtjek er lukket. Kontakt instruktør.")</label>
-                    </div>
-                </div>
-            </div>
-            <br />
-            <div>
-                <label class="form-check-label" for="departureTimeEnabled">aktiver afgangstider</label>
-                <InputCheckbox @bind-Value="DepartureTimeEnabled" class="form-check-input" />
-                <div>DepartureTimeEnabled: @DepartureTimeEnabled</div>
-                @if (DepartureTimeEnabled)
+                <label class="h5">Besked ved forsinkelse?</label>
+                <InputCheckbox @bind-Value="Group.IsLateMessageEnabled" class="form-check-input" />
+                @if (Group.IsLateMessageEnabled)
                 {
-                    <div id="Departure">
-                        <label>Sæt fyraften for fredag eftermiddag.</label>
-                        <div class="form-check">
-                            <InputRadioGroup @bind-Value="DepartureTime">
-                                <div>
-                                    <InputRadio Value="0" />
-                                    <label>Fredag til kl. 12:00</label>
-                                </div>
-                                <div>
-                                    <InputRadio Value="1" />
-                                    <label>Fredag til kl. 14:30</label>
-                                </div>
-                                <div>
-                                    <InputRadio Value="2" />
-                                    <label>Redigere alle dage</label>
-                                </div>
-                            </InputRadioGroup>
+                    <div id="LateMessage">
+                        <div>
+                            <label>Hvis lærlingene checker in senere end mødetid+buffertid, vil de blive mødt af en besked om at de skal finde deres instruktør.</label>
+                            <label>Eks. hvis mødetiden er 7.30 og buffertiden er 15 minutter, vil alle lærlinge, der møder senere end 7.45, blive mødt med beskeden som defineres nedenfor.</label>
+                            <label>Systemet registrerer ankomsttidpunktet, som normalt.</label>
+                        </div>
+                        <div class="col-md-3">
+                            <p></p>
+                            <label>Buffertid:</label>
+                            <InputDate Type="InputDateType.Time" @bind-Value="Group.IsLateBuffer" class="form-control" />
+                        </div>
+                        <br />
+                        <div>
+                            <label> Besked til lærlingene: </label>
+                            <InputText @bind-Value="Group.IsLateMessage" class="form-control" />
+                            <label>(Standard er "Indtjek er lukket. Kontakt instruktør.")</label>
                         </div>
                     </div>
                 }
             </div>
+            <br />
+
+
+            <div>
+                <label class="form-check-label h5" for="Group.CheckoutRequired">Skal lærlinge tjekke ud?</label>
+                <InputCheckbox @bind-Value="Group.CheckoutRequired" class="form-check-input" />
+                @if (Group.CheckoutRequired)
+                {
+                    <div id="Departure">
+                        <label>Sæt fyraften for fredag eftermiddag.</label>
+                        <i>Alle andre dage er til kl 15.00</i>
+                        <div class="form-check">
+                            <InputRadioGroup @bind-Value="DepartureTime">
+                                <div>
+                                    <InputRadio Value="0" id="12" />
+                                    <label for="12">Fredag til kl. 12:00</label>
+                                </div>
+                                <div>
+                                    <InputRadio Value="1" id="14" />
+                                    <label for="14">Fredag til kl. 14:30</label>
+                                </div>
+                                <div>
+                                    <InputRadio Value="2" id="selective" />
+                                    <label for="selective">Mødetid er fleksibel</label>
+                                </div>
+                            </InputRadioGroup>
+                        </div>
+                        @if (DepartureTime == 2)
+                        {
+                            <div class="form-group">
+                                <label>Hvis dette er slået til, vil checkud blive ændret: Hvis en lærling ikke har været på arbejde i lang nok tid, vil de blive mødt med en besked der fortælle dem, at de er ved at gå for tidligt.</label>
+                                <label>Vælg timer og minutter for hvor længe lærlingene kan flexe.</label>
+                                <div class="form-group col-md-time">
+                                    <InputDate Type="InputDateType.Time" @bind-value="FlexTimes" class="form-control" />
+                                </div>
+                                <br />
+                                <label>Vælg hvor lang tid lærlingene skal være på arbejde hver dag:</label>
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col col-md-time" style="width: 105px">
+                                            <label class="col-md-time">Mandag: </label>
+                                        </div>
+                                        <div class="col col-md-time" style="width: 105px">
+                                            <label class="col-md-time">Tirsdag: </label>
+                                        </div>
+                                        <div class="col col-md-time" style="width: 105px">
+                                            <label class="col-md-time">Onsdag: </label>
+                                        </div>
+                                        <div class="col col-md-time" style="width: 105px">
+                                            <label class="col-md-time">Torsdag: </label>
+                                        </div>
+                                        <div class="col col-md-time" style="width: 105px">
+                                            <label class="col-md-time">Fredag: </label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col col-md-time" style="width: 105px">
+                                            <InputDate Type="InputDateType.Time" @bind-value="_monday" class="col-md-time" />
+                                        </div>
+                                        <div class="col col-md-time" style="width: 105px">
+                                            <InputDate Type="InputDateType.Time" @bind-value="_tuesday" id="tuesday" class="col-md-time" />
+                                        </div>
+                                        <div class="col col-md-time" style="width: 105px">
+                                            <InputDate Type="InputDateType.Time" @bind-value="_wednesday" id="wednesday" class="col-md-time" />
+                                        </div>
+                                        <div class="col col-md-time" style="width: 105px">
+                                            <InputDate Type="InputDateType.Time" @bind-value="_thursday" id="thursday" class="col-md-time" />
+                                        </div>
+                                        <div class="col col-md-time" style="width: 105px">
+                                            <InputDate Type="InputDateType.Time" @bind-value="_friday" id="friday" class="col-md-time" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+            <p></p>
+            <input type="submit" value="Udfør" class="btn btn-primary" />
+
         </EditForm>
+        <button class="btn btn-secondary" @onclick="GoToIndex">Tilbage til listen</button>
     </div>
 </div>
 
@@ -93,23 +161,32 @@
     [SupplyParameterFromForm]
     private GroupRequest Group { get; set; } = new GroupRequest { Name = "", ArrivalTime = new() };
 
-    private bool DelayMessage { get; set; } = false;
-    private bool DepartureTimeEnabled { get; set; }
+    //private bool IsLateMessage { get; set; } = false;
+    //    private bool DepartureTimeEnabled { get; set; }
     private int DepartureTime { get; set; } = 0;
+    private TimeOnly FlexTimes { get; set; } = new();
+    private WorkHoursInDay WorkHoursInDay { get; set; } = new() { Monday = new(0, 0, 0), Tuesday = new(0, 0, 0), Wednesday = new(0, 0, 0), Thursday = new(0, 0, 0), Friday = new(0, 0, 0) };
+
+    private TimeOnly _monday = new(0, 0, 0);
+    private TimeOnly _tuesday = new(0, 0, 0);
+    private TimeOnly _wednesday = new(0, 0, 0);
+    private TimeOnly _thursday = new(0, 0, 0);
+    private TimeOnly _friday = new(0, 0, 0);
+
 
     private List<SelectListItem> Departments { get; set; } = [];
 
     protected override async Task OnInitializedAsync()
     {
-        var httpContext = HttpContextAccessor.HttpContext;
-        if (httpContext != null)
-            CurrentUserData = httpContext.Session.GetObject<LogInResponse>("CurrentUser");
+        // var httpContext = HttpContextAccessor.HttpContext;
+        // if (httpContext != null)
+        //     CurrentUserData = httpContext.Session.GetObject<LogInResponse>("CurrentUser");
 
-        if (CurrentUserData == null)
-        {
-            NavigationManager.NavigateTo("/login", true);
-            return;
-        }
+        // if (CurrentUserData == null)
+        // {
+        //     NavigationManager.NavigateTo("/login", true);
+        //     return;
+        // }
 
         await OnGetAsync();
     }
@@ -125,11 +202,71 @@
                     Text = $"{_department.Name}"
                 });
         }
+        Group.DepartmentId = _departments[0].Id;
     }
 
     public async Task<IActionResult?> OnPostAsync()
     {
+        if (Group.CheckoutRequired == true)
+            if (DepartureTime == 0)//Fredag til kl. 12:00
+            {
+                WorkHoursInDay.Monday = new TimeSpan(8, 0, 0);
+                WorkHoursInDay.Tuesday = new TimeSpan(8, 0, 0);
+                WorkHoursInDay.Wednesday = new TimeSpan(8, 0, 0);
+                WorkHoursInDay.Thursday = new TimeSpan(8, 0, 0);
+                WorkHoursInDay.Friday = new TimeSpan(5, 0, 0);
+                Group.WorkHoursInDay = WorkHoursInDay;
+                Group.FlexibleArrivalEnabled = false;
+
+            }
+            else if (DepartureTime == 1)//fredag til kl. 14.30
+            {
+                WorkHoursInDay.Monday = new TimeSpan(7, 30, 0);
+                WorkHoursInDay.Tuesday = new TimeSpan(7, 30, 0);
+                WorkHoursInDay.Wednesday = new TimeSpan(7, 30, 0);
+                WorkHoursInDay.Thursday = new TimeSpan(7, 30, 0);
+                WorkHoursInDay.Friday = new TimeSpan(7, 0, 0);
+                Group.WorkHoursInDay = WorkHoursInDay;
+                Group.FlexibleArrivalEnabled = false;
+            }
+            else if (DepartureTime == 2)//Mødetid er fleksibel
+            {
+                WorkHoursInDay.Monday = _monday.ToTimeSpan();
+                WorkHoursInDay.Tuesday = _tuesday.ToTimeSpan();
+                WorkHoursInDay.Wednesday = _wednesday.ToTimeSpan();
+                WorkHoursInDay.Thursday = _thursday.ToTimeSpan();
+                WorkHoursInDay.Friday = _friday.ToTimeSpan();
+                Group.WorkHoursInDay = WorkHoursInDay;
+                Group.FlexibleArrivalEnabled = true;
+                Group.FlexibleAmount = FlexTimes;
+            }
+
+        if (Group.IsLateMessageEnabled)
+        {
+            Group.IsLateMessage ??= "Indtjek er lukket. Kontakt instruktør.";
+        }
+        else
+        {
+            Group.IsLateBuffer = null;
+            Group.IsLateMessage = null;
+        }
+
+
+
         Group.Deactivated = false;
+
+        var result = await _groupService.CreateGroup(Group);
+        if (result != null)
+        {
+            NavigationManager.NavigateTo($"/groups/details/{result.Id}", true);
+            return new RedirectToActionResult("Details", "Groups", new { id = result.Id });
+        }
+
         return null;
+    }
+
+    private void GoToIndex()
+    {
+        NavigationManager.NavigateTo("/departments/index", true);
     }
 }

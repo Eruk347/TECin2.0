@@ -72,7 +72,7 @@ namespace TECin2.API.Repositories
                 return await _context.Group
                     .Include(g => g.Department)
                     .Include(g => g.WorkHoursInDay)
-                    .FirstOrDefaultAsync(group => group.Id == group.Id);
+                    .FirstOrDefaultAsync(_group => _group.Id == group.Id);
             }
             catch (Exception e)
             {
@@ -110,8 +110,10 @@ namespace TECin2.API.Repositories
                     updatedGroup.Name = group.Name;
                     updatedGroup.DepartmentId = group.DepartmentId;
                     updatedGroup.ArrivalTime = group.ArrivalTime;
+                    updatedGroup.IsLateMessagingEnabled = group.IsLateMessagingEnabled;
                     updatedGroup.IsLateBuffer = group.IsLateBuffer;
                     updatedGroup.IsLateMessage = group.IsLateMessage;
+                    updatedGroup.CheckoutRequired = group.CheckoutRequired;
                     updatedGroup.WorkHoursInDay = group.WorkHoursInDay;
                     updatedGroup.Deactivated = group.Deactivated;
                     updatedGroup.FlexibleArrivalEnabled = group.FlexibleArrivalEnabled;

@@ -10,11 +10,14 @@ namespace TECin2.API.DTOs
         public required TimeOnly ArrivalTime { get; set; }
         public bool FlexibleArrivalEnabled { get; set; }
         public TimeSpan? FlexibleAmount { get; set; }
+        public bool IsLateMessageEnabled { get; set; }
         public TimeOnly? IsLateBuffer { get; set; }
         public string? IsLateMessage { get; set; }
+        public bool CheckoutRequired { get; set; }
         public WorkHoursInDay? WorkHoursInDay { get; set; }
         public required GroupDepartmentResponse Department { get; set; }
         public List<GroupUsersResponse?> Students { get; set; } = [];
+        public List<GroupUsersResponse?> Instructors { get; set; } = [];
     }
 
     public class GroupDepartmentResponse

@@ -8,65 +8,91 @@
 @inject IHttpContextAccessor HttpContextAccessor
 @inject NavigationManager NavigationManager
 @inject IStudentService _studentService
+@inject IGroupService _groupService
+@inject IDepartmentService _departmentService
 
 <h2>Opret Lærling</h2>
 <h4>Alle felter markeret med '*' er påkrævet</h4>
-<div class="row">
-    <div class="col-md-4">
-        <EditForm Model="@Student" method="post" OnValidSubmit="OnPostAsync" Id="instructorForm" FormName="Create">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
+<div>
+    <EditForm Model="@Student" method="post" OnValidSubmit="OnPostAsync" Id="instructorForm" FormName="Create">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label @bind="Student.FirstName" class="control-label">Fornavn *</label>
+                    <InputText @bind-value="Student.FirstName" class="form-control" />
+                    <span asp-validation-for="Student.FirstName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label @bind="Student.LastName" class="control-label">Efternavn *</label>
+                    <InputText @bind-value="Student.LastName" class="form-control" />
+                    <span asp-validation-for="Student.LastName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label @bind="Student.Phonenumber" class="control-label">Telefonnummer</label>
+                    <InputNumber @bind-value="Student.Phonenumber" class="form-control" />
+                    <span asp-validation-for="Student.Phonenumber" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label @bind="Student.Email" class="control-label">Email</label>
+                    <InputText @bind-value="Student.Email" class="form-control" />
+                    <span asp-validation-for="Student.Email" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Password" class="control-label">CPR-nummer *</label>
+                    <InputText @bind-value="CPR" class="form-control" type="password" />
+                    <span asp-validation-for="CPR" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ConfirmPassword" class="control-label">Gentag CPR-nummer *</label>
+                    <InputText @bind-value="ConfirmCPR" class="form-control" type="password" />
+                    <span asp-validation-for="ConfirmCPR" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label class="control-label h5">Gruppe *</label>
+                    <div class="form-group">
+                        <InputRadioGroup @bind-Value="Student.GroupId" class="form-check-input">
+                            @foreach (var department in Departments)
+                            {
+                                <h6> Afdeling: @department.Name</h6>
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Tilmeld</th>
+                                            <th>Gruppenavn</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (department.Groups != null)
+                                        {
+                                            @foreach (var group in department.Groups)
+                                            {
+                                                if (group != null)
+                                                {
+                                                    <tr>
+                                                        <td><InputRadio Value="@group.Id" id="@group.Id" /></td>
+                                                        <td>@group.Name</td>
 
-            <div class="form-group">
-                <label @bind="Student.FirstName" class="control-label">Fornavn</label>
-                <label>*</label>
-                <InputText @bind-value="Student.FirstName" class="form-control" />
-                <span asp-validation-for="Student.FirstName" class="text-danger"></span>
+                                                    </tr>
+                                                }
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            }
+                        </InputRadioGroup>
+                    </div>
+                    <span asp-validation-for="instructor.RoleId" class="text-danger"></span>
+                </div>
             </div>
-            <div class="form-group">
-                <label @bind="Student.LastName" class="control-label">Efternavn</label>
-                <label>*</label>
-                <InputText @bind-value="Student.LastName" class="form-control" />
-                <span asp-validation-for="Student.LastName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label @bind="Student.Phonenumber" class="control-label">Telefonnummer</label>
-                <InputNumber @bind-value="Student.Phonenumber" class="form-control" />
-                <span asp-validation-for="Student.Phonenumber" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label @bind="Student.Email" class="control-label">Email</label>
-                <label>*</label>
-                <InputText @bind-value="Student.Email" class="form-control" />
-                <span asp-validation-for="Student.Email" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Password" class="control-label">CPR-nummer</label>
-                <label>*</label>
-                <InputText @bind-value="CPR" class="form-control" type="password" />
-                <span asp-validation-for="CPR" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ConfirmPassword" class="control-label">Gentag CPR-nummer</label>
-                <label>*</label>
-                <InputText @bind-value="ConfirmCPR" class="form-control" type="password" />
-                <span asp-validation-for="ConfirmCPR" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label class="control-label">Gruppe</label>
-                <InputSelect id="departmentHead" class="form-select" @bind-Value="Student.GroupId">
-                    @foreach (var _group in CurrentUserData!.Groups)
-                    {
-                        <option value="@_group.Id">@_group.Name</option>
-                    }
-                </InputSelect>
-                <span asp-validation-for="instructor.RoleId" class="text-danger"></span>
-            </div>
-            <p />
-            <input type="submit" value="Opret" class="btn btn-primary" />
-            <button class="btn btn-secondary" @onclick="GoToIndex">Annuller</button>
-        </EditForm>
-    </div>
+        </div>
+        <p />
+        <input type="submit" value="Opret" class="btn btn-primary" />
+        <button class="btn btn-secondary" @onclick="GoToIndex">Annuller</button>
+    </EditForm>
 </div>
 @code {
     [SupplyParameterFromForm]
@@ -77,6 +103,8 @@
     private string ConfirmCPR { get; set; } = "";
 
     private LogInResponse? CurrentUserData { get; set; }
+    private List<Group?> Groups { get; set; } = [];
+    private List<Department> Departments = [];
 
     protected override async Task OnInitializedAsync()
     {
@@ -95,7 +123,43 @@
 
     private async Task OnGetAsync()
     {
-
+        List<Department> _departments = await _departmentService.GetAllDepartments() ?? new();
+        if (CurrentUserData!.RoleRank < 2)
+        {
+            Departments = _departments;
+        }
+        else if (CurrentUserData.RoleRank == 2)
+        {
+            foreach (var department in _departments)
+            {
+                if (department.DepartmentHead == CurrentUserData.Id)
+                {
+                    Departments.Add(department);
+                }
+            }
+        }
+        else
+        {
+            foreach (var _group in CurrentUserData.Groups)
+            {
+                foreach (var _department in _departments)
+                {
+                    if (_department.Groups != null)
+                    {
+                        foreach (var group in _department.Groups)
+                        {
+                            if (group != null && group.Id == _group.Id)
+                            {
+                                if (!Departments.Contains(_department))
+                                {
+                                    Departments.Add(_department);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public async Task<IActionResult?> OnPostAsync()

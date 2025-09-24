@@ -1,5 +1,187 @@
-﻿<h3>GroupsDelete</h3>
+﻿@page "/groups/delete/{Id:int}"
+@using Microsoft.AspNetCore.Mvc
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using TECin2.Blazor.Models
+@using TECin2.Blazor.Services
+@using TECin2.Blazor.Models.DTOs
+@rendermode InteractiveServer
+@inject NavigationManager NavigationManager
+@inject IHttpContextAccessor HttpContextAccessor
+@inject IGroupService _groupService
+
+
+<h3>Slet gruppe: @Group.Name</h3>
+<div class="row">
+    @if (IsLoading)
+    {
+        <p>Indlæser data...</p>
+    }
+    else
+    {
+        <div class="col-md-5">
+
+            <table>
+                <thead>
+                    <tr>
+                        <th width="200" />
+                        <th width="200" />
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            Afdeling:
+                        </td>
+                        <td>
+                            @Group.Department!.Name
+                        </td>
+                    </tr>
+                    <tr />
+                    <tr>
+                        <td>
+                            Lærlinge skal flyttes til følgende gruppe:
+                        </td>
+                        <td>
+                            <div class="form-group">
+                                <InputSelect id="departmentHead" class="form-select" @bind-Value="TargetGroup">
+                                    @if (CurrentUserData!.RoleRank >= 3)
+                                        @foreach (var _group in CurrentUserData!.Groups)
+                                        {
+                                            <option value="@_group.Id">@_group.Name</option>
+                                        }
+                                    else
+                                        @foreach (var _group in Groups)
+                                        {
+                                            <option value="@_group!.Id">@_group!.Name</option>
+                                        }
+                                </InputSelect>
+                                <span asp-validation-for="instructor.RoleId" class="text-danger"></span>
+                            </div>
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+            <p></p>
+            <button class="btn btn-danger" @onclick="DeleteGroup">Slet</button>
+            <button class="btn btn-secondary" @onclick="GoToIndex">Annuller</button>
+        </div>
+        <div class="col-md-5">
+            <h5>Lærlinge</h5>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Fornavn</th>
+                        <th>Efternavn</th>
+                        <th>Tlf</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Students)
+                    {
+                        <tr>
+                            <td>
+                                <button class="btn-link2" @onclick="() => GoToStudent(item.Id)">@item.FirstName</button>
+                            </td>
+                            <td>@item.LastName</td>
+                            <td>@item.Phonenumber</td>
+                            <td>@item.Email</td>
+                            <td>@item.LastCheckIn</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
 
 @code {
+    private LogInResponse? CurrentUserData { get; set; }
+    private bool IsLoading = true;
+    private bool ShouldRedirectToLogin = false;
 
+
+    [Parameter]
+    public required int Id { get; set; }
+
+    [SupplyParameterFromForm]
+    private int TargetGroup { get; set; }
+
+    private Group Group { get; set; } = new Group { Name = "", ArrivalTime = new(0, 0, 0), DepartmentId = 0, IsLateMessage = "" };
+    private List<Group?> Groups { get; set; } = [];
+    private List<Student> Students = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        var httpContext = HttpContextAccessor.HttpContext;
+        if (httpContext != null)
+            CurrentUserData = httpContext.Session.GetObject<LogInResponse>("CurrentUser");
+
+        if (CurrentUserData == null)
+        {
+            ShouldRedirectToLogin = true;
+            return;
+        }
+        await LoadDataAsync();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (ShouldRedirectToLogin)
+        {
+            ShouldRedirectToLogin = false;
+            NavigationManager.NavigateTo("/login", true);
+        }
+    }
+
+    private async Task LoadDataAsync()
+    {
+        IsLoading = true;
+        try
+        {
+            var group = await _groupService.GetGroupById(Id);
+            if (group == null)
+            {
+                NavigationManager.NavigateTo("/groups/index", true);
+                return;
+            }
+            Group = group;
+            if (group.Students != null)
+                Students = group.Students;
+
+            if (CurrentUserData!.RoleRank < 3)
+                Groups = (await _groupService.GetAllGroups()).Where(g => g != null && g.Id != Id).ToList();
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private void GoToIndex()
+    {
+        NavigationManager.NavigateTo("/groups/index", true);
+    }
+
+    private void GoToStudent(string _id)
+    {
+        NavigationManager.NavigateTo("/students/details/" + _id, true);
+    }
+
+    private async Task DeleteGroup()
+    {
+        if (TargetGroup != 0)
+        {
+            var group = await _groupService.DeleteGroup(Id, TargetGroup);
+            if (group != null)
+            {
+                NavigationManager.NavigateTo("/groups/index", true);
+            }
+        }
+    }
 }

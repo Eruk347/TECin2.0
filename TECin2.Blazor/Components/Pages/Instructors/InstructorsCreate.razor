@@ -60,38 +60,39 @@
                 Tilmeld grupper:
             </h3>
             <div class="form-group">
-                @foreach (var department in Departments)
-                {
-                    <h5> Afdeling: @department.Name</h5>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Tilmeld</th>
-                                <th>Gruppenavn</th>
-                                <th>Primær gruppe</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @if (department.Groups != null)
-                            {
-                                @foreach (var group in department.Groups)
-                                {
+                <InputRadioGroup @bind-Value="PrimaryGroup" class="form-check-input">
+                    @foreach (var department in Departments)
+                    {
+                        <h5> Afdeling: @department.Name</h5>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Tilmeld</th>
+                                    <th>Gruppenavn</th>
+                                    <th>Primær gruppe</th>
+                                </tr>
+                            </thead>
+                            <tbody>
 
-                                    if (group != null)
+                                @if (department.Groups != null)
+                                {
+                                    @foreach (var group in department.Groups)
                                     {
-                                        <InputRadioGroup @bind-Value="group.FlexibleArrivalEnabled" class="form-check-input">
+                                        if (group != null)
+                                        {
                                             <tr>
                                                 <td><InputCheckbox @bind-Value=group.Deactivated /></td>
                                                 <td>@group.Name</td>
-                                                <td><InputRadio @bind-Value=group.FlexibleArrivalEnabled /></td>
+                                                <td><InputRadio Value="@group.Id" /></td>
                                             </tr>
-                                        </InputRadioGroup>
+                                        }
                                     }
                                 }
-                            }
-                        </tbody>
-                    </table>
-                }
+
+                            </tbody>
+                        </table>
+                    }
+                </InputRadioGroup>
             </div>
             <p></p>
             <input type="submit" value="Opret" class="btn btn-primary" />
@@ -111,6 +112,8 @@
     private string Password { get; set; } = "";
     [SupplyParameterFromForm]
     private string ConfirmPassword { get; set; } = "";
+    [SupplyParameterFromForm]
+    private int PrimaryGroup { get; set; } = 0;
 
     private List<SelectListItem> RolesForCombobox = new List<SelectListItem>();
     private List<Department> Departments = new List<Department>();
@@ -141,17 +144,51 @@
         }
         //find ud af hvad brugerene må se af afdelinger og grupper
 
-
-
-        Departments = await _departmentService.GetAllDepartments() ?? new();
-
         List<Role?> roles = await _roleService.GetAllRoles();
+        List<Department> _departments = await _departmentService.GetAllDepartments() ?? new();
 
         foreach (var role in roles)
         {
-            if (role != null)
-                if (role.Rank >= CurrentUserData.RoleRank)
-                    RolesForCombobox.Add(new SelectListItem { Text = role.Name, Value = role.Id.ToString() });
+            if (role != null && role.Rank >= CurrentUserData.RoleRank)
+                // if (role.Rank >= CurrentUserData.RoleRank)
+                RolesForCombobox.Add(new SelectListItem { Text = role.Name, Value = role.Id.ToString() });
+        }
+
+        if (CurrentUserData.RoleRank < 2)
+        {
+            Departments = _departments;
+        }
+        else if (CurrentUserData.RoleRank == 2)
+        {
+            foreach (var department in _departments)
+            {
+                if (department.DepartmentHead == CurrentUserData.Id)
+                {
+                    Departments.Add(department);
+                }
+            }
+        }
+        else
+        {
+            foreach (var _group in CurrentUserData.Groups)
+            {
+                foreach (var _department in _departments)
+                {
+                    if (_department.Groups != null)
+                    {
+                        foreach (var group in _department.Groups)
+                        {
+                            if (group != null && group.Id == _group.Id)
+                            {
+                                if (!Departments.Contains(_department))
+                                {
+                                    Departments.Add(_department);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -172,12 +209,10 @@
                 }
                 if (group.Deactivated)
                 {
-                    Instructor.Groups.Add(group);
+                    Instructor.Groups.Add(group.Id);
                 }
-                if (group.FlexibleArrivalEnabled)
-                {
-                    Instructor.PrimaryGroupId = group.Id;
-                }
+                Instructor.PrimaryGroupId = PrimaryGroup;
+
             }
         }
         if (Password == ConfirmPassword)

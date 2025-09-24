@@ -54,6 +54,7 @@ namespace TECin2.API
             services.AddScoped<ISecurityRepository, SecurityRepository>();
             services.AddScoped<ISettingRepository, SettingRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IWorkHoursInDayRepository, WorkHoursInDayRepository>();
 
             services.AddScoped<ICheckInService, CheckInService>();
             services.AddScoped<IDepartmentService, DepartmentService>();
@@ -61,11 +62,12 @@ namespace TECin2.API
             services.AddScoped<IInstructorService, InstructorService>();
             services.AddScoped<ILoginService, LoginService>();
             services.AddScoped<ILoggerService, LoggerService>();
-            //services.AddScoped<IPermissionService, PermissionService>();
+                        //services.AddScoped<IPermissionService, PermissionService>();
             services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<ISchoolService, SchoolService>();
             services.AddScoped<ISettingService, SettingService>();
             services.AddScoped<IStudentService, StudentService>();
+            services.AddScoped<IWorkHoursInDayService, WorkHoursInDayService>();
 
             services.AddDbContext<TECinContext>(
                 x => x.UseSqlServer(System.Environment.GetEnvironmentVariable("TECin2-Default", EnvironmentVariableTarget.User))

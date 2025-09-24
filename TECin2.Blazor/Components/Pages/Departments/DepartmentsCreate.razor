@@ -58,15 +58,15 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var httpContext = HttpContextAccessor.HttpContext;
-        if (httpContext != null)
-            CurrentUserData = httpContext.Session.GetObject<LogInResponse>("CurrentUser");
+        // var httpContext = HttpContextAccessor.HttpContext;
+        // if (httpContext != null)
+        //     CurrentUserData = httpContext.Session.GetObject<LogInResponse>("CurrentUser");
 
-        if (CurrentUserData == null)
-        {
-            NavigationManager.NavigateTo("/login", true);
-            return;
-        }
+        // if (CurrentUserData == null)
+        // {
+        //     NavigationManager.NavigateTo("/login", true);
+        //     return;
+        // }
 
         await OnGetAsync();
     }

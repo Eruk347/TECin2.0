@@ -18,9 +18,13 @@ namespace TECin2.API.DTOs
         [Required]
         public required TimeOnly ArrivalTime { get; set; }
 
+        public bool IsLateMessageEnabled { get; set; }
+
         public TimeOnly? IsLatebuffer { get; set; }
 
         public string? IsLateMessage { get; set; }
+
+        public bool CheckoutRequired { get; set; }
 
         public WorkHoursInDay? WorkHoursInDay { get; set; }
 

@@ -99,7 +99,7 @@ namespace TECin2.API.Services
                 return [];
             }
 
-            List<User>? users = [.. group.Users];
+            List<User>? users = [.. group.Users.OrderBy(u => u.FirstName)];
             List<CheckInResponseLong?> checkInResponses = [];
             foreach (User user in users)
             {

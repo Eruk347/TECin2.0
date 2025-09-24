@@ -22,9 +22,12 @@ namespace TECin2.API.Database.Entities
         [Column(TypeName = "time")]
         public required TimeOnly ArrivalTime { get; set; }
 
+        [Column(TypeName = "bit")]
+        public bool CheckoutRequired { get; set; }
+
         [ForeignKey("WorkHoursInDay")]
         [Column(TypeName = "int")]
-        public int? WorkHoursInDayId { get; set; }
+        public int WorkHoursInDayId { get; set; }
         public WorkHoursInDay? WorkHoursInDay { get; set; }
 
         [Column(TypeName = "bit")]
@@ -33,12 +36,15 @@ namespace TECin2.API.Database.Entities
         [Column(TypeName = "time")]
         public TimeSpan? FlexibleAmount { get; set; }
 
+        [Column(TypeName = "bit")]
+        public bool IsLateMessagingEnabled { get; set; }
+
         [Column(TypeName = "time")]
         public TimeOnly? IsLateBuffer { get; set; }
 
         [Column(TypeName = "nvarchar(100)")]
         public required string IsLateMessage { get; set; }
 
-        public ICollection<User>? Users { get; set; }
+        public ICollection<User>? Users { get; set; } = [];
     }
 }

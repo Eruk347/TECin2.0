@@ -10,7 +10,7 @@ namespace TECin2.Blazor.Services
         Task<List<Group?>> GetAllGroups();
         Task<List<Department?>> GetAllDepartments();
         Task<Group?> GetGroupById(int groupId);
-        Task<Group?> UpdateGroup(Group updateGroup, int groupId);
+        Task<Group?> UpdateGroup(GroupRequest updateGroup, int groupId);
     }
     public class GroupService : IGroupService
     {
@@ -162,7 +162,7 @@ namespace TECin2.Blazor.Services
             return null;
         }
 
-        public async Task<Group?> UpdateGroup(Group updateGroup, int groupId)
+        public async Task<Group?> UpdateGroup(GroupRequest updateGroup, int groupId)
         {
             try
             {
@@ -197,6 +197,7 @@ namespace TECin2.Blazor.Services
                 {
                     Id = groupResponse.Id,
                     ArrivalTime = groupResponse.ArrivalTime,
+                    IsLateMessageEnabled = groupResponse.IsLateMessageEnabled,
                     IsLateBuffer = groupResponse.IsLateBuffer,
                     IsLateMessage = groupResponse.IsLateMessage ?? "",
                     Deactivated = groupResponse.Deactivated,
@@ -210,8 +211,9 @@ namespace TECin2.Blazor.Services
                         Deactivated = groupResponse.Department.Deactivated
                     },
                     DepartmentId = groupResponse.Department.Id,
+                    CheckoutRequired = groupResponse.CheckoutRequired,
                     WorkHoursInDay = groupResponse.WorkHoursInDay,
-                    Students = students
+                    Students = students,
                 };
                 return answer;
             }
@@ -221,27 +223,5 @@ namespace TECin2.Blazor.Services
                 return null;
             }
         }
-
-        //private GroupRequest MapGroupToGroupRequest(Group updateGroup)
-        //{
-        //    try
-        //    {
-        //        return new GroupRequest
-        //        {
-        //            Name = updateGroup.Name,
-        //            Deactivated = updateGroup.Deactivated,
-        //            ArrivalTime = updateGroup.ArrivalTime,
-        //            Departuretime = updateGroup.Departuretime,
-        //            IsLateBuffer = updateGroup.IsLateBuffer,
-        //            IsLateMessage = updateGroup.IsLateMessage,
-        //            DepartmentId = updateGroup.DepartmentId
-        //        };
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        WriteToLog("MapGroupToGroupRequest", e);
-        //        return null;
-        //    }
-        //}
     }
 }

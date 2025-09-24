@@ -12,11 +12,12 @@ namespace TECin2.API.Services
         Task<GroupResponse?> UpdateGroup(int groupId, GroupRequest updateGroup, string accessToken);
         Task<GroupResponse?> DeleteGroup(int deletingGroupId, int newGroupId, string accessToken);
     }
-    public class GroupService(IGroupRepository groupRepository, IUserRepository userRepository, ILoggerService loggerService) : IGroupService
+    public class GroupService(IGroupRepository groupRepository, IUserRepository userRepository, ILoggerService loggerService, IWorkHoursInDayRepository workHoursInDayRepository) : IGroupService
     {
         private readonly IGroupRepository _groupRepository = groupRepository;
         private readonly IUserRepository _userRepository = userRepository;
         private readonly ILoggerService _loggerService = loggerService;
+        private readonly IWorkHoursInDayRepository _workHoursInDayRepository = workHoursInDayRepository;
 
         private void WriteToLog(string task, Exception e)
         {
@@ -69,6 +70,7 @@ namespace TECin2.API.Services
 
                 if (deletedGroup != null)
                 {
+                    await _workHoursInDayRepository.DeleteWorkHoursInDay(deletedGroup.WorkHoursInDayId);
                     await _loggerService.WriteLog("Delete", accessToken, deletedGroup);
                     return MapGroupToGroupResponse(deletedGroup);
                 }
@@ -119,18 +121,23 @@ namespace TECin2.API.Services
         {
             try
             {
-                return new Group
+                Group answer =new Group
                 {
                     Name = groupRequest.Name,
                     Deactivated = groupRequest.Deactivated,
                     DepartmentId = groupRequest.DepartmentId,
                     ArrivalTime = groupRequest.ArrivalTime,
+                    IsLateMessagingEnabled = groupRequest.IsLateMessageEnabled,
                     IsLateBuffer = groupRequest.IsLatebuffer,
                     IsLateMessage = groupRequest.IsLateMessage ?? "",
+                    CheckoutRequired = groupRequest.CheckoutRequired,
                     WorkHoursInDay = groupRequest.WorkHoursInDay,
                     FlexibleAmount = groupRequest.FlexibleAmount,
                     FlexibleArrivalEnabled = groupRequest.FlexibleArrivalEnabled,
                 };
+                if (!answer.CheckoutRequired)
+                    answer.WorkHoursInDayId = 2;//kræver at der er oprettet en WorkHoursInDay 
+                return answer;
             }
             catch (Exception e)
             {
@@ -153,8 +160,10 @@ namespace TECin2.API.Services
                     Name = group.Name,
                     Deactivated = group.Deactivated,
                     ArrivalTime = group.ArrivalTime,
+                    IsLateMessageEnabled = group.IsLateMessagingEnabled,
                     IsLateBuffer = group.IsLateBuffer,
                     IsLateMessage = group.IsLateMessage,
+                    CheckoutRequired = group.CheckoutRequired,
                     WorkHoursInDay = group.WorkHoursInDay,
                     FlexibleAmount = group.FlexibleAmount,
                     FlexibleArrivalEnabled = group.FlexibleArrivalEnabled,
@@ -164,7 +173,17 @@ namespace TECin2.API.Services
                         Name = group.Department.Name,
                         Deactivated = group.Department.Deactivated
                     },
-                    Students = group.Users!.Select(u=> MapUserToGroupUserResponse(u)).ToList() ?? []
+                    Students = group.Users!
+                    .Where(u => u.IsStudent)
+                    .OrderBy(u => u.FirstName)
+                    .Select(u => MapUserToGroupUserResponse(u))
+                    .ToList() ?? [],
+
+                    Instructors = group.Users!
+                    .Where(u => u.IsStudent == false)
+                    .OrderBy(u => u.FirstName)
+                    .Select(u => MapUserToGroupUserResponse(u))
+                    .ToList() ?? []
                 };
             }
             catch (Exception e)

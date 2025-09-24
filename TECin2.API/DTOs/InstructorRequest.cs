@@ -24,7 +24,8 @@ namespace TECin2.API.DTOs
 
         public int PrimaryGroupId { get; set; }
 
-        public List<Group>? Groups { get; set; }
+        public List<int>? Groups { get; set; }
+        //public List<Group>? Groups { get; set; }
 
         [Required]
         public bool IsStudent { get; set; } = false;

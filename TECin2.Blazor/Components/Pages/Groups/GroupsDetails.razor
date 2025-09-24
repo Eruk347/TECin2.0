@@ -1,5 +1,234 @@
-﻿<h3>GroupsDetails</h3>
+﻿@page "/groups/details/{Id:int}"
+@using Microsoft.AspNetCore.Mvc
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using TECin2.Blazor.Models
+@using TECin2.Blazor.Services
+@using TECin2.Blazor.Models.DTOs
+@rendermode InteractiveServer
+@inject NavigationManager NavigationManager
+@inject IHttpContextAccessor HttpContextAccessor
+@inject IGroupService _groupService
+@inject IDepartmentService _departmentService
+
+<h3>Detaljer for hold: @Group.Name</h3>
+
+<div class="row">
+    @if (IsLoading)
+    {
+        <p>Indlæser data...</p>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-md-5">
+                <div class="form-group">
+                    <label class="control-label">Navn: </label>
+                    <span class="form-control">@Group.Name</span>
+                </div>
+                <br />
+
+
+                <div class="form-group">
+                    <label class="control-label">Deaktiveret?</label>
+                    @if (Group.Deactivated)
+                    {
+                        <span>Ja</span>
+                    }
+                    else
+                    {
+                        <span>Nej</span>
+                    }
+                </div>
+                <br />
+
+
+                <div class="form-group">
+                    <label class="control-label">Afdeling: </label>
+                    <span class="form-control">@Group.Department!.Name</span>
+                </div>
+                <br />
+
+
+                <div class="form-group">
+                    <label class="control-label">Mødetid: </label>
+                    <span class="form-control">@Group.ArrivalTime</span>
+                </div>
+                <br />
+
+
+                <div class="form-group">
+                    <label class="control-label h5">Vises der en besked ved forsinkelse? </label>
+                    @if (Group.IsLateMessageEnabled)
+                    {
+                        <span>Ja.<br /> Beskeden der vises er: @Group.IsLateMessage</span>
+                        <br />
+                        <span>Beskeden vises hvis lærlingen kommer for sent med mere end<br /> @Group.IsLateBuffer!.Value.Hour timer og  @Group.IsLateBuffer.Value.Minute minutter.</span>
+                    }
+                    else
+                    {
+                        <span>Nej</span>
+                    }
+                </div>
+                <br />
+
+
+                <div class="form-group">
+                    <label class="control-label h5">Er checkud påkrævet? </label>
+                    @if (Group.CheckoutRequired)
+                    {
+
+                        <span>Ja</span>
+                        <div class="form-group">
+                            <label class="control-label">Er mødetid fleksibel? </label>
+                            @if (Group.FlexibleArrivalEnabled)
+                            {
+
+                                <label class="control-label">Ja - Flekstiden er: </label>
+                                <span>@Group.FlexibleAmount!.Value.Hour timer og  @Group.FlexibleAmount.Value.Minute minutter.</span>
+
+                            }
+                            else
+                            {
+                                <label class="control-label">Nej</label>
+                            }
+                            <span></span>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Mandag</th>
+                                        <th>Tirsdag</th>
+                                        <th>Onsdag</th>
+                                        <th>Torsdag</th>
+                                        <th>Fredag</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        @if (Group.FlexibleArrivalEnabled)
+                                        {
+                                            <td>Minimums arbejdstid</td>
+                                            <td>@Group.WorkHoursInDay!.Monday</td>
+                                            <td>@Group.WorkHoursInDay.Tuesday</td>
+                                            <td>@Group.WorkHoursInDay.Wednesday</td>
+                                            <td>@Group.WorkHoursInDay.Thursday</td>
+                                            <td>@Group.WorkHoursInDay.Friday</td>
+                                        }
+                                        else
+                                        {
+                                            <td>Lærlingene har fri kl. </td>
+                                            <td>@Group.ArrivalTime.Add(Group.WorkHoursInDay!.Monday)</td>
+                                            <td>@Group.ArrivalTime.Add(Group.WorkHoursInDay.Tuesday)</td>
+                                            <td>@Group.ArrivalTime.Add(Group.WorkHoursInDay.Wednesday)</td>
+                                            <td>@Group.ArrivalTime.Add(Group.WorkHoursInDay.Thursday)</td>
+                                            <td>@Group.ArrivalTime.Add(Group.WorkHoursInDay.Friday)</td>
+                                        }
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <span>Nej</span>
+                    }
+                </div>
+                <div>
+                </div>
+                <p></p>
+                <button class="btn btn-warning" @onclick="GoToEdit">Rediger</button>
+                <button class="btn btn-secondary" @onclick="GoToIndex">Tilbage til listen</button>
+            </div>
+            <div class="col-md-5">
+                <h5>Lærlinge</h5>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Fornavn</th>
+                            <th>Efternavn</th>
+                            <th>Tlf</th>
+                            <th>Email</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Students)
+                        {
+                            <tr>
+                                <td>
+                                    <button class="btn-link2" @onclick="() => GoToStudent(item.Id)">@item.FirstName</button>
+                                </td>
+                                <td>@item.LastName</td>
+                                <td>@item.Phonenumber</td>
+                                <td>@item.Email</td>
+                                <td>@item.LastCheckIn</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>
 
 @code {
+    private LogInResponse? CurrentUserData { get; set; }
+    private bool IsLoading = true;
+    [Parameter]
+    public required int Id { get; set; }
+    private Group Group { get; set; } = new Group { Name = "", ArrivalTime = new(0, 0, 0), DepartmentId = 0, IsLateMessage = "" };
+    private List<Student> Students = [];
 
+    protected override async Task OnInitializedAsync()
+    {
+        // var httpContext = HttpContextAccessor.HttpContext;
+        // if (httpContext != null)
+        //     CurrentUserData = httpContext.Session.GetObject<LogInResponse>("CurrentUser");
+
+        // if (CurrentUserData == null)
+        // {
+        //     NavigationManager.NavigateTo("/login", true);
+        //     return;
+        // }
+
+        await OnGetAsync();
+    }
+    private async Task OnGetAsync()
+    {
+        IsLoading = true;
+        try
+        {
+            var group = await _groupService.GetGroupById(Id);
+            if (group == null)
+            {
+                NavigationManager.NavigateTo("/groups/index", true);
+                return;
+            }
+            Group = group;
+            if (group.Students != null)
+                Students = group.Students;
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private void GoToIndex()
+    {
+        NavigationManager.NavigateTo("/groups/index", true);
+    }
+
+    private void GoToEdit()
+    {
+        NavigationManager.NavigateTo("/groups/edit/" + Id, true);
+    }
+
+    private void GoToStudent(string _id)
+    {
+        NavigationManager.NavigateTo("/students/details/" + _id, true);
+    }
 }

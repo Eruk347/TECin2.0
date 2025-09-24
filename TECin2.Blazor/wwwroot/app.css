@@ -110,3 +110,20 @@ main {
     display: flex;
     align-items: center;
 }
+
+.col-md-time {
+    flex: 0 0 auto;
+    width: 100px;
+}
+
+.table2 {
+    width: stretch;
+}
+
+th, td {
+    padding-left: 10px;
+    padding-right: 20px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #ddd;
+}

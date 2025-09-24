@@ -37,7 +37,7 @@ namespace TECin2.API.Controllers
         //    }
         //}
 
-        [HttpGet("{groupId}")] //https://localhost:5001/api/author/1 - 1 bliver sat ind i linjen i stedet for userId
+        [HttpGet("{workHoursId}")] //https://localhost:5001/api/author/1 - 1 bliver sat ind i linjen i stedet for userId
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]//bliver håndteret på et højere niveau, pga [FromRoute]
@@ -63,7 +63,7 @@ namespace TECin2.API.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        //[Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]

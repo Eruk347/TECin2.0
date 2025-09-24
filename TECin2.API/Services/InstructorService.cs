@@ -16,13 +16,15 @@ namespace TECin2.API.Services
                     , IUserRepository userRepository
                     , ISettingRepository settingRepository
                     , ILoggerService loggerService
-                    , IRoleRepository roleRepository) : IInstructorService
+                    , IRoleRepository roleRepository
+                    , IGroupRepository groupRepository) : IInstructorService
     {
         private readonly IPasswordRepository _passwordRepository = passwordRepository;
         private readonly IUserRepository _userRepository = userRepository;
         private readonly ISettingRepository _settingRepository = settingRepository;
         private readonly ILoggerService _loggerService = loggerService;
         private readonly IRoleRepository _roleRepository = roleRepository;
+        private readonly IGroupRepository _groupRepository = groupRepository;
         private Guid id;
 
         private void WriteToLog(string task, Exception e)
@@ -66,7 +68,8 @@ namespace TECin2.API.Services
 
             string salt = Guid.NewGuid().ToString();
 
-            User? user = MapInstructorRequestToUser(newInstructor, id.ToString(), salt);
+            List<Group> groups = await _groupRepository.SelectAllGroups();
+            User? user = MapInstructorRequestToUser(newInstructor, id.ToString(), salt, groups);
             Password? password = CreatePassword(newInstructor.Password, id.ToString(), salt);
 
             if (user != null && password != null)
@@ -134,8 +137,9 @@ namespace TECin2.API.Services
                     }
                 }
             }
+            List<Group> groups = await _groupRepository.SelectAllGroups();
 
-            User? user = MapInstructorRequestToUser(updateInstructor, instructorId, originalUser.Salt);
+            User? user = MapInstructorRequestToUser(updateInstructor, instructorId, originalUser.Salt, groups);
 
             if (user != null)
             {
@@ -151,10 +155,19 @@ namespace TECin2.API.Services
         }
 
 
-        private User? MapInstructorRequestToUser(InstructorRequest instructorRequest, string _id, string salt)
+        private User? MapInstructorRequestToUser(InstructorRequest instructorRequest, string _id, string salt, List<Group> allGroups)
         {
             try
             {
+                List<Group> groupsForInstructor = [];
+
+                foreach (var group in allGroups)
+                {
+                    if (instructorRequest.Groups!.Any(g => g == group.Id))
+                    {
+                        groupsForInstructor.Add(group);
+                    }
+                }
 
                 return new User
                 {
@@ -165,7 +178,7 @@ namespace TECin2.API.Services
                     Phonenumber = instructorRequest.Phonenumber,
                     Email = instructorRequest.Email,
                     PrimaryGroupId = instructorRequest.PrimaryGroupId,
-                    Groups = instructorRequest.Groups,
+                    Groups = groupsForInstructor,
                     RoleId = instructorRequest.RoleId,
                     Settings = instructorRequest.Settings,
                     Deactivated = instructorRequest.Deactivated,

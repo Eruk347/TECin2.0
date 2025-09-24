@@ -10,7 +10,7 @@
     protected override void OnInitialized()
     {
         LogInResponse empty = new LogInResponse { Username = "", FirstName = "", LastName = "", Id = "", Token = "" };
-        HttpContextAccessor.HttpContext?.Session.SetObject("CurrentUser", null);
+        HttpContextAccessor.HttpContext?.Session.SetObject("CurrentUser", empty);
         Global.SetRoleRank(0);
         Global.SetGroupId(0);
         Global.SetToken(null);

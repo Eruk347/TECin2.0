@@ -17,9 +17,13 @@ namespace TECin2.Blazor.Models.DTOs
         [Required]
         public required TimeOnly ArrivalTime { get; set; }
 
-        public TimeOnly? IsLatebuffer { get; set; }
+        public bool IsLateMessageEnabled { get; set; }
+
+        public TimeOnly? IsLateBuffer { get; set; }
 
         public string? IsLateMessage { get; set; }
+
+        public bool CheckoutRequired { get; set; }
 
         public WorkHoursInDay? WorkHoursInDay { get; set; }
 
