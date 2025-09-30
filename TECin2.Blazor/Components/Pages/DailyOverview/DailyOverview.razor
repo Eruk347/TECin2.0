@@ -17,7 +17,7 @@
         </dir>
         <dir class="col" con>
             <EditForm Model=@listOfCheckIns>
-                <input type="date" id="datePicker" @onchange="OnDateChanged" value="@SelectedDate" runat="server" />
+                <input type="date" id="datePicker" @bind="SelectedDate" @bind:format="yyyy-MM-dd" />
             </EditForm>
         </dir>
     </div>
@@ -27,25 +27,38 @@
         {
             <p>Indlæser data</p>
         }
-        @if (listOfCheckIns != null)
+        else
         {
-            @foreach (var list in listOfCheckIns)
+            @if (listOfCheckIns != null)
             {
-                <GroupOverviewTable CheckIns="list" CurrentUserData="CurrentUserData" Date="SelectedDate" />
-                <hr size="5"/>
+                @foreach (var list in listOfCheckIns)
+                {
+                    <GroupOverviewTable CheckIns="list" CurrentUserData="CurrentUserData" Date="SelectedDate" />
+                    <hr size="5" />
+                }
             }
         }
     </div>
 </div>
 
 @code {
-
-    private DateOnly SelectedDate = DateOnly.FromDateTime(DateTime.Now);
     private bool IsLoading = true;
     private LogInResponse? CurrentUserData { get; set; }
     List<List<CheckInResponseLong>> listOfCheckIns = [];
 
-
+    private DateOnly selectedDate = DateOnly.FromDateTime(DateTime.Now);
+    private DateOnly SelectedDate
+    {
+        get => selectedDate;
+        set
+        {
+            if (selectedDate != value)
+            {
+                selectedDate = value;
+                _ = LoadDataAsync(selectedDate); // Fire and forget, or make this async if you want to await
+            }
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -91,6 +104,7 @@
         finally
         {
             IsLoading = false;
+            StateHasChanged();
         }
     }
 

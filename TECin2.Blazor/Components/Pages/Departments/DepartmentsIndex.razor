@@ -8,16 +8,17 @@
 
 <a href="/departments/create">Ny afdeling</a>
 <a href="/groups/create">Ny gruppe</a>
-
+<br />
 @foreach (var _department in Departments!)
 {
+    <h3>
+        <a href="/departments/details/@_department.Id">@_department.Name</a>
+    </h3>
     <table class="table">
         <thead>
             <tr>
                 <th width="200px">
-                    <h3>
-                        <a href="/departments/details/@_department.Id">@_department.Name</a>
-                    </h3>
+                    
                 </th>
                 <th>
                     Mødetid
@@ -60,37 +61,6 @@
                     </td>
                 </tr>
             }
-            @*  @foreach (var _group in GroupHelper)
-            {
-                @if (_group.Department == _department.Id)
-                {
-                    <tr>
-                        <td style="width:300px">
-                            <a asp-page="../CheckedIn/Index" asp-route-id="@_group.GroupId">@_group.GroupName</a>
-                        </td>
-                        <td>
-                            @_group.ArrivalTime
-                        </td>
-                        <td>
-                            @_group.Arrived
-                        </td>
-                        <td>
-                            @_group.Late
-                        </td>
-                        <td>
-                            @_group.Abscent
-                        </td>
-                        <td>
-                            @_group.Total
-                        </td>
-                        <td>
-                            <a asp-page="../Groups/Details" asp-route-id="@_group.GroupId">Detaljer</a> |
-                            <a asp-page="../Groups/Edit" asp-route-id="@_group.GroupId">Rediger</a> |
-                            <a asp-page="../Groups/Delete" asp-route-id="@_group.GroupId">Slet</a>
-                        </td>
-                    </tr>
-                }
-            } *@
         </tbody>
     </table>
     <br />
@@ -119,7 +89,7 @@
             NavigationManager.NavigateTo("/login", true);
             return;
         }
-       // await LoadDataAsync();
+        // await LoadDataAsync();
 
 
         Departments = await _departmentService.GetAllDepartments();

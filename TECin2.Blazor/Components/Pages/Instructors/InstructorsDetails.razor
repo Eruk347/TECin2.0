@@ -42,9 +42,11 @@
                 </InputSelect> *@
                 <span class="form-control">@Instructor.Role.Name</span>
             </div>
-            <br />
+        </div>
+        <br />
+        <div class="col-md-4">
             <h3>
-                Grupper:
+                Grupper: flyttes til højre som student
             </h3>
             <div class="form-group">
                 <InputRadioGroup @bind-Value="PrimaryGroup" class="form-check-input">
@@ -79,7 +81,9 @@
                     }
                 </InputRadioGroup>
             </div>
-            <p></p>
+        </div>
+        <p></p>
+        <div class="col-md-4">
             <button class="btn btn-warning" @onclick="GoToEdit">Rediger</button>
             <button class="btn btn-secondary" @onclick="GoToIndex">Tilbage til listen</button>
         </div>

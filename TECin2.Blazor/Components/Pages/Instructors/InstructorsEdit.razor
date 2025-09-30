@@ -17,92 +17,99 @@
     }
     else
     {
-        <div class="col-md-4">
+        <div>
             <EditForm Model="@Instructor" method="post" OnValidSubmit="OnPostAsync" Id="instructorForm" FormName="Create">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
-
-                <div class="form-group">
-                    <label @bind="Instructor.FirstName" class="control-label">Fornavn</label>
-                    <label>*</label>
-                    <InputText @bind-value="Instructor.FirstName" class="form-control" />
-                    <span asp-validation-for="Instructor.FirstName" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label @bind="instructor.LastName" class="control-label">Efternavn</label>
-                    <label>*</label>
-                    <InputText @bind-value="Instructor.LastName" class="form-control" />
-                    <span asp-validation-for="Instructor.LastName" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label @bind="Instructor.Username" class="control-label">Brugernavn</label>
-                    <label>*</label>
-                    <InputText @bind-value="Instructor.UserName" class="form-control" />
-                    <span asp-validation-for="Instructor.UserName" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="Password" class="control-label">Password</label>
-                    <InputText @bind-value="Password" class="form-control" type="password" />
-                    <span asp-validation-for="Password" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="ConfirmPassword" class="control-label">Gentag password</label>
-                    <InputText @bind-value="ConfirmPassword" class="form-control" type="password" />
-                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label class="control-label">Rolle*</label>
-                    <InputSelect id="role" class="form-select" @bind-Value="Instructor.RoleId">
-                        @foreach (var role in RolesForCombobox)
-                        {
-                            <option value="@role.Value">@role.Text</option>
-                        }
-                    </InputSelect>
-                    <span asp-validation-for="instructor.RoleId" class="text-danger"></span>
-                </div>
-                <br />
-                <h3>
-                    Tilmeld grupper:
-                </h3>
-                <div class="form-group">
-                    <InputRadioGroup @bind-Value="PrimaryGroup" class="form-check-input">
-                        @foreach (var department in Departments)
-                        {
-                            <h5> Afdeling: @department.Name</h5>
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Tilmeld</th>
-                                        <th>Gruppenavn</th>
-                                        <th>Primær gruppe</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @if (department.Groups != null)
-                                    {
-                                        @foreach (var group in ListOfGroups[Departments.IndexOf(department)])
-                                        {
-                                            if (group != null)
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label @bind="Instructor.FirstName" class="control-label">Fornavn</label>
+                            <label>*</label>
+                            <InputText @bind-value="Instructor.FirstName" class="form-control" />
+                            <span asp-validation-for="Instructor.FirstName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label @bind="instructor.LastName" class="control-label">Efternavn</label>
+                            <label>*</label>
+                            <InputText @bind-value="Instructor.LastName" class="form-control" />
+                            <span asp-validation-for="Instructor.LastName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label @bind="Instructor.Username" class="control-label">Brugernavn</label>
+                            <label>*</label>
+                            <InputText @bind-value="Instructor.UserName" class="form-control" />
+                            <span asp-validation-for="Instructor.UserName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Password" class="control-label">Password</label>
+                            <InputText @bind-value="Password" class="form-control" type="password" />
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="ConfirmPassword" class="control-label">Gentag password</label>
+                            <InputText @bind-value="ConfirmPassword" class="form-control" type="password" />
+                            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Rolle*</label>
+                            <InputSelect id="role" class="form-select" @bind-Value="Instructor.RoleId">
+                                @foreach (var role in RolesForCombobox)
+                                {
+                                    <option value="@role.Value">@role.Text</option>
+                                }
+                            </InputSelect>
+                            <span asp-validation-for="instructor.RoleId" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="col-md-4">
+                        <h3>
+                            Tilmeld grupper: flytes til højre side som student
+                        </h3>
+                        <div class="form-group">
+                            <InputRadioGroup @bind-Value="PrimaryGroup" class="form-check-input">
+                                @foreach (var department in Departments)
+                                {
+                                    <h5> Afdeling: @department.Name</h5>
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Tilmeld</th>
+                                                <th>Gruppenavn</th>
+                                                <th>Primær gruppe</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (department.Groups != null)
                                             {
-                                                <tr>
-                                                    <td><input id="group.id" type="checkbox" @bind=group.IsMember /></td>
-                                                    <td>@group.Name</td>
-                                                    <td><InputRadio Value="@group.PrimaryGroup" id="@group.Id" /></td>
-                                                </tr>
+                                                @foreach (var group in ListOfGroups[Departments.IndexOf(department)])
+                                                {
+                                                    if (group != null)
+                                                    {
+                                                        <tr>
+                                                            <td><input id="group.id" type="checkbox" @bind=group.IsMember /></td>
+                                                            <td>@group.Name</td>
+                                                            <td><InputRadio Value="@group.PrimaryGroup" id="@group.Id" /></td>
+                                                        </tr>
+                                                    }
+                                                }
                                             }
-                                        }
-                                    }
-                                </tbody>
-                            </table>
-                        }
-                    </InputRadioGroup>
+                                        </tbody>
+                                    </table>
+                                }
+                            </InputRadioGroup>
+                        </div>
+                    </div>
+                    <p></p>
+                    <div class="col-md-4">
+                        <input type="submit" value="Udfør" class="btn btn-primary" />
+                        <button class="btn btn-secondary" @onclick="GoToIndex">Tilbage til listen</button>
+                    </div>
                 </div>
-                <p></p>
-                <input type="submit" value="Udfør" class="btn btn-primary" />
-
             </EditForm>
 
-            <button class="btn btn-secondary" @onclick="GoToIndex">Tilbage til listen</button>
+
         </div>
     }
 </div>
@@ -260,7 +267,7 @@
                 ListOfGroups.Add(groupHelpers);
             }
 
-            
+
         }
         catch (Exception)
         {

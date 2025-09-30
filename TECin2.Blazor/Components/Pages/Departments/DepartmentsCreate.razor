@@ -76,13 +76,13 @@
         List<Instructor> instructors = await _instructorService.GetAllInstructors();
         foreach (var _instructor in instructors)
         {
-            if (_instructor != null)
+            if (_instructor != null && _instructor.Role.Rank < 3)
             {
                 Instructors.Add(new SelectListItem
-                    {
-                        Value = _instructor.Id.ToString(),
-                        Text = $"{_instructor.FirstName} {_instructor.LastName}"
-                    });
+                {
+                    Value = _instructor.Id.ToString(),
+                    Text = $"{_instructor.FirstName} {_instructor.LastName}"
+                });
             }
         }
     }
