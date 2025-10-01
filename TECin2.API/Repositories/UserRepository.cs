@@ -184,6 +184,7 @@ namespace TECin2.API.Repositories
                     updatedUser.RoleId = user.RoleId;
                     updatedUser.Settings = user.Settings;
                     updatedUser.LastCheckin = user.LastCheckin;
+                    updatedUser.PrimaryGroupId = user.PrimaryGroupId;
                     updatedUser.Groups = user.Groups;
                     await _context.SaveChangesAsync();
                 }

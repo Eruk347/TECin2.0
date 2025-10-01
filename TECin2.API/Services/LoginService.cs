@@ -92,7 +92,7 @@ namespace TECin2.API.Services
                                 {
                                     Group? group = await _groupRepository.SelectGroupById(_group.Id);
 
-                                    if(group != null)
+                                    if (group != null)
                                     {
                                         response.Groups.Add(new LogInGroupResponse
                                         {
@@ -124,6 +124,7 @@ namespace TECin2.API.Services
                             }
                             else
                                 response.Settings = [];
+                            response.PrimaryGroupId = user.PrimaryGroupId;
                             return response;
                         }
                     }

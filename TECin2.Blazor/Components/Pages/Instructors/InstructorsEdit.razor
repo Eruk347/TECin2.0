@@ -90,7 +90,7 @@
                                                         <tr>
                                                             <td><input id="group.id" type="checkbox" @bind=group.IsMember /></td>
                                                             <td>@group.Name</td>
-                                                            <td><InputRadio Value="@group.PrimaryGroup" id="@group.Id" /></td>
+                                                            <td><InputRadio Value="@group.Id" /></td>
                                                         </tr>
                                                     }
                                                 }
@@ -189,7 +189,6 @@
             foreach (var role in roles)
             {
                 if (role != null && role.Rank >= CurrentUserData!.RoleRank)
-                    // if (role.Rank >= CurrentUserData.RoleRank)
                     RolesForCombobox.Add(new SelectListItem { Text = role.Name, Value = role.Id.ToString() });
             }
 
@@ -266,7 +265,7 @@
                 }
                 ListOfGroups.Add(groupHelpers);
             }
-
+            PrimaryGroup = _instructor.PrimaryGroupId;
 
         }
         catch (Exception)
@@ -289,15 +288,15 @@
             {
                 if (group.IsMember)
                 {
-                    if (group.PrimaryGroup)
+                    //if (group.PrimaryGroup)
                     {
-                        Instructor.PrimaryGroupId = group.Id;
+                        //Instructor.PrimaryGroupId = group.Id;
                     }
                     Instructor.Groups.Add(group.Id);
                 }
             }
         }
-
+        Instructor.PrimaryGroupId = PrimaryGroup;
         if (Password == ConfirmPassword && Password != null && Password != "")
             Instructor.Password = Password;
 

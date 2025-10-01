@@ -11,15 +11,15 @@
 @inject IDailyOverviewService dailyOverviewService
 
 <div>
-    <div class="row">
-        <dir class="col">
+    <div>
+        <div class="col">
             <h2>Dagens oversigt</h2>
-        </dir>
-        <dir class="col" con>
+        </div>
+        <div class="col" 
             <EditForm Model=@listOfCheckIns>
                 <input type="date" id="datePicker" @bind="SelectedDate" @bind:format="yyyy-MM-dd" />
             </EditForm>
-        </dir>
+        </div>
     </div>
     <hr size="5" />
     <div>
@@ -84,6 +84,17 @@
         {
             NavigationManager.NavigateTo("/login", true);
             return;
+        }
+
+        CurrentUserData.Groups = CurrentUserData.Groups.OrderBy(g => g.Name).ToList();
+        var primaryGroup = CurrentUserData.Groups.FirstOrDefault(g => g.Id == CurrentUserData.PrimaryGroupId);
+
+        // Remove the primary group from the list if it exists
+        if (primaryGroup != null)
+        {
+            CurrentUserData.Groups.Remove(primaryGroup);
+            // Insert the primary group at the beginning
+            CurrentUserData.Groups.Insert(0, primaryGroup);
         }
 
         try

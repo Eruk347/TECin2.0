@@ -34,12 +34,6 @@
             </div>
             <div class="form-group">
                 <label class="control-label">Rolle*</label>
-                @* <InputSelect id="role" class="form-select" @bind-Value="Instructor.RoleId">
-                    @foreach (var role in RolesForCombobox)
-                    {
-                        <option value="@role.Value">@role.Text</option>
-                    }
-                </InputSelect> *@
                 <span class="form-control">@Instructor.Role.Name</span>
             </div>
         </div>
@@ -56,7 +50,7 @@
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>Tilmeld</th>
+                                    <th>Medlem</th>
                                     <th>Gruppenavn</th>
                                     <th>Primær gruppe</th>
                                 </tr>
@@ -71,7 +65,7 @@
                                             <tr>
                                                 <td><input id="group.id" type="checkbox" @bind=group.IsMember disabled="disabled" /></td>
                                                 <td>@group.Name</td>
-                                                <td><InputRadio Value="@group.PrimaryGroup" /></td>
+                                                <td><InputRadio Value="@group.Id" disabled="disabled"/></td>
                                             </tr>
                                         }
                                     }
@@ -229,6 +223,7 @@
                     if (role.Rank >= CurrentUserData!.RoleRank)
                         RolesForCombobox.Add(new SelectListItem { Text = role.Name, Value = role.Id.ToString() });
             }
+            PrimaryGroup = Instructor.PrimaryGroupId;
         }
         catch (Exception)
         {

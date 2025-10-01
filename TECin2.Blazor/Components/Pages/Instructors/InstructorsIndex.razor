@@ -26,7 +26,7 @@
                 Brugernavn
             </th>
             <th width="200">
-                Gruppe
+                Gruppe(r)
             </th>
 
             <th></th>
@@ -54,15 +54,13 @@
                 <td>
                     @foreach (var group in instructor.Groups)
                         @group.Name
-
-
-                </td>
-                <td>
-                    <a href="/instructors/edit/@instructor.Id">Rediger</a> |
-                    <a href="/instructors/delete/@instructor.Id">Slet</a>
-                </td>
-            </tr>
-        }
+            </td>
+            <td>
+                <a href="/instructors/edit/@instructor.Id">Rediger</a> |
+                <a href="/instructors/delete/@instructor.Id">Slet</a>
+            </td>
+        </tr>
+                }
     </tbody>
 </table>
 <br />

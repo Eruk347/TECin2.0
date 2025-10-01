@@ -10,6 +10,7 @@
         public string? Email { get; set; }
         public required string Username { get; set; }
         public int RoleRank { get; set; }
+        public int PrimaryGroupId { get; set; }
         public List<LogInSettingResponse> Settings { get; set; } = [];
         public List<LogInGroupResponse> Groups { get; set; } = [];
     }
