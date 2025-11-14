@@ -9,6 +9,11 @@
 @inject IHttpContextAccessor HttpContextAccessor
 
 <h3>Opret Instruktør</h3>
+@if(IsLoading)
+{
+    <p>Indlæser data...</p>
+}
+else{
 <div>
     <EditForm Model="@Instructor" method="post" OnValidSubmit="OnPostAsync" Id="instructorForm" FormName="Create">
         <DataAnnotationsValidator />
@@ -32,6 +37,16 @@
                     <label>*</label>
                     <InputText @bind-value="Instructor.UserName" class="form-control" />
                     <span asp-validation-for="Instructor.UserName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Instructor.Email" class="control-label">Email</label>
+                    <InputText @bind-value="Instructor.Email" class="form-control" />
+                    <span asp-validation-for="Instructor.Email" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Instructor.Phonenumber" class="control-label">Telefonnummer</label>
+                    <InputNumber @bind-value="Instructor.Phonenumber" class="form-control" />
+                    <span asp-validation-for="Instructor.Phonenumber" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <label asp-for="Password" class="control-label">Password</label>
@@ -59,7 +74,7 @@
             <br />
             <div class="col-md-4">
                 <h3>
-                    Tilmeld grupper: flyttes til højre side som student + annuler knap
+                    Tilmeld grupper: 
                 </h3>
                 <div class="form-group">
                     <InputRadioGroup @bind-Value="PrimaryGroup" class="form-check-input">
@@ -103,7 +118,7 @@
         <button class="btn btn-secondary" @onclick="GoToIndex">Annuler</button>
     </EditForm>
 </div>
-
+}
 
 @code {
     private readonly IInstructorService _instructorService;
@@ -122,6 +137,8 @@
     private List<SelectListItem> RolesForCombobox = new List<SelectListItem>();
     private List<Department> Departments = new List<Department>();
     private LogInResponse? CurrentUserData { get; set; }
+    private bool ShouldRedirectToLogin = false;
+    private bool IsLoading = true;
 
     public InstructorsCreate(IInstructorService instructorService, IRoleService roleService, IDepartmentService departmentService)
     {
@@ -132,21 +149,33 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await OnGetAsync();
-    }
-
-    private async Task OnGetAsync()
-    {
         var httpContext = HttpContextAccessor.HttpContext;
         if (httpContext != null)
             CurrentUserData = httpContext.Session.GetObject<LogInResponse>("CurrentUser");
 
         if (CurrentUserData == null)
         {
-            NavigationManager.NavigateTo("/login", true);
+            ShouldRedirectToLogin = true;
             return;
         }
-        //find ud af hvad brugerene må se af afdelinger og grupper
+        await LoadDataAsync();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (ShouldRedirectToLogin)
+        {
+            ShouldRedirectToLogin = false;
+            NavigationManager.NavigateTo("/login", true);
+        }
+    }
+
+    private async Task LoadDataAsync()
+    {
+        IsLoading = true;
+
+        try
+        {
 
         List<Role?> roles = await _roleService.GetAllRoles();
         List<Department> _departments = await _departmentService.GetAllDepartments() ?? new();
@@ -193,6 +222,15 @@
                     }
                 }
             }
+        }
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+        finally
+        {
+            IsLoading = false;
         }
     }
 

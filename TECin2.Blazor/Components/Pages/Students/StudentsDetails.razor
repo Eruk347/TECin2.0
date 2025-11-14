@@ -63,6 +63,7 @@ else
     public required Student student { get; set; }
 
     private bool IsLoading = true;
+    private bool ShouldRedirectToLogin = false;
     private LogInResponse? CurrentUserData { get; set; }
     List<Week> Weeks { get; set; } = [];
 
@@ -74,19 +75,19 @@ else
 
         if (CurrentUserData == null)
         {
-            NavigationManager.NavigateTo("/login", true);
+            ShouldRedirectToLogin = true;
             return;
         }
-
-        
-
         await LoadDataAsync(StudentId);
+    }
 
-
-
-
-        
-
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (ShouldRedirectToLogin)
+        {
+            ShouldRedirectToLogin = false;
+            NavigationManager.NavigateTo("/login", true);
+        }
     }
 
     private async Task LoadDataAsync(string _studentId)

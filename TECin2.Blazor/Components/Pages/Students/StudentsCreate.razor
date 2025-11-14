@@ -95,6 +95,9 @@
     </EditForm>
 </div>
 @code {
+    private bool ShouldRedirectToLogin = false;
+    private bool IsLoading = true;
+
     [SupplyParameterFromForm]
     private StudentRequest Student { get; set; } = new StudentRequest { FirstName = "", LastName = "", Username = "", IsStudent = true };
     [SupplyParameterFromForm]
@@ -114,51 +117,72 @@
 
         if (CurrentUserData == null)
         {
-            NavigationManager.NavigateTo("/login", true);
+            ShouldRedirectToLogin = true;
             return;
         }
-
-        await OnGetAsync();
+        await LoadDataAsync();
     }
 
-    private async Task OnGetAsync()
+    protected override void OnAfterRender(bool firstRender)
     {
-        List<Department> _departments = await _departmentService.GetAllDepartments() ?? new();
-        if (CurrentUserData!.RoleRank < 2)
+        if (ShouldRedirectToLogin)
         {
-            Departments = _departments;
+            ShouldRedirectToLogin = false;
+            NavigationManager.NavigateTo("/login", true);
         }
-        else if (CurrentUserData.RoleRank == 2)
+    }
+
+    private async Task LoadDataAsync()
+    {
+        IsLoading = true;
+
+        try
         {
-            foreach (var department in _departments)
+            List<Department> _departments = await _departmentService.GetAllDepartments() ?? new();
+            if (CurrentUserData!.RoleRank < 2)
             {
-                if (department.DepartmentHead == CurrentUserData.Id)
+                Departments = _departments;
+            }
+            else if (CurrentUserData.RoleRank == 2)
+            {
+                foreach (var department in _departments)
                 {
-                    Departments.Add(department);
+                    if (department.DepartmentHead == CurrentUserData.Id)
+                    {
+                        Departments.Add(department);
+                    }
                 }
             }
-        }
-        else
-        {
-            foreach (var _group in CurrentUserData.Groups)
+            else
             {
-                foreach (var _department in _departments)
+                foreach (var _group in CurrentUserData.Groups)
                 {
-                    if (_department.Groups != null)
+                    foreach (var _department in _departments)
                     {
-                        foreach (var group in _department.Groups)
+                        if (_department.Groups != null)
                         {
-                            if (group != null && group.Id == _group.Id)
+                            foreach (var group in _department.Groups)
                             {
-                                if (!Departments.Contains(_department))
+                                if (group != null && group.Id == _group.Id)
                                 {
-                                    Departments.Add(_department);
+                                    if (!Departments.Contains(_department))
+                                    {
+                                        Departments.Add(_department);
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+        finally
+        {
+            IsLoading = false;
         }
     }
 

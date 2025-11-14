@@ -173,6 +173,7 @@
 @code {
     private LogInResponse? CurrentUserData { get; set; }
     private bool IsLoading = true;
+    private bool ShouldRedirectToLogin = false;
     [Parameter]
     public required int Id { get; set; }
     private Group Group { get; set; } = new Group { Name = "", ArrivalTime = new(0, 0, 0), DepartmentId = 0, IsLateMessage = "" };
@@ -180,19 +181,27 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // var httpContext = HttpContextAccessor.HttpContext;
-        // if (httpContext != null)
-        //     CurrentUserData = httpContext.Session.GetObject<LogInResponse>("CurrentUser");
+        var httpContext = HttpContextAccessor.HttpContext;
+        if (httpContext != null)
+            CurrentUserData = httpContext.Session.GetObject<LogInResponse>("CurrentUser");
 
-        // if (CurrentUserData == null)
-        // {
-        //     NavigationManager.NavigateTo("/login", true);
-        //     return;
-        // }
-
-        await OnGetAsync();
+        if (CurrentUserData == null)
+        {
+            ShouldRedirectToLogin = true;
+            return;
+        }
+        await LoadDataAsync();
     }
-    private async Task OnGetAsync()
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (ShouldRedirectToLogin)
+        {
+            ShouldRedirectToLogin = false;
+            NavigationManager.NavigateTo("/login", true);
+        }
+    }
+    private async Task LoadDataAsync()
     {
         IsLoading = true;
         try

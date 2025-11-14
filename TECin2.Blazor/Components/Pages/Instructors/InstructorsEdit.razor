@@ -42,6 +42,16 @@
                             <span asp-validation-for="Instructor.UserName" class="text-danger"></span>
                         </div>
                         <div class="form-group">
+                            <label asp-for="Instructor.Email" class="control-label">Email</label>
+                            <InputText @bind-value="Instructor.Email" class="form-control"/>
+                            <span asp-validation-for="Instructor.Email" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Instructor.Phonenumber" class="control-label">Telefonnummer</label>
+                            <InputNumber @bind-value="Instructor.Phonenumber" class="form-control" />
+                            <span asp-validation-for="Instructor.Phonenumber" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
                             <label asp-for="Password" class="control-label">Password</label>
                             <InputText @bind-value="Password" class="form-control" type="password" />
                             <span asp-validation-for="Password" class="text-danger"></span>
@@ -119,6 +129,7 @@
     private readonly IRoleService _roleService;
     private readonly IDepartmentService _departmentService;
     private bool IsLoading = true;
+    private bool ShouldRedirectToLogin = false;
 
     [Parameter]
     public required string Id { get; set; }
@@ -154,10 +165,19 @@
 
         if (CurrentUserData == null)
         {
-            NavigationManager.NavigateTo("/login", true);
+            ShouldRedirectToLogin = true;
             return;
         }
         await LoadDataAsync();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (ShouldRedirectToLogin)
+        {
+            ShouldRedirectToLogin = false;
+            NavigationManager.NavigateTo("/login", true);
+        }
     }
 
     private async Task LoadDataAsync()

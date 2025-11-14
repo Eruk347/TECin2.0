@@ -1,28 +1,44 @@
-﻿@page "/schools/index"
+﻿@page "/locked/{input}"
 @rendermode InteractiveServer
 @using System.Globalization
-@using TECin2.Blazor.Models
 @using TECin2.Blazor.Models.DTOs
 @using TECin2.Blazor.Services
+@using TECin2.Blazor.Components.Pages.Departments
 @inject IHttpContextAccessor HttpContextAccessor
 @inject NavigationManager NavigationManager
-<h3>SchoolsIndex</h3>
-<div>
+
+<div style="height:90px">
+    <h3>test</h3>
+    <div>
         @if (IsLoading)
         {
             <p>Indlæser data...</p>
         }
         else
         {
-            <p>Hello World</p>
+            if (input == "students")
+            {
+                <div>
+                    <TECin2.Blazor.Components.Pages.Students.StudentsIndex />
+                </div>
+            }
+            else
+            {
+                <div>
+                    <DepartmentsIndex />
+                </div>
+            }
         }
     </div>
+</div>
 
 @code {
     private bool IsLoading = true;
-    private LogInResponse? CurrentUserData { get; set; }
-    private List<Group> Groups { get; set; } = [];
     private bool ShouldRedirectToLogin = false;
+    private LogInResponse? CurrentUserData { get; set; }
+
+    [Parameter]
+    public required string input { get; set; }
 
     protected override async Task OnInitializedAsync()
     {

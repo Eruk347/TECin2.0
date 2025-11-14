@@ -43,6 +43,7 @@
     private readonly IDepartmentService _departmentService;
     private readonly IInstructorService _instructorService;
     private LogInResponse? CurrentUserData { get; set; }
+    private bool ShouldRedirectToLogin = false;
 
     [SupplyParameterFromForm]
     private DepartmentRequest Department { get; set; } = new DepartmentRequest { Name = "" };
@@ -54,24 +55,32 @@
     {
         _departmentService = departmentService;
         _instructorService = instructorService;
-    }
+    }    
 
     protected override async Task OnInitializedAsync()
     {
-        // var httpContext = HttpContextAccessor.HttpContext;
-        // if (httpContext != null)
-        //     CurrentUserData = httpContext.Session.GetObject<LogInResponse>("CurrentUser");
+        var httpContext = HttpContextAccessor.HttpContext;
+        if (httpContext != null)
+            CurrentUserData = httpContext.Session.GetObject<LogInResponse>("CurrentUser");
 
-        // if (CurrentUserData == null)
-        // {
-        //     NavigationManager.NavigateTo("/login", true);
-        //     return;
-        // }
-
-        await OnGetAsync();
+        if (CurrentUserData == null)
+        {
+            ShouldRedirectToLogin = true;
+            return;
+        }
+        await LoadDataAsync();
     }
 
-    private async Task OnGetAsync()
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (ShouldRedirectToLogin)
+        {
+            ShouldRedirectToLogin = false;
+            NavigationManager.NavigateTo("/login", true);
+        }
+    }
+
+    private async Task LoadDataAsync()
     {
         List<Instructor> instructors = await _instructorService.GetAllInstructors();
         foreach (var _instructor in instructors)

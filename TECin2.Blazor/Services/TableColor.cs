@@ -37,7 +37,7 @@ namespace TECin2.Blazor.Services
             if (_currentUserData == null)
                 return red;
 
-            bool seeAll = false;
+            bool seeAll = true;
             foreach (var item in _currentUserData.Settings)
             {
                 if (item.Name == "SeeAll")
@@ -105,13 +105,8 @@ namespace TECin2.Blazor.Services
 
                 TimeSpan? timeWorked = studentDeparture - arrivalBuffer;
 
-                if (timeWorked != null)
-                {
-                    if (timeWorked < time)
-                    {
-                        return ReturnColor(seeAll);
-                    }
-                }
+                if (!timeWorked.HasValue || timeWorked.Value < time)
+                    return ReturnColor(seeAll);
             }
             return "#FFFFFF";
         }

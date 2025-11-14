@@ -63,6 +63,7 @@
 @code {
     private LogInResponse? CurrentUserData { get; set; }
     private bool IsLoading = true;
+    private bool ShouldRedirectToLogin = false;
 
     [Parameter]
     public required string Id { get; set; }
@@ -76,10 +77,19 @@
 
         if (CurrentUserData == null)
         {
-            NavigationManager.NavigateTo("/login", true);
+            ShouldRedirectToLogin = true;
             return;
         }
         await LoadDataAsync();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (ShouldRedirectToLogin)
+        {
+            ShouldRedirectToLogin = false;
+            NavigationManager.NavigateTo("/login", true);
+        }
     }
 
     private async Task LoadDataAsync()

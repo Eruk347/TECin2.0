@@ -46,11 +46,11 @@
         if (httpContext != null)
             CurrentUserData = httpContext.Session.GetObject<LogInResponse>("CurrentUser");
 
-        if (CurrentUserData == null)
-        {
-            ShouldRedirectToLogin = true;
-            return;
-        }
+        // if (CurrentUserData == null)
+        // {
+        //     ShouldRedirectToLogin = true;
+        //     return;
+        // }
         await LoadDataAsync();
     }
 

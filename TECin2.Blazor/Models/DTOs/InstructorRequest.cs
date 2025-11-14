@@ -32,7 +32,7 @@ namespace TECin2.Blazor.Models.DTOs
         [Required]
         public int RoleId { get; set; }
 
-        public List<Setting>? Settings { get; set; }
+        public List<Setting>? Settings { get; set; } = [];
 
         public bool Deactivated { get; set; }
 

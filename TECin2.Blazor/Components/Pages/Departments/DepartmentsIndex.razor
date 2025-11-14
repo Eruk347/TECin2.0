@@ -18,7 +18,7 @@
         <thead>
             <tr>
                 <th width="200px">
-                    
+
                 </th>
                 <th>
                     Mødetid
@@ -72,6 +72,8 @@
     private readonly IDepartmentService _departmentService;
     private LogInResponse? CurrentUserData { get; set; }
     List<Department>? Departments = [];
+    private bool IsLoading = true;
+    private bool ShouldRedirectToLogin = false;
 
     public DepartmentsIndex(IDepartmentService departmentService)
     {
@@ -86,22 +88,43 @@
 
         if (CurrentUserData == null)
         {
-            NavigationManager.NavigateTo("/login", true);
+            ShouldRedirectToLogin = true;
             return;
         }
-        // await LoadDataAsync();
+        await LoadDataAsync();
+    }
 
-
-        Departments = await _departmentService.GetAllDepartments();
-
-        if (Departments == null)
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (ShouldRedirectToLogin)
         {
-            //hvis noget med en fejl at der ikke er nogen list - empty list betyder der er kommet et svar, null, betyder noget er galt
-            Departments = new List<Department>();
+            ShouldRedirectToLogin = false;
+            NavigationManager.NavigateTo("/login", true);
         }
+    }
+    private async Task LoadDataAsync()
+    {
+        IsLoading = true;
+        try
+        {
+            Departments = await _departmentService.GetAllDepartments();
 
-        Departments = Departments.OrderBy(x => x.Name).ToList();
+            if (Departments == null)
+            {
+                //hvis noget med en fejl at der ikke er nogen list - empty list betyder der er kommet et svar, null, betyder noget er galt
+                Departments = new List<Department>();
+            }
 
+            Departments = Departments.OrderBy(x => x.Name).ToList();
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+        finally
+        {
+            IsLoading = false;
 
+        }
     }
 }

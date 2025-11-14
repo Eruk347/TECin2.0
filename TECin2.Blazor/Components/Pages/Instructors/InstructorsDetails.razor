@@ -33,6 +33,14 @@
                 <span class="form-control">@Instructor.UserName</span>
             </div>
             <div class="form-group">
+                <label asp-for="Instructor.Email" class="control-label">Email</label>
+                <span class="form-control">@Instructor.Email</span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Instructor.Phonenumber" class="control-label">Telefonnummer</label>
+                <span class="form-control">@Instructor.Phonenumber</span>
+            </div>
+            <div class="form-group">
                 <label class="control-label">Rolle*</label>
                 <span class="form-control">@Instructor.Role.Name</span>
             </div>
@@ -65,7 +73,7 @@
                                             <tr>
                                                 <td><input id="group.id" type="checkbox" @bind=group.IsMember disabled="disabled" /></td>
                                                 <td>@group.Name</td>
-                                                <td><InputRadio Value="@group.Id" disabled="disabled"/></td>
+                                                <td><InputRadio Value="@group.Id" disabled="disabled" /></td>
                                             </tr>
                                         }
                                     }
@@ -89,6 +97,7 @@
     private readonly IRoleService _roleService;
     private readonly IDepartmentService _departmentService;
     private bool IsLoading = true;
+    private bool ShouldRedirectToLogin = false;
 
     [Parameter]
     public required string Id { get; set; }
@@ -120,10 +129,19 @@
 
         if (CurrentUserData == null)
         {
-            NavigationManager.NavigateTo("/login", true);
+            ShouldRedirectToLogin = true;
             return;
         }
         await LoadDataAsync();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (ShouldRedirectToLogin)
+        {
+            ShouldRedirectToLogin = false;
+            NavigationManager.NavigateTo("/login", true);
+        }
     }
 
     private async Task LoadDataAsync()

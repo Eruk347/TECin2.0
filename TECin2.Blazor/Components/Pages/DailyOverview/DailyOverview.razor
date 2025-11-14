@@ -44,6 +44,7 @@
 @code {
     private bool IsLoading = true;
     private LogInResponse? CurrentUserData { get; set; }
+    private bool ShouldRedirectToLogin = false;
     List<List<CheckInResponseLong>> listOfCheckIns = [];
 
     private DateOnly selectedDate = DateOnly.FromDateTime(DateTime.Now);
@@ -68,10 +69,19 @@
 
         if (CurrentUserData == null)
         {
-            NavigationManager.NavigateTo("/login", true);
+            ShouldRedirectToLogin = true;
             return;
         }
         await LoadDataAsync(SelectedDate);
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (ShouldRedirectToLogin)
+        {
+            ShouldRedirectToLogin = false;
+            NavigationManager.NavigateTo("/login", true);
+        }
     }
 
     private async Task LoadDataAsync(DateOnly _selectedDate)
