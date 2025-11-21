@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using TECin2.API.Database;
+using TECin2.ClassLibrary.DTOs;
 using TECin2.API.Repositories;
 using TECin2.API.Services;
 

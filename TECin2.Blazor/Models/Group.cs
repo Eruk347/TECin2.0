@@ -1,4 +1,4 @@
-﻿using TECin2.Blazor.Models;
+﻿using TECin2.ClassLibrary;
 
 namespace TECin2.Blazor.Models
 {

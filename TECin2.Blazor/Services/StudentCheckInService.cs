@@ -1,4 +1,4 @@
-﻿using TECin2.Blazor.Models.DTOs;
+﻿using TECin2.ClassLibrary.DTOs;
 
 namespace TECin2.Blazor.Services
 {

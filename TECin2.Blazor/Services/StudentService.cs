@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
-using TECin2.Blazor.Models;
-using TECin2.Blazor.Models.DTOs;
+using TECin2.ClassLibrary;
+using TECin2.ClassLibrary.DTOs;
 
 namespace TECin2.Blazor.Services
 {

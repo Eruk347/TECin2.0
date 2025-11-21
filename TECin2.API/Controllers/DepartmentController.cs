@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using TECin2.API.DTOs;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using TECin2.ClassLibrary.DTOs;
 using TECin2.API.Services;
 
 namespace TECin2.API.Controllers
@@ -11,6 +12,7 @@ namespace TECin2.API.Controllers
         private readonly IDepartmentService _departmentService = departmentService;
 
         [HttpGet]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -37,8 +39,7 @@ namespace TECin2.API.Controllers
             }
         }
 
-        [HttpGet("{departmentId}")] //https://localhost:5001/api/author/1 - 1 bliver sat ind i linjen i stedet for userId
-        //[Authorize]
+        [HttpGet("{departmentId}")] 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]//bliver håndteret på et højere niveau, pga [FromRoute]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -63,7 +64,7 @@ namespace TECin2.API.Controllers
         }
 
         [HttpPost]
-        //[Authorize]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -88,7 +89,7 @@ namespace TECin2.API.Controllers
         }
 
         [HttpPut("{departmentId}")]
-        //[Authorize]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]//bliver håndteret på et højere niveau, pga [FromRoute]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -114,7 +115,7 @@ namespace TECin2.API.Controllers
         }
 
         [HttpDelete("{departmentId}")]
-       // [Authorize]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]//bliver håndteret på et højere niveau, pga [FromRoute]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

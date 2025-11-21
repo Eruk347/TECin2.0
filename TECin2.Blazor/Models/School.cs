@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using TECin2.Blazor.Models;
+using TECin2.ClassLibrary;
 
 namespace TECin2.Blazor.Models
 {

@@ -17,4 +17,8 @@
     <Folder Include="wwwroot\lib\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\TECin2.ClassLibrary\TECin2.ClassLibrary.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -1,5 +1,5 @@
-﻿using TECin2.API.Database.Entities;
-using TECin2.API.DTOs;
+﻿using TECin2.ClassLibrary.Entities;
+using TECin2.ClassLibrary.DTOs;
 using TECin2.API.Repositories;
 
 namespace TECin2.API.Services

@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using TECin2.API.Database.Entities;
+using TECin2.ClassLibrary.Entities;
 
 namespace TECin2.API.DTOs
 {
