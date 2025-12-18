@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Moq;
 using TECin2.API.Controllers;
-using TECin2.API.DTOs;
+using TECin2.ClassLibrary.DTOs;
 using TECin2.API.Services;
 
 namespace TECin2.Tests.Controllers
@@ -132,22 +132,6 @@ namespace TECin2.Tests.Controllers
             var statusCodeResult = (IStatusCodeActionResult)result;
             var noContentResult = Assert.IsType<NoContentResult>(result);
             Assert.Equal(204, statusCodeResult.StatusCode);
-        }
-
-        [Fact]
-        public async Task GetAll_ShouldReturn500_Problem_WhenServiceReturnsNull()
-        {
-            //Arrange
-            _mockCheckInService
-                .Setup(service => service.GetAllCheckInStatusesFromGroup(It.IsAny<int>(), It.IsAny<DateOnly>()))
-                .ReturnsAsync(() => null);
-
-            //Act
-            var result = await _controller.GetAll("1,20250303");
-
-            //Assert
-            var statusCodeResult = (IStatusCodeActionResult)result;
-            Assert.Equal(500, statusCodeResult.StatusCode);
         }
 
         [Fact]

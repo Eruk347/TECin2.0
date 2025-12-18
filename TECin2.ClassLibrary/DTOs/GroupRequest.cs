@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using TECin2.ClassLibrary.Entities;
 
 namespace TECin2.ClassLibrary.DTOs
 {
@@ -29,6 +30,6 @@ namespace TECin2.ClassLibrary.DTOs
 
         public bool FlexibleArrivalEnabled { get; set; }
 
-        public TimeOnly? FlexibleAmount { get; set; }
+        public TimeSpan? FlexibleAmount { get; set; }
     }
 }

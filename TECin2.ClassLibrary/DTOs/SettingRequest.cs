@@ -1,4 +1,6 @@
-﻿namespace TECin2.ClassLibrary.DTOs
+﻿using TECin2.ClassLibrary.Entities;
+
+namespace TECin2.ClassLibrary.DTOs
 {
     public class SettingRequest
     {

@@ -1,4 +1,6 @@
-﻿namespace TECin2.ClassLibrary.DTOs
+﻿using TECin2.ClassLibrary.Entities;
+
+namespace TECin2.ClassLibrary.DTOs
 {
     public class InstructorResponse
     {
@@ -9,6 +11,7 @@
         public string? Email { get; set; }
         public required string UserName { get; set; }
         public int PrimaryGroupId { get; set; }
+        public required List<Setting> Settings { get; set; }
         public required List<InstructorGroupResponse> Groups { get; set; }
         public required InstructorRoleResponse Role { get; set; }
     }

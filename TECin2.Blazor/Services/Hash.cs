@@ -47,7 +47,7 @@ namespace TECin2.Blazor.Services
                 hashValue = SHA256.HashData(objUtf8.GetBytes(Encoding.ASCII.GetChars(hashValue)));
             }
 
-            return string.Format("{0}:{1}:{2}", Convert.ToBase64String(hashValue), Convert.ToBase64String(usedSalt), iterations);
+            return string.Format("{0}", Convert.ToBase64String(hashValue));
         }
 
         public static bool Validate(string password, string passwordHash)

@@ -1,11 +1,20 @@
 ﻿@page "/instructors/index"
 @inject NavigationManager NavigationManager
 @inject IHttpContextAccessor HttpContextAccessor
+@inject IDepartmentService _departmentService
+@inject IInstructorService _instructorService
 @using TECin2.ClassLibrary
-@using TECin2.ClassLibrary.DTOs
+@using TECin2.ClassLibrary.DTOs; @using TECin2.ClassLibrary.Entities
 @using TECin2.Blazor.Services
 
 <h3>InstructorsIndex</h3>
+
+@if(IsLoading)
+{
+    <p>Indlæser data...</p>
+}
+else
+{
 <NavLink class="nav-link text-dark" href="/instructors/create">
     <span class="bi" aria-hidden="true"></span> Opret
 </NavLink>
@@ -67,19 +76,12 @@
     </tbody>
 </table>
 <br />
+}
 
 @code {
-    private readonly IInstructorService _instructorService;
-    private readonly IDepartmentService _departmentService;
     private LogInResponse? CurrentUserData { get; set; }
     private bool ShouldRedirectToLogin = false;
     private bool IsLoading = true;
-
-    public InstructorsIndex(IInstructorService instructorService, IDepartmentService departmentService)
-    {
-        _instructorService = instructorService;
-        _departmentService = departmentService;
-    }
 
     public List<Instructor> Instructors { get; set; } = new();
     public List<Department> Departments { get; set; } = new();
@@ -114,6 +116,28 @@
 
     private async Task LoadDataAsync()
     {
-        Instructors = await _instructorService.GetAllInstructors();
+        try
+        {
+            Instructors = await _instructorService.GetAllInstructors();
+            Departments = await _departmentService.GetAllDepartments();
+            //fordel grupper på afdelinger
+            //fordel instruktører i forhold til deres ene gruppe eller primary group
+
+
+
+
+
+
+        }
+        catch(Exception)
+        {
+            throw;
+        }
+        finally
+        {
+            IsLoading = false;
+        }
     }
+
+
 }

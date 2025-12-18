@@ -121,14 +121,14 @@ namespace TECin2.API.Services
         {
             try
             {
-                Group answer =new Group
+                Group answer =new()
                 {
                     Name = groupRequest.Name,
                     Deactivated = groupRequest.Deactivated,
                     DepartmentId = groupRequest.DepartmentId,
                     ArrivalTime = groupRequest.ArrivalTime,
                     IsLateMessagingEnabled = groupRequest.IsLateMessageEnabled,
-                    IsLateBuffer = groupRequest.IsLatebuffer,
+                    IsLateBuffer = groupRequest.IsLateBuffer,
                     IsLateMessage = groupRequest.IsLateMessage ?? "",
                     CheckoutRequired = groupRequest.CheckoutRequired,
                     WorkHoursInDay = groupRequest.WorkHoursInDay,
@@ -205,6 +205,7 @@ namespace TECin2.API.Services
                     Id = user.Id,
                     FirstName = user.FirstName,
                     LastName = user.LastName,
+                    Username = user.Username,
                     Deactivated = user.Deactivated,
                     Email = user.Email,
                     Phonenumber = user.Phonenumber,

@@ -3,7 +3,8 @@
 @using System.Globalization
 @using Microsoft.AspNetCore.Mvc
 @using TECin2.ClassLibrary
-@using TECin2.ClassLibrary.DTOs
+@using TECin2.ClassLibrary.DTOs;
+@using TECin2.ClassLibrary.Entities
 @using TECin2.Blazor.Services
 @inject IHttpContextAccessor HttpContextAccessor
 @inject NavigationManager NavigationManager
@@ -12,94 +13,105 @@
 @inject IDepartmentService _departmentService
 
 <h2>Opret Lærling</h2>
-<h4>Alle felter markeret med '*' er påkrævet</h4>
-<div>
-    <EditForm Model="@Student" method="post" OnValidSubmit="OnPostAsync" Id="instructorForm" FormName="Create">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
-        <div class="row">
-            <div class="col-md-4">
-                <div class="form-group">
-                    <label @bind="Student.FirstName" class="control-label">Fornavn *</label>
-                    <InputText @bind-value="Student.FirstName" class="form-control" />
-                    <span asp-validation-for="Student.FirstName" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label @bind="Student.LastName" class="control-label">Efternavn *</label>
-                    <InputText @bind-value="Student.LastName" class="form-control" />
-                    <span asp-validation-for="Student.LastName" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label @bind="Student.Phonenumber" class="control-label">Telefonnummer</label>
-                    <InputNumber @bind-value="Student.Phonenumber" class="form-control" />
-                    <span asp-validation-for="Student.Phonenumber" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label @bind="Student.Email" class="control-label">Email</label>
-                    <InputText @bind-value="Student.Email" class="form-control" />
-                    <span asp-validation-for="Student.Email" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="Password" class="control-label">CPR-nummer *</label>
-                    <InputText @bind-value="CPR" class="form-control" type="password" />
-                    <span asp-validation-for="CPR" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="ConfirmPassword" class="control-label">Gentag CPR-nummer *</label>
-                    <InputText @bind-value="ConfirmCPR" class="form-control" type="password" />
-                    <span asp-validation-for="ConfirmCPR" class="text-danger"></span>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="form-group">
-                    <label class="control-label h5">Gruppe *</label>
+@if (IsLoading)
+{
+    <div>Loading...</div>
+}
+else
+{
+    <h4>Alle felter markeret med '*' er påkrævet</h4>
+    <div>
+        <EditForm Model="@Student" method="post" OnValidSubmit="OnPostAsync" Id="instructorForm" FormName="Create">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <div class="row">
+                <div class="col-md-4">
                     <div class="form-group">
-                        <InputRadioGroup @bind-Value="Student.GroupId" class="form-check-input">
-                            @foreach (var department in Departments)
-                            {
-                                <h6> Afdeling: @department.Name</h6>
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th>Tilmeld</th>
-                                            <th>Gruppenavn</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @if (department.Groups != null)
-                                        {
-                                            @foreach (var group in department.Groups)
+                        <InputText @bind-value="Student.Username" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label @bind="Student.FirstName" class="control-label">Fornavn *</label>
+                        <InputText @bind-value="Student.FirstName" class="form-control" />
+                        <span asp-validation-for="Student.FirstName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label @bind="Student.LastName" class="control-label">Efternavn *</label>
+                        <InputText @bind-value="Student.LastName" class="form-control" />
+                        <span asp-validation-for="Student.LastName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label @bind="Student.Phonenumber" class="control-label">Telefonnummer</label>
+                        <InputNumber @bind-value="Student.Phonenumber" class="form-control" />
+                        <span asp-validation-for="Student.Phonenumber" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label @bind="Student.Email" class="control-label">Email</label>
+                        <InputText @bind-value="Student.Email" class="form-control" />
+                        <span asp-validation-for="Student.Email" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Password" class="control-label">CPR-nummer *</label>
+                        <InputText @bind-value="CPR" class="form-control" type="password" />
+                        <span asp-validation-for="CPR" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="ConfirmPassword" class="control-label">Gentag CPR-nummer *</label>
+                        <InputText @bind-value="ConfirmCPR" class="form-control" type="password" />
+                        <span asp-validation-for="ConfirmCPR" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="control-label h5">Gruppe *</label>
+                        <div class="form-group">
+                            <InputRadioGroup @bind-Value="Student.GroupId" class="form-check-input">
+                                @foreach (var department in Departments)
+                                {
+                                    <h6> Afdeling: @department.Name</h6>
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Tilmeld</th>
+                                                <th>Gruppenavn</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (department.Groups != null)
                                             {
-                                                if (group != null)
+                                                @foreach (var group in department.Groups)
                                                 {
-                                                    <tr>
-                                                        <td><InputRadio Value="@group.Id" id="@group.Id" /></td>
-                                                        <td>@group.Name</td>
+                                                    if (group != null)
+                                                    {
+                                                        <tr>
+                                                            <td><InputRadio Value="@group.Id" id="@group.Id" /></td>
+                                                            <td>@group.Name</td>
 
-                                                    </tr>
+                                                        </tr>
+                                                    }
                                                 }
                                             }
-                                        }
-                                    </tbody>
-                                </table>
-                            }
-                        </InputRadioGroup>
+                                        </tbody>
+                                    </table>
+                                }
+                            </InputRadioGroup>
+                        </div>
+                        <span asp-validation-for="instructor.RoleId" class="text-danger"></span>
                     </div>
-                    <span asp-validation-for="instructor.RoleId" class="text-danger"></span>
                 </div>
             </div>
-        </div>
-        <p />
-        <input type="submit" value="Opret" class="btn btn-primary" />
-        <button class="btn btn-secondary" @onclick="GoToIndex">Annuller</button>
-    </EditForm>
-</div>
+            <p />
+            <input type="submit" value="Opret" class="btn btn-primary" />
+            <button class="btn btn-secondary" @onclick="GoToIndex">Annuller</button>
+        </EditForm>
+    </div>
+}
+
 @code {
     private bool ShouldRedirectToLogin = false;
     private bool IsLoading = true;
 
     [SupplyParameterFromForm]
-    private StudentRequest Student { get; set; } = new StudentRequest { FirstName = "", LastName = "", Username = "", IsStudent = true };
+    private StudentRequest Student { get; set; } = new StudentRequest { FirstName = "", LastName = "", Username = " ", IsStudent = true };
     [SupplyParameterFromForm]
     private string CPR { get; set; } = "";
     [SupplyParameterFromForm]
@@ -188,6 +200,7 @@
 
     public async Task<IActionResult?> OnPostAsync()
     {
+        Student.Username = Student.FirstName + Student.LastName;
         if (CPR == ConfirmCPR)
             Student.CPR = CPR;
 

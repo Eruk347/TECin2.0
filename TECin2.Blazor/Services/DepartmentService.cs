@@ -1,5 +1,6 @@
-﻿using TECin2.ClassLibrary;
-using TECin2.ClassLibrary.DTOs;
+﻿using TECin2.ClassLibrary.DTOs;
+using TECin2.ClassLibrary.Entities;
+using static System.Net.WebRequestMethods;
 
 namespace TECin2.Blazor.Services
 {
@@ -78,7 +79,7 @@ namespace TECin2.Blazor.Services
                     if (result == null)
                         return [];
 
-                    return [.. result.Select(dep => MapDepartmentResponseToDepartment(dep))];
+                    return [.. result.Select(MapDepartmentResponseToDepartment)];
                 }
             }
             catch (Exception e)
@@ -140,6 +141,7 @@ namespace TECin2.Blazor.Services
                 return null;
             try
             {
+                List<Group?> groups = departmentResponse.Groups.Select(group => MapDepartmentGroupResponseToGroup(group, departmentResponse.Id)).ToList() ?? [];
                 Department answer = new()
                 {
                     Name = departmentResponse.Name,
@@ -153,7 +155,7 @@ namespace TECin2.Blazor.Services
                         Deactivated = departmentResponse.School.Deactivated,
                         Principal = departmentResponse.School.Principal
                     },
-                    Groups = departmentResponse.Groups.Select(group => MapDepartmentGroupResponseToGroup(group, departmentResponse.Id)).ToList() ?? []
+                    Groups = [.. groups.Where(g => g != null).Cast<Group>()]
                 };
                 return answer;
             }

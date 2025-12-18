@@ -4,6 +4,8 @@ namespace TECin2.ClassLibrary.DTOs
 {
     public class StudentRequest
     {
+        public string? Username { get; set; }
+
         [Required]
         [StringLength(50)]
         public required string FirstName { get; set; }
@@ -17,13 +19,8 @@ namespace TECin2.ClassLibrary.DTOs
         [StringLength(50)]
         public string? Email { get; set; }
 
-        [Required]
-        [StringLength(100)]
-        public required string Username { get; set; }
-
-        public string? CPR { get; set; }//kan ikke være required for put(update) ellers skal cpr nummer tastes ind ved opdateringer
-
         public int GroupId { get; set; }
+
         [Required]
         public bool IsStudent { get; set; }
 
@@ -32,6 +29,8 @@ namespace TECin2.ClassLibrary.DTOs
         public bool Deactivated { get; set; }
 
         public DateOnly? LastCheckin { get; set; }
+
+        public string? CPR { get; set; }//kan ikke være required for put(update) ellers skal cpr nummer tastes ind ved opdateringer
 
     }
 }

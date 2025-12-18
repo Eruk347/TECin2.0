@@ -1,69 +1,77 @@
 ﻿@page "/departments/index"
-@using TECin2.ClassLibrary
-@using TECin2.ClassLibrary.DTOs
+@using TECin2.ClassLibrary.DTOs;
+@using TECin2.ClassLibrary.Entities
 @using TECin2.Blazor.Services
 @inject NavigationManager NavigationManager
 @inject IHttpContextAccessor HttpContextAccessor
+
 <h3>Afdelinger</h3>
 
-<a href="/departments/create">Ny afdeling</a>
-<a href="/groups/create">Ny gruppe</a>
-<br />
-@foreach (var _department in Departments!)
+@if (IsLoading)
 {
-    <h3>
-        <a href="/departments/details/@_department.Id">@_department.Name</a>
-    </h3>
-    <table class="table">
-        <thead>
-            <tr>
-                <th width="200px">
-
-                </th>
-                <th>
-                    Mødetid
-                </th>
-                <th>
-                    Fremmødt
-                </th>
-                <th>
-                    Forsinket
-                </th>
-                <th>
-                    Fraværende
-                </th>
-                <th>
-                    I alt
-                </th>
-                <th>
-                    <a href="/departments/edit/@_department.Id">Rediger</a> |
-                    <a href="/departments/delete/@_department.Id">Slet</a>
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (Group _group in _department.Groups!)
-            {
-                <tr>
-                    <td>
-                        <a href="/groups/details/@_group.Id">@_group.Name</a>
-                    </td>
-                    <td>
-                        @_group.ArrivalTime
-                    </td>
-                    <td />
-                    <td />
-                    <td />
-                    <td />
-                    <td>
-                        <a href="/groups/edit/@_group.Id">Rediger</a> |
-                        <a href="/groups/delete/@_group.Id">Slet</a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <p>Henter data</p>
+}
+else
+{
+    <a href="/departments/create">Ny afdeling</a>
+    <a href="/groups/create">Ny gruppe</a>
     <br />
+    @foreach (var _department in Departments!)
+    {
+        <h3>
+            <a href="/departments/details/@_department.Id">@_department.Name</a>
+        </h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th width="200px">
+
+                    </th>
+                    <th>
+                        Mødetid
+                    </th>
+                    <th>
+                        Fremmødt
+                    </th>
+                    <th>
+                        Forsinket
+                    </th>
+                    <th>
+                        Fraværende
+                    </th>
+                    <th>
+                        I alt
+                    </th>
+                    <th>
+                        <a href="/departments/edit/@_department.Id">Rediger</a> |
+                        <a href="/departments/delete/@_department.Id">Slet</a>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Group _group in _department.Groups!)
+                {
+                    <tr>
+                        <td>
+                            <a href="/groups/details/@_group.Id">@_group.Name</a>
+                        </td>
+                        <td>
+                            @_group.ArrivalTime
+                        </td>
+                        <td />
+                        <td />
+                        <td />
+                        <td />
+                        <td>
+                            <a href="/groups/edit/@_group.Id">Rediger</a> |
+                            <a href="/groups/delete/@_group.Id">Slet</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <br />
+    }
 }
 
 

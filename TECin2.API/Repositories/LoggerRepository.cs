@@ -1,4 +1,4 @@
-﻿using TECin2.ClassLibrary.DTOs;
+﻿using TECin2.API.Database;
 using TECin2.ClassLibrary.Entities;
 
 namespace TECin2.API.Repositories

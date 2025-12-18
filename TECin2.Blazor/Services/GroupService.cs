@@ -1,5 +1,6 @@
-﻿using TECin2.ClassLibrary;
+﻿//using TECin2.Blazor.Models;
 using TECin2.ClassLibrary.DTOs;
+using TECin2.ClassLibrary.Entities;
 
 namespace TECin2.Blazor.Services
 {
@@ -193,11 +194,37 @@ namespace TECin2.Blazor.Services
         {
             try
             {
+                ICollection<User> users = [];
+
+                foreach (var student in students)
+                {
+                    if (student != null)
+                        users.Add(new User
+                        {
+                            Id = student.Id,
+                            FirstName = student.FirstName,
+                            LastName = student.LastName,
+                            Salt = "",
+                            Username = student.Username,
+                        });
+
+                }
+
+                //users = (ICollection<User>)(students == null ? [] : students.Select(student => new User
+                //{
+                //    Id = student.Id,
+                //    FirstName = student.FirstName,
+                //    LastName = student.LastName,
+                //    Salt = "",
+                //    Username = student.Username,
+                //}) ?? []);
+
+
                 Group answer = new()
                 {
                     Id = groupResponse.Id,
                     ArrivalTime = groupResponse.ArrivalTime,
-                    IsLateMessageEnabled = groupResponse.IsLateMessageEnabled,
+                    IsLateMessagingEnabled = groupResponse.IsLateMessageEnabled,
                     IsLateBuffer = groupResponse.IsLateBuffer,
                     IsLateMessage = groupResponse.IsLateMessage ?? "",
                     Deactivated = groupResponse.Deactivated,
@@ -213,7 +240,7 @@ namespace TECin2.Blazor.Services
                     DepartmentId = groupResponse.Department.Id,
                     CheckoutRequired = groupResponse.CheckoutRequired,
                     WorkHoursInDay = groupResponse.WorkHoursInDay,
-                    Students = students,
+                    Users = users,
                 };
                 return answer;
             }

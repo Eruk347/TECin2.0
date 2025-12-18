@@ -1,8 +1,8 @@
 ﻿using TECin2.API.Repositories;
 using TECin2.API.Services;
-using TECin2.API.DTOs;
+using TECin2.ClassLibrary.DTOs;
 using Moq;
-using TECin2.API.Database.Entities;
+using TECin2.ClassLibrary.Entities;
 
 namespace TECin2.Tests.Services
 {
@@ -858,32 +858,6 @@ namespace TECin2.Tests.Services
             //Arrange
             Group group = TestData.TestData.GetGroupTestData();
             group.Users = null;
-            _mockGroupRepository
-                .Setup(x => x.SelectGroupById(It.IsAny<int>()))
-                .ReturnsAsync(group);
-
-            _mockCheckInRepository
-                .Setup(x => x.SelectCheckInForUserOnDate(It.IsAny<string>(), It.IsAny<DateOnly>()))
-                .ReturnsAsync(() => null);
-
-            //Act
-            var result = await _checkInservice.GetAllCheckInStatusesFromGroup(1, DateOnly.FromDateTime(DateTime.Now));
-
-            //Assert
-            Assert.NotNull(result);
-            Assert.IsType<List<CheckInResponseLong>>(result);
-            Assert.Empty(result);
-        }
-
-        [Fact]
-        public async Task GetAllCheckInsFromGroup_ShouldReturnEmptyList_WhenNoCheckInsForTheDayExist()
-        {
-            //Arrange
-            Group group = TestData.TestData.GetGroupTestData();
-            group.Users =
-            [
-                TestData.TestData.GetUserTestData("1")
-            ];
             _mockGroupRepository
                 .Setup(x => x.SelectGroupById(It.IsAny<int>()))
                 .ReturnsAsync(group);

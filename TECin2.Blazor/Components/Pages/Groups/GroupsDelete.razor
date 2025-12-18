@@ -4,6 +4,7 @@
 @using TECin2.ClassLibrary
 @using TECin2.Blazor.Services
 @using TECin2.ClassLibrary.DTOs
+@using TECin2.ClassLibrary.Entities
 @rendermode InteractiveServer
 @inject NavigationManager NavigationManager
 @inject IHttpContextAccessor HttpContextAccessor
@@ -147,9 +148,17 @@
                 return;
             }
             Group = group;
-            if (group.Students != null)
-                Students = group.Students;
-
+            if (group.Users != null)
+                Students = [.. group.Users.Select(student=>new Student
+            {
+                    Id = student.Id,
+                    FirstName = student.FirstName,
+                    LastName = student.LastName,
+                    Phonenumber = student.Phonenumber,
+                    Email = student.Email,
+                    LastCheckIn = student.LastCheckin,
+                    Username = student.Username,
+            })];
             if (CurrentUserData!.RoleRank < 3)
                 Groups = (await _groupService.GetAllGroups()).Where(g => g != null && g.Id != Id).ToList();
         }

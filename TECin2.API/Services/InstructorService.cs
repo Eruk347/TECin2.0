@@ -9,7 +9,7 @@ namespace TECin2.API.Services
         Task<InstructorResponse?> CreateInstructor(InstructorRequest newInstructor, string accesstoken);
         Task<InstructorResponse?> DeleteInstructor(string instructorId, string accesstoken);
         Task<List<InstructorResponse?>> GetAllInstructors();
-        Task<InstructorResponse?> GetInstruktoById(string instructorId);
+        Task<InstructorResponse?> GetInstructorById(string instructorId);
         Task<InstructorResponse?> UpdateInstructor(string instructorId, InstructorRequest updateInstructor, string accesstoken);
     }
     public class InstructorService(IPasswordRepository passwordRepository
@@ -107,7 +107,7 @@ namespace TECin2.API.Services
             return [.. users.Select(instructor => MapUserToInstructorResponse(instructor))];
         }
 
-        public async Task<InstructorResponse?> GetInstruktoById(string instructorId)
+        public async Task<InstructorResponse?> GetInstructorById(string instructorId)
         {
             User? user = await _userRepository.SelectUserById(instructorId);
             if (user != null)
@@ -172,7 +172,7 @@ namespace TECin2.API.Services
                 return new User
                 {
                     Id = _id,
-                    Username = instructorRequest.Username,
+                    Username = instructorRequest.UserName,
                     FirstName = instructorRequest.FirstName,
                     LastName = instructorRequest.LastName,
                     Phonenumber = instructorRequest.Phonenumber,
@@ -256,7 +256,7 @@ namespace TECin2.API.Services
                     LastName = user.LastName,
                     Email = user.Email,
                     Phonenumber = user.Phonenumber,
-                    Username = user.Username,
+                    UserName = user.Username,
                     PrimaryGroupId = user.PrimaryGroupId,
                     Groups = [.. user.Groups.Select(group => new InstructorGroupResponse
                     {
@@ -272,7 +272,8 @@ namespace TECin2.API.Services
                         Name = role.Name,
                         Description = role.Description,
                         Rank = role.Rank
-                    }
+                    },
+                    Settings = user.Settings ?? []
                 };
                 return response;
             }

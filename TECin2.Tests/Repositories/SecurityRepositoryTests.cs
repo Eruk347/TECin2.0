@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TECin2.API.Database;
-using TECin2.API.Database.Entities;
+using TECin2.ClassLibrary.Entities;
 using TECin2.API.Repositories;
 
 namespace TECin2.Tests.Repositories

@@ -4,6 +4,7 @@
 @using TECin2.ClassLibrary
 @using TECin2.Blazor.Services
 @using TECin2.ClassLibrary.DTOs
+@using TECin2.ClassLibrary.Entities
 @rendermode InteractiveServer
 @inject NavigationManager NavigationManager
 @inject IHttpContextAccessor HttpContextAccessor
@@ -58,7 +59,7 @@
 
                 <div class="form-group">
                     <label class="control-label h5">Vises der en besked ved forsinkelse? </label>
-                    @if (Group.IsLateMessageEnabled)
+                    @if (Group.IsLateMessagingEnabled)
                     {
                         <span>Ja.<br /> Beskeden der vises er: @Group.IsLateMessage</span>
                         <br />
@@ -84,7 +85,7 @@
                             {
 
                                 <label class="control-label">Ja - Flekstiden er: </label>
-                                <span>@Group.FlexibleAmount!.Value.Hour timer og  @Group.FlexibleAmount.Value.Minute minutter.</span>
+                                <span>@Group.FlexibleAmount!.Value.Hours timer og  @Group.FlexibleAmount.Value.Minutes minutter.</span>
 
                             }
                             else
@@ -213,8 +214,17 @@
                 return;
             }
             Group = group;
-            if (group.Students != null)
-                Students = group.Students;
+            if (group.Users != null)
+                Students = [.. group.Users.Select(student=>new Student
+            {
+                    Id = student.Id,
+                    FirstName = student.FirstName,
+                    LastName = student.LastName,
+                    Phonenumber = student.Phonenumber,
+                    Email = student.Email,
+                    LastCheckIn = student.LastCheckin,
+                    Username = student.Username,
+            })];
         }
         catch (Exception)
         {

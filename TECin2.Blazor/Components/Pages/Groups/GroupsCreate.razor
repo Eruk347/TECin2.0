@@ -3,7 +3,8 @@
 @using Microsoft.AspNetCore.Mvc.Rendering
 @using TECin2.ClassLibrary
 @using TECin2.Blazor.Services
-@using TECin2.ClassLibrary.DTOs
+@using TECin2.ClassLibrary.DTOs;
+@using TECin2.ClassLibrary.Entities
 @rendermode InteractiveServer
 @inject NavigationManager NavigationManager
 @inject IHttpContextAccessor HttpContextAccessor
@@ -268,7 +269,7 @@ else
                 WorkHoursInDay.Friday = _friday.ToTimeSpan();
                 Group.WorkHoursInDay = WorkHoursInDay;
                 Group.FlexibleArrivalEnabled = true;
-                Group.FlexibleAmount = FlexTimes;
+                Group.FlexibleAmount = new(FlexTimes.Hour, FlexTimes.Minute, FlexTimes.Second);
             }
 
         if (Group.IsLateMessageEnabled)
@@ -285,7 +286,7 @@ else
 
         Group.Deactivated = false;
 
-        var result = await _groupService.CreateGroup(Group);
+        Group? result = await _groupService.CreateGroup(Group);
         if (result != null)
         {
             NavigationManager.NavigateTo($"/groups/details/{result.Id}", true);

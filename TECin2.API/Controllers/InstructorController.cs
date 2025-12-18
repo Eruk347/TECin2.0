@@ -47,7 +47,7 @@ namespace TECin2.API.Controllers
         {
             try
             {
-                InstructorResponse? instructorResponse = await _instructorService.GetInstruktoById(instructorId);
+                InstructorResponse? instructorResponse = await _instructorService.GetInstructorById(instructorId);
 
                 if (instructorResponse == null)
                 {

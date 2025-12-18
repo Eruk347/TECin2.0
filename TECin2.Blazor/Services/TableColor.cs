@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
-using TECin2.ClassLibrary;
+using TECin2.ClassLibrary.Entities;
 using TECin2.ClassLibrary.DTOs;
 
 namespace TECin2.Blazor.Services

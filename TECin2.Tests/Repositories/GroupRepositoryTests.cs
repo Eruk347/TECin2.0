@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TECin2.API.Database.Entities;
+using TECin2.ClassLibrary.Entities;
 using TECin2.API.Database;
 using TECin2.API.Repositories;
 
@@ -52,6 +52,8 @@ namespace TECin2.Tests.Repositories
                 IsLateBuffer = new(),
                 IsLateMessage = "",
             });
+
+            _context.WorkHoursInDay.Add(TestData.TestData.GetWorkHoursInDayTestData());
 
             await _context.SaveChangesAsync();
 
@@ -109,6 +111,8 @@ namespace TECin2.Tests.Repositories
                 IsLateBuffer = new(),
                 IsLateMessage = "",
             };
+
+            _context.WorkHoursInDay.Add(TestData.TestData.GetWorkHoursInDayTestData());
 
             //Act
             var result = await _repository.InsertNewGroup(newGroup);
@@ -231,6 +235,8 @@ namespace TECin2.Tests.Repositories
                 IsLateMessage = "",
             });
 
+            _context.WorkHoursInDay.Add(TestData.TestData.GetWorkHoursInDayTestData());
+
             await _context.SaveChangesAsync();
 
             //Act
@@ -283,13 +289,13 @@ namespace TECin2.Tests.Repositories
                 Deactivated = false,
                 ArrivalTime = new(),
                 DepartmentId = 1,
-               WorkHoursInDayId = 1,
+                WorkHoursInDayId = 1,
                 FlexibleArrivalEnabled = true,
                 FlexibleAmount = new(),
                 IsLateBuffer = new(),
                 IsLateMessage = "",
             });
-
+            _context.WorkHoursInDay.Add(TestData.TestData.GetWorkHoursInDayTestData());
             await _context.SaveChangesAsync();
 
             //Act
@@ -356,8 +362,8 @@ namespace TECin2.Tests.Repositories
                 IsLateBuffer = new(),
                 IsLateMessage = "",
             };
-
-            _context.Add(newGroup);
+            _context.WorkHoursInDay.Add(TestData.TestData.GetWorkHoursInDayTestData());
+            _context.Group.Add(newGroup);
             await _context.SaveChangesAsync();
 
             Group Update = new()

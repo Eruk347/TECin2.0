@@ -5,7 +5,7 @@
 @inject NavigationManager NavigationManager
 @using TECin2.ClassLibrary
 @using TECin2.Blazor.Services
-@using TECin2.ClassLibrary.DTOs
+@using TECin2.ClassLibrary.DTOs; @using TECin2.ClassLibrary.Entities
 @inject NavigationManager NavigationManager
 @inject IHttpContextAccessor HttpContextAccessor
 @inject IInstructorService _instructorService
@@ -29,7 +29,7 @@ oversigt ved lærlinge detaljer
                 <DataAnnotationsValidator />
                 <ValidationSummary />
                 <div>
-                    <input type="hidden" asp-for="Instructor.Id" />
+                    <input type="hidden" asp-for="_id" />
                     <input type="hidden" asp-for="Instructor.UserName" />
                     <input type="hidden" asp-for="Instructor.FirstName" />
                     <input type="hidden" asp-for="Instructor.LastName" />
@@ -100,6 +100,9 @@ oversigt ved lærlinge detaljer
     [Parameter]
     public required string Id { get; set; }
 
+
+    [SupplyParameterFromForm]
+    private string _id { get; set; } = "";
     [SupplyParameterFromForm]
     private InstructorRequest Instructor { get; set; } = new InstructorRequest { FirstName = "", LastName = "", UserName = "" };
     [SupplyParameterFromForm]
@@ -114,6 +117,7 @@ oversigt ved lærlinge detaljer
     private LogInResponse? CurrentUserData { get; set; }
     private bool ShouldRedirectToLogin = false;
     private List<Setting?> Settings { get; set; } = [];
+    private List<int> Groups { get; set; }=[];
 
     protected override async Task OnInitializedAsync()
     {
@@ -144,8 +148,10 @@ oversigt ved lærlinge detaljer
         try
         {
             var instructor = await _instructorService.GetInstructorById(CurrentUserData!.Id);
-
+            _id = CurrentUserData!.Id;
             if (instructor != null)
+            {
+                Groups = [.. instructor.Groups.Select(g => g.Id)];
                 Instructor = new InstructorRequest
                 {
                     FirstName = instructor.FirstName,
@@ -153,13 +159,25 @@ oversigt ved lærlinge detaljer
                     UserName = instructor.UserName,
                     Email = instructor.Email,
                     Phonenumber = instructor.Phonenumber,
-                    Password = ""
+                    Password = "",
+                    Groups=[..instructor.Groups.Select(g => g.Id)],
+                    RoleId=instructor.Role.Id,
+                    Settings=instructor.Settings
                 };
+            }
             else
                 NavigationManager.NavigateTo("/login", true);
 
             Settings = await _settingService.GetAllSettings();
 
+            
+            foreach (var setting in Instructor.Settings!)
+            {
+                if(setting.Name=="SeeAllInCheckIn")
+                    seeCheckedIn = true;
+                if(setting.Name=="SeeAllInStudentDetails")
+                    seeStudentDetails = true;
+            }
         }
         catch (Exception)
         {
@@ -170,6 +188,7 @@ oversigt ved lærlinge detaljer
             IsLoading = false;
         }
     }
+
     public async Task<IActionResult?> OnPostAsync()
     {
         if (Password == ConfirmPassword && Password != null && Password != "")
@@ -177,6 +196,7 @@ oversigt ved lærlinge detaljer
 
         Instructor.IsStudent = false;
         Instructor.Deactivated = false;
+        Instructor.Groups = Groups;
 
         if (seeCheckedIn)
         {
@@ -186,11 +206,11 @@ oversigt ved lærlinge detaljer
 
         if (seeStudentDetails)
         {
-            Setting? item = Settings.FirstOrDefault(s => s!.Name == "SeeAllInStudentDeails");
+            Setting? item = Settings.FirstOrDefault(s => s!.Name == "SeeAllInStudentDetails");
             Instructor.Settings!.Add(item!);
         }
 
-        var result = await _instructorService.UpdateInstructor(Instructor, Id);
+        var result = await _instructorService.UpdateInstructor(Instructor, _id);
         if (result != null)
         {
             NavigationManager.NavigateTo("/instructors/index", true);

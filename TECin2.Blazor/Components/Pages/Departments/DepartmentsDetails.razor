@@ -4,6 +4,7 @@
 @using TECin2.ClassLibrary
 @using TECin2.Blazor.Services
 @using TECin2.ClassLibrary.DTOs
+@using TECin2.ClassLibrary.Entities
 @rendermode InteractiveServer
 @inject NavigationManager NavigationManager
 @inject IHttpContextAccessor HttpContextAccessor
@@ -29,7 +30,7 @@
             <div class="form-group">
                 @foreach (Group _group in Department.Groups!)
                 {
-                        @_group.Name
+                    @_group.Name
                 }
             </div>
             <p></p>
@@ -85,19 +86,19 @@
         try
         {
             var department = await _departmentService.GetDepartmentById(Id);
-            if (department == null)
+            if (department==null)
             {
                 NavigationManager.NavigateTo("/departments/index", true);
                 return;
             }
-            Department = department;
+            Department = department!;
 
-            var departmentHead = await _instructorService.GetInstructorById(department.DepartmentHead!);
+            var departmentHead = await _instructorService.GetInstructorById(department!.DepartmentHead!);
             if (departmentHead == null)
             {
                 NavigationManager.NavigateTo("/departments/index", true);
                 return;
-            }
+            } 
             DepartmentHead = departmentHead;
         }
         catch (Exception)

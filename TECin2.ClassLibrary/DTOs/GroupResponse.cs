@@ -1,4 +1,6 @@
-﻿namespace TECin2.ClassLibrary.DTOs
+﻿using TECin2.ClassLibrary.Entities;
+
+namespace TECin2.ClassLibrary.DTOs
 {
     public class GroupResponse
     {
@@ -7,7 +9,7 @@
         public bool Deactivated { get; set; }
         public required TimeOnly ArrivalTime { get; set; }
         public bool FlexibleArrivalEnabled { get; set; }
-        public TimeOnly? FlexibleAmount { get; set; }
+        public TimeSpan? FlexibleAmount { get; set; }
         public bool IsLateMessageEnabled { get; set; }
         public TimeOnly? IsLateBuffer { get; set; }
         public string? IsLateMessage { get; set; }

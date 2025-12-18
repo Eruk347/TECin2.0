@@ -1,26 +1,21 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TECin2.ClassLibrary.DTOs;
+using TECin2.API.Database;
 using TECin2.ClassLibrary.Entities;
 
 namespace TECin2.API.Repositories
 {
     public interface IPasswordRepository
     {
-
         Task<Password?> DeletePassword(string userId);
         Task<Password?> InsertNewPassword(Password newPassword);
         Task<Password?> SelectPassword(string userId);
         Task<Password?> UpdatePassword(Password updatePassword);
     }
 
-    public class PasswordRepository : IPasswordRepository
+    public class PasswordRepository(TECinContext2 context2) : IPasswordRepository
     {
-        private readonly TECinContext2 _context2;
+        private readonly TECinContext2 _context2 = context2;
 
-        public PasswordRepository(TECinContext2 context2)
-        {
-            _context2 = context2;
-        }
         private void WriteToLog(string task, Exception e)
         {
             LoggerRepository.WriteLog("Error caught in " + this.GetType().Name + " in method " + task + ": " + e.InnerException + " " + e.Message);

@@ -1,5 +1,5 @@
 ﻿@using TECin2.ClassLibrary
-@using TECin2.ClassLibrary.DTOs
+@using TECin2.ClassLibrary.DTOs; @using TECin2.ClassLibrary.Entities
 @inject NavigationManager NavigationManager
 
 <div class="row">
@@ -16,7 +16,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in Group.Students!)
+                @foreach (var item in Group.Users!)
                 {
                     <tr>
                         <td>                            
@@ -25,7 +25,7 @@
                         <td>@item.LastName</td>
                         <td>@item.Phonenumber</td>
                         <td>@item.Email</td>
-                        <td>@item.LastCheckIn</td>
+                        <td>@item.LastCheckin</td>
                         <td>
                             <a href="/students/edit/@item.Id">Rediger</a> |
                             <a href="/students/delete/@item.Id">Slet</a>
@@ -49,7 +49,7 @@
 
     protected override void OnInitialized()
     {
-        for (int i = 0; i < Group.Students!.Count; i++)
+        for (int i = 0; i < Group.Users!.Count; i++)
             TotalStudents++;
     }
 

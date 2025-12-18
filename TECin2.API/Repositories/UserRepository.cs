@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TECin2.ClassLibrary.DTOs;
+using TECin2.API.Database;
 using TECin2.ClassLibrary.Entities;
 
 namespace TECin2.API.Repositories
@@ -127,6 +127,7 @@ namespace TECin2.API.Repositories
             {
                 return await _context.User
                     .Include(s => s.Groups)
+                    .Include(s => s.Settings)
                     .Include(r => r.Role)
                     .FirstOrDefaultAsync(user => user.Id == userId);
             }
@@ -165,6 +166,7 @@ namespace TECin2.API.Repositories
                     .FirstOrDefaultAsync(user => user.Id == userId);
                 if (updatedUser != null)
                 {
+                    updatedUser.Settings = [];
                     updatedUser.Groups = [];
                     await _context.SaveChangesAsync();
                 }

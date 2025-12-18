@@ -5,6 +5,7 @@ using System.Text;
 using TECin2.ClassLibrary.DTOs;
 using TECin2.API.Repositories;
 using TECin2.API.Services;
+using TECin2.API.Database;
 
 namespace TECin2.API
 {

@@ -4,6 +4,7 @@
 @using TECin2.ClassLibrary
 @using TECin2.Blazor.Services
 @using TECin2.ClassLibrary.DTOs
+@using TECin2.ClassLibrary.Entities
 @rendermode InteractiveServer
 @inject NavigationManager NavigationManager
 @inject IHttpContextAccessor HttpContextAccessor
@@ -133,7 +134,7 @@
     private async Task DeleteDepartment()
     {
         var department = await _departmentService.DeleteDepartment(Id);
-        if (department != null)
+        if (department!=null)
         {
             NavigationManager.NavigateTo("/departments/index", true);
         }

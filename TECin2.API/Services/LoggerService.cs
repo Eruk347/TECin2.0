@@ -169,10 +169,10 @@ namespace TECin2.API.Services
         public async Task<bool> WriteLog(string _action, string _accessToken, User _entity)
         {
             string _message;
-            if (_entity.IsStudent)
-                _message = "Instruktor";
-            else
+            if (_entity.IsStudent)//
                 _message = "Student";
+            else
+                _message = "Instruktor";
 
             if (_action == "Create")
             {
@@ -198,7 +198,7 @@ namespace TECin2.API.Services
         public async Task<bool> WriteLog(string _accessToken, User _originalEntity, User _updatedEntity)
         {
             string _message;
-            if (_originalEntity.IsStudent)
+            if (!_originalEntity.IsStudent)
                 _message = "Instruktor";
             else
                 _message = "Student";

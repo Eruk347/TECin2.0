@@ -3,7 +3,7 @@
 @using Microsoft.AspNetCore.Mvc.Rendering
 @using TECin2.ClassLibrary
 @using TECin2.Blazor.Services
-@using TECin2.ClassLibrary.DTOs
+@using TECin2.ClassLibrary.DTOs; @using TECin2.ClassLibrary.Entities
 @rendermode InteractiveServer
 @inject NavigationManager NavigationManager
 @inject IHttpContextAccessor HttpContextAccessor
@@ -48,7 +48,7 @@
                             Gruppe:
                         </td>
                         <td>
-                            @Student.Group.Name
+                            @Student.Group!.Name
                         </td>
                     </tr>
                 </tbody>
@@ -116,13 +116,9 @@
     }
     private async Task OnPostAsync(string id)
     {
-        var student = await _studentService.DeleteStudent(id);
+        bool student = await _studentService.DeleteStudent(id);
 
-        if (student == null)
-        {
-
-        }
-        else if (student != null)
+        if (student )
         {
             NavigationManager.NavigateTo("/students/index", true);
             return;
@@ -136,16 +132,11 @@
 
     private async Task DeleteInstructor()
     {
-        var instruktor = await _studentService.DeleteStudent(Student.Id);
+        bool success = await _studentService.DeleteStudent(Student.Id);
 
-        if (instruktor == null)
-        {
-
-        }
-        else if (instruktor != null)
+        if (!success)
         {
             NavigationManager.NavigateTo("/students/index", true);
-
         }
     }
 }

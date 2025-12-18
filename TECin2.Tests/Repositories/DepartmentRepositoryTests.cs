@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TECin2.API.Database;
-using TECin2.API.Database.Entities;
+using TECin2.ClassLibrary.Entities;
 using TECin2.API.Repositories;
 
 namespace TECin2.Tests.Repositories
@@ -29,6 +29,16 @@ namespace TECin2.Tests.Repositories
             //Arrange
             await _context.Database.EnsureDeletedAsync();
             int departmentId = 1;
+
+            int schoolId = 1;
+            _context.School.Add(new()
+            {
+                Id = schoolId,
+                Name = "Test School",
+                Deactivated = false,
+                Principal = null
+            });
+
             _context.Department.Add(new()
             {
                 Id = departmentId,
@@ -265,6 +275,14 @@ namespace TECin2.Tests.Repositories
             //Arrange
             await _context.Database.EnsureDeletedAsync();
             string name = "Data";
+            int schoolId = 1;
+            _context.School.Add(new()
+            {
+                Id = schoolId,
+                Name = "Test School",
+                Deactivated = false,
+                Principal = null
+            });
             _context.Department.Add(new()
             {
                 Id = 1,
@@ -308,6 +326,15 @@ namespace TECin2.Tests.Repositories
             await _context.Database.EnsureDeletedAsync();
 
             int departmentId = 1;
+
+            int schoolId = 1;
+            _context.School.Add(new()
+            {
+                Id = schoolId,
+                Name = "Test School",
+                Deactivated = false,
+                Principal = null
+            });
 
             Department newDepartment = new()
             {

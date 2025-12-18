@@ -90,7 +90,7 @@ namespace TECin2.API.Services
             }
             user.RoleId = role.Id;
 
-
+            var _exists = await _securityRepository.SelectSecurityNumbByCPR(securityNumb.Cipher);
             if (await _securityRepository.SelectSecurityNumbByCPR(securityNumb.Cipher) == null)
             {
                 User? insertedUser = await _userRepository.InsertNewUser(user);

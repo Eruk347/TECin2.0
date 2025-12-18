@@ -1,4 +1,6 @@
-﻿namespace TECin2.ClassLibrary.DTOs
+﻿using TECin2.ClassLibrary.Entities;
+
+namespace TECin2.ClassLibrary.DTOs
 {
     public class StudentResponse
     {
@@ -7,7 +9,7 @@
         public required string LastName { get; set; }
         public int? Phonenumber { get; set; }
         public string? Email { get; set; }
-        public required string Username { get; set; }
+        public string? Username { get; set; }
         public DateOnly? LastCheckin { get; set; }
         public bool Deactivated { get; set; }
         public required StudentGroupResponse Group { get; set; }
@@ -22,7 +24,7 @@
         public TimeOnly? IsLateBuffer { get; set; }
         public WorkHoursInDay? WorkHoursInDay { get; set; }
         public bool FlexibleArrivalEnabled { get; set; }
-        public TimeOnly? FlexibleAmount { get; set; }
+        public TimeSpan? FlexibleAmount { get; set; }
     }
 
     public class StudentCheckInStatusResponse

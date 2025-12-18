@@ -1,6 +1,5 @@
-﻿using TECin2.ClassLibrary;
-using TECin2.ClassLibrary.DTOs;
-using TECin2.Blazor.Services;
+﻿using TECin2.ClassLibrary.DTOs;
+using TECin2.ClassLibrary.Entities;
 
 namespace TECin2.Blazor.Services
 {
@@ -156,9 +155,9 @@ namespace TECin2.Blazor.Services
 
         public async Task<Instructor?> UpdateInstructor(InstructorRequest updateInstructor, string InstructorId)
         {
-            if (updateInstructor.Password != null)// || updateInstructor.Password != "")
+            if (updateInstructor.Password != null)//|| updateInstructor.Password != "")
             {
-                updateInstructor.Password = Hash.HashPassword(updateInstructor.Password, updateInstructor.Password);
+                updateInstructor.Password = Hash.HashPassword(updateInstructor.Password!, updateInstructor.Password!);
             }
             try
             {
@@ -197,14 +196,15 @@ namespace TECin2.Blazor.Services
                     UserName = InstructorResponse.UserName,
                     Phonenumber = InstructorResponse.Phonenumber,
                     PrimaryGroupId = InstructorResponse.PrimaryGroupId,
-                    Groups = [.. InstructorResponse.Groups.Select(gr => MapInstructorGroupResponseToGroup(gr))],
+                    Groups = [.. InstructorResponse.Groups.Select(MapInstructorGroupResponseToGroup)],
                     Role = new Role
                     {
                         Id = InstructorResponse.Role.Id,
                         Rank = InstructorResponse.Role.Rank,
                         Name = InstructorResponse.Role.Name,
                         Description = InstructorResponse.Role.Description
-                    }
+                    },
+                    Settings = InstructorResponse.Settings,
                 };
             }
             catch (Exception e)

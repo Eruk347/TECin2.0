@@ -4,6 +4,7 @@
 @using TECin2.ClassLibrary
 @using TECin2.Blazor.Services
 @using TECin2.ClassLibrary.DTOs
+@using TECin2.ClassLibrary.Entities
 @rendermode InteractiveServer
 @inject NavigationManager NavigationManager
 @inject IHttpContextAccessor HttpContextAccessor
@@ -237,7 +238,7 @@
                 ArrivalTime = _group.ArrivalTime,
                 DepartmentId = _group.DepartmentId,
                 Deactivated = _group.Deactivated,
-                IsLateMessageEnabled = _group.IsLateMessageEnabled,
+                IsLateMessageEnabled = _group.IsLateMessagingEnabled,
                 IsLateBuffer = _group.IsLateBuffer,
                 IsLateMessage = _group.IsLateMessage,
                 CheckoutRequired = _group.CheckoutRequired,
@@ -246,8 +247,17 @@
                 FlexibleAmount = _group.FlexibleAmount
             };
 
-            if (_group.Students != null)
-                Students = _group.Students;
+            if (_group.Users != null)
+                Students = [.. _group.Users.Select(student=>new Student
+            {
+                    Id = student.Id,
+                    FirstName = student.FirstName,
+                    LastName = student.LastName,
+                    Phonenumber = student.Phonenumber,
+                    Email = student.Email,
+                    LastCheckIn = student.LastCheckin,
+                    Username = student.Username,
+            })];
 
             _monday = TimeOnly.FromTimeSpan(Group.WorkHoursInDay!.Monday);
             _tuesday = TimeOnly.FromTimeSpan(Group.WorkHoursInDay!.Tuesday);
@@ -257,7 +267,7 @@
 
             if (Group.FlexibleArrivalEnabled)
             {
-                FlexTimes = new(Group.FlexibleAmount!.Value.Hour, Group.FlexibleAmount.Value.Minute);
+                FlexTimes = new(Group.FlexibleAmount!.Value.Hours, Group.FlexibleAmount.Value.Minutes);
                 DepartureTime = 2;
             }
             else if (Group.WorkHoursInDay.Friday == new TimeSpan(7, 0, 0))
@@ -317,7 +327,7 @@
                 WorkHoursInDay.Friday = _friday.ToTimeSpan();
                 Group.WorkHoursInDay = WorkHoursInDay;
                 Group.FlexibleArrivalEnabled = true;
-                Group.FlexibleAmount = FlexTimes;
+                Group.FlexibleAmount = new(FlexTimes.Hour, FlexTimes.Minute, FlexTimes.Second);
             }
 
         if (Group.IsLateMessageEnabled)

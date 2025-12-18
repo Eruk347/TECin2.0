@@ -12,7 +12,6 @@ namespace TECin2.API.Controllers
         private readonly IDepartmentService _departmentService = departmentService;
 
         [HttpGet]
-        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -39,7 +38,8 @@ namespace TECin2.API.Controllers
             }
         }
 
-        [HttpGet("{departmentId}")] 
+        [HttpGet("{departmentId}")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]//bliver håndteret på et højere niveau, pga [FromRoute]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

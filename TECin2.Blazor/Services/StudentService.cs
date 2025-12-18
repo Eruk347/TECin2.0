@@ -1,5 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
-using TECin2.ClassLibrary;
+using TECin2.ClassLibrary.Entities;
 using TECin2.ClassLibrary.DTOs;
 
 namespace TECin2.Blazor.Services
@@ -7,7 +7,7 @@ namespace TECin2.Blazor.Services
     public interface IStudentService
     {
         Task<Student?> CreateStudent(StudentRequest newStudent);
-        Task<Student?> DeleteStudent(string studentId);
+        Task<bool> DeleteStudent(string studentId);
         Task<List<Student?>> GetAllStudents(int groupId);
         Task<List<Group?>> GetGroups();//skal vi ahve den her??
         Task<Student?> GetStudentById(string studentId);
@@ -48,7 +48,7 @@ namespace TECin2.Blazor.Services
             return null;
         }
 
-        public async Task<Student?> DeleteStudent(string studentId)
+        public async Task<bool> DeleteStudent(string studentId)
         {
             try
             {
@@ -58,17 +58,15 @@ namespace TECin2.Blazor.Services
 
                 if (response.IsSuccessStatusCode)
                 {
-                    var result = await response.Content.ReadFromJsonAsync<StudentResponse>();
-
-                    return MapStudentResponseToStudent(result);
+                    return true;
                 }
             }
             catch (Exception e)
             {
                 WriteToLog("Delete", e);
-                return null;
+                return false;
             }
-            return null;
+            return false;
         }
 
         public async Task<List<Student?>> GetAllStudents(int groupId)//sammen ligenet med de andre, er det her en forkert måde at gøre det på. Men det er nemmere
@@ -165,55 +163,55 @@ namespace TECin2.Blazor.Services
             }
             return null;
         }
-        private StudentRequest? MapStudentoStudentRequest(Student? _student)
-        {
-            if (_student == null)
-                return null;
-            try
-            {
-                return new StudentRequest
-                {
-                    FirstName = _student.FirstName,
-                    LastName = _student.LastName,
-                    Phonenumber = _student.Phonenumber,
-                    Email = _student.Email,
-                    Username = _student.Username,
-                    CPR = _student.CPR,
-                    GroupId = _student.Group.Id,
-                    Deactivated = _student.Deactivated,
-                };
-            }
-            catch (Exception e)
-            {
-                WriteToLog("MapStudentoStudentRequest", e);
-                return null;
-            }
-        }
+        //private StudentRequest? MapStudentoStudentRequest(Student? _student)
+        //{
+        //    if (_student == null)
+        //        return null;
+        //    try
+        //    {
+        //        return new StudentRequest
+        //        {
+        //            FirstName = _student.FirstName,
+        //            LastName = _student.LastName,
+        //            Phonenumber = _student.Phonenumber,
+        //            Email = _student.Email,
+        //            Username = _student.Username,
+        //            CPR = _student.CPR,
+        //            GroupId = _student.Group.Id,
+        //            Deactivated = _student.Deactivated,
+        //        };
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        WriteToLog("MapStudentoStudentRequest", e);
+        //        return null;
+        //    }
+        //}
 
-        private Student? MapGroupUserResponseToStudent(GroupUsersResponse? _studentResponse)
-        {
-            if (_studentResponse == null)
-                return null;
-            try
-            {
-                return new Student
-                {
-                    Id = _studentResponse.Id,
-                    FirstName = _studentResponse.FirstName,
-                    LastName = _studentResponse.LastName,
-                    Username = _studentResponse.Username,
-                    Phonenumber = _studentResponse.Phonenumber,
-                    Email = _studentResponse.Email,
-                    LastCheckIn = _studentResponse.LastCheckin,
-                    Deactivated = _studentResponse.Deactivated,
-                };
-            }
-            catch (Exception e)
-            {
-                WriteToLog("MapGroupUserResponseToStudent", e);
-                return null;
-            }
-        }
+        //private Student? MapGroupUserResponseToStudent(GroupUsersResponse? _studentResponse)
+        //{
+        //    if (_studentResponse == null)
+        //        return null;
+        //    try
+        //    {
+        //        return new Student
+        //        {
+        //            Id = _studentResponse.Id,
+        //            FirstName = _studentResponse.FirstName,
+        //            LastName = _studentResponse.LastName,
+        //            Username = _studentResponse.Username,
+        //            Phonenumber = _studentResponse.Phonenumber,
+        //            Email = _studentResponse.Email,
+        //            LastCheckIn = _studentResponse.LastCheckin,
+        //            Deactivated = _studentResponse.Deactivated,
+        //        };
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        WriteToLog("MapGroupUserResponseToStudent", e);
+        //        return null;
+        //    }
+        //}
         private Student? MapStudentResponseToStudent(StudentResponse? _studentResponse)
         {
             if (_studentResponse == null)
@@ -230,7 +228,7 @@ namespace TECin2.Blazor.Services
                     Email = _studentResponse.Email,
                     LastCheckIn = _studentResponse.LastCheckin,
                     Deactivated = _studentResponse.Deactivated,
-                    Group = new Models.Group
+                    Group = new Group
                     {
                         Id = _studentResponse.Group.Id,
                         Name = _studentResponse.Group.Name,
