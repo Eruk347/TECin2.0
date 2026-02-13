@@ -5,17 +5,14 @@
 @inject NavigationManager NavigationManager
 @using TECin2.ClassLibrary
 @using TECin2.Blazor.Services
-@using TECin2.ClassLibrary.DTOs; @using TECin2.ClassLibrary.Entities
+@using TECin2.ClassLibrary.DTOs;
+@using TECin2.ClassLibrary.Entities
 @inject NavigationManager NavigationManager
 @inject IHttpContextAccessor HttpContextAccessor
 @inject IInstructorService _instructorService
 @inject ISettingService _settingService
 
 <h3>Personlige indstillinger</h3>
-
-oversigt i "Checket ind"
-
-oversigt ved lærlinge detaljer
 
 <div class="row">
     @if (IsLoading)
@@ -25,7 +22,7 @@ oversigt ved lærlinge detaljer
     else
     {
         <div class="col-md-4">
-            <EditForm Model="@Instructor" method="post" OnValidSubmit="OnPostAsync" Id="instructorForm" FormName="Create">
+            <EditForm Model="@Instructor" method="post" OnValidSubmit="OnPostAsync" Id="instructorForm" FormName="Create" OnInvalidSubmit="OnPostAsync">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
                 <div>
@@ -117,7 +114,7 @@ oversigt ved lærlinge detaljer
     private LogInResponse? CurrentUserData { get; set; }
     private bool ShouldRedirectToLogin = false;
     private List<Setting?> Settings { get; set; } = [];
-    private List<int> Groups { get; set; }=[];
+    private List<int> Groups { get; set; } = [];
 
     protected override async Task OnInitializedAsync()
     {
@@ -160,9 +157,12 @@ oversigt ved lærlinge detaljer
                     Email = instructor.Email,
                     Phonenumber = instructor.Phonenumber,
                     Password = "",
-                    Groups=[..instructor.Groups.Select(g => g.Id)],
-                    RoleId=instructor.Role.Id,
-                    Settings=instructor.Settings
+                    Groups = [.. instructor.Groups.Select(g => g.Id)],
+                    RoleId = instructor.Role.Id,
+                    Settings = instructor.Settings ?? [],
+                    PrimaryGroupId = instructor.PrimaryGroupId,
+                    Deactivated = false,
+                    IsStudent = false
                 };
             }
             else
@@ -170,12 +170,12 @@ oversigt ved lærlinge detaljer
 
             Settings = await _settingService.GetAllSettings();
 
-            
+
             foreach (var setting in Instructor.Settings!)
             {
-                if(setting.Name=="SeeAllInCheckIn")
+                if (setting.Name == "SeeAllInCheckIn")
                     seeCheckedIn = true;
-                if(setting.Name=="SeeAllInStudentDetails")
+                if (setting.Name == "SeeAllInStudentDetails")
                     seeStudentDetails = true;
             }
         }
@@ -198,16 +198,26 @@ oversigt ved lærlinge detaljer
         Instructor.Deactivated = false;
         Instructor.Groups = Groups;
 
-        if (seeCheckedIn)
+        if (seeCheckedIn && !Instructor.Settings.Any(s => s.Name == "SeeAllInCheckIn"))
         {
             Setting? item = Settings.FirstOrDefault(s => s!.Name == "SeeAllInCheckIn");
             Instructor.Settings!.Add(item!);
         }
+        else if (!seeCheckedIn && Instructor.Settings.Any(s => s.Name == "SeeAllInCheckIn"))
+        {
+            Setting? item = Settings.FirstOrDefault(s => s!.Name == "SeeAllInCheckIn");
+            Instructor.Settings!.Remove(item!);
+        }
 
-        if (seeStudentDetails)
+        if (seeStudentDetails && !Instructor.Settings.Any(s => s.Name == "SeeAllInStudentDetails"))
         {
             Setting? item = Settings.FirstOrDefault(s => s!.Name == "SeeAllInStudentDetails");
             Instructor.Settings!.Add(item!);
+        }
+        else if (!seeStudentDetails && Instructor.Settings.Any(s => s.Name == "SeeAllInStudentDetails"))
+        {
+            Setting? item = Settings.FirstOrDefault(s => s!.Name == "SeeAllInStudentDetails");
+            Instructor.Settings!.Remove(item!);
         }
 
         var result = await _instructorService.UpdateInstructor(Instructor, _id);

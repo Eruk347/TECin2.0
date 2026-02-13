@@ -36,5 +36,6 @@ namespace TECin2.ClassLibrary.DTOs
         public TimeOnly? IsLateBuffer { get; set; }
         public string? IsLateMessage { get; set; }
         public WorkHoursInDay? WorkHoursInDay { get; set; }
+        public int DepartmentId { get; set; }
     }
 }

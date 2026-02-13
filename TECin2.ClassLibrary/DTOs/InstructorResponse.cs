@@ -11,7 +11,7 @@ namespace TECin2.ClassLibrary.DTOs
         public string? Email { get; set; }
         public required string UserName { get; set; }
         public int PrimaryGroupId { get; set; }
-        public required List<Setting> Settings { get; set; }
+        public required List<InstructorSettingResponse> Settings { get; set; }
         public required List<InstructorGroupResponse> Groups { get; set; }
         public required InstructorRoleResponse Role { get; set; }
     }
@@ -33,6 +33,13 @@ namespace TECin2.ClassLibrary.DTOs
         public required string IsLateMessage { get; set; }
     }
 
+    public class InstructorSettingResponse
+    {
+        public int Id { get; set; }
+        public required string Name { get; set; }
+        public required string Description { get; set; }
+        public bool Deactivated { get; set; }
+    }
 
 }
 

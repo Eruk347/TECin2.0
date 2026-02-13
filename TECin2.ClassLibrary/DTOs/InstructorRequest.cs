@@ -33,7 +33,7 @@ namespace TECin2.ClassLibrary.DTOs
 
         public bool Deactivated { get; set; }
 
-        public List<Setting>? Settings { get; set; } = [];
+        public List<Setting> Settings { get; set; } = [];
         
         public string? Password { get; set; }
     }

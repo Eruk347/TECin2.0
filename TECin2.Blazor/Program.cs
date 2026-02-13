@@ -30,7 +30,7 @@ namespace TECin2.Blazor
 
             builder.Services.AddSession(options =>
             {
-                options.IdleTimeout = TimeSpan.FromMinutes(3);  //you can change the session expired time.  
+                options.IdleTimeout = TimeSpan.FromMinutes(30);  //you can change the session expired time.  
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });

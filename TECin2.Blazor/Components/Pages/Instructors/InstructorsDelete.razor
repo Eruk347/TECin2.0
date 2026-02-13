@@ -7,7 +7,7 @@
 @rendermode InteractiveServer
 @inject NavigationManager NavigationManager
 @inject IHttpContextAccessor HttpContextAccessor
-
+@inject IInstructorService _instructorService
 
 <h3>Slet instruktør: @Instructor.FirstName @Instructor.LastName</h3>
 
@@ -64,7 +64,6 @@
     }
 </div>
 @code {
-    private readonly IInstructorService _instructorService;
     private LogInResponse? CurrentUserData { get; set; }
     private bool IsLoading = true;
     private bool ShouldRedirectToLogin = false;
@@ -72,11 +71,6 @@
     [Parameter]
     public required string Id { get; set; }
     private Instructor Instructor { get; set; } = new Instructor { Id = "", FirstName = "", LastName = "", UserName = "", Role = new Role { Name = "", Description = "" }, Groups = [], };
-
-    public InstructorsDelete(IInstructorService instructorService)
-    {
-        _instructorService = instructorService;
-    }
 
     protected override async Task OnInitializedAsync()
     {

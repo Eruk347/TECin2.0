@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TECin2.ClassLibrary.DTOs;
 using TECin2.API.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TECin2.API.Controllers
 {

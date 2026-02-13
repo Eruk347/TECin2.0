@@ -107,6 +107,15 @@ namespace TECin2.API.Repositories
                     .FirstOrDefaultAsync(group => group.Id == groupId);
                 if (updatedGroup != null)
                 {
+                    updatedGroup.WorkHoursInDay = null;
+                    await _context.SaveChangesAsync();
+                }
+                updatedGroup = await _context.Group
+                    .Include(g => g.Department)
+                    .Include(g => g.WorkHoursInDay)
+                    .FirstOrDefaultAsync(group => group.Id == groupId);
+                if (updatedGroup != null)
+                {
                     updatedGroup.Name = group.Name;
                     updatedGroup.DepartmentId = group.DepartmentId;
                     updatedGroup.ArrivalTime = group.ArrivalTime;

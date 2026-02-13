@@ -94,7 +94,7 @@ namespace TECin2.API.Repositories
             catch (Exception e)
             {
                 WriteToLog("SelectSettingsByUserId", e);
-                return [null];
+                return [];
             }
         }
 

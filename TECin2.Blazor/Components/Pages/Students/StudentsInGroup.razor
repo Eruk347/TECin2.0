@@ -36,6 +36,42 @@
         </table>
     </div>
 </div>
+<div class="row">
+    Lærlinge der ikke har tjekket ind i 30 dage eller er deaktiverede:
+    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#deactivated" aria-expanded="false" aria-controls="deactivated">Vis</button>
+    <div id="deactivated" class="collapse">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Fornavn</th>
+                    <th>Efternavn</th>
+                    <th>Tlf</th>
+                    <th>Email</th>
+                    <th>Sidste checkin</th>
+                    <th>I alt: @TotalStudents</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Group.Users!)
+                {
+                    <tr>
+                        <td>                            
+                            <a href="/students/details/@item.Id">@item.FirstName</a> 
+                        </td>
+                        <td>@item.LastName</td>
+                        <td>@item.Phonenumber</td>
+                        <td>@item.Email</td>
+                        <td>@item.LastCheckin</td>
+                        <td>
+                            <a href="/students/edit/@item.Id">Rediger</a> |
+                            <a href="/students/delete/@item.Id">Slet</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
 
 
 @code {

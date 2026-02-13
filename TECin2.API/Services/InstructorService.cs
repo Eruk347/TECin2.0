@@ -125,7 +125,7 @@ namespace TECin2.API.Services
                 return null;
             }
 
-            if (updateInstructor.Password != null)
+            if (updateInstructor.Password != null && updateInstructor.Password != "")
             {
                 Password? password = CreatePassword(updateInstructor.Password, instructorId, originalUser.Salt);
                 if (password != null)
@@ -273,7 +273,13 @@ namespace TECin2.API.Services
                         Description = role.Description,
                         Rank = role.Rank
                     },
-                    Settings = user.Settings ?? []
+                    Settings = [.. user.Settings!.Select(setting=> new InstructorSettingResponse
+                    {
+                        Id = setting.Id,
+                        Name = setting.Name,
+                        Deactivated= setting.Deactivated,
+                        Description= setting.Description??""
+                    })]
                 };
                 return response;
             }

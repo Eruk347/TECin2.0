@@ -204,7 +204,7 @@ namespace TECin2.Blazor.Services
                         Name = InstructorResponse.Role.Name,
                         Description = InstructorResponse.Role.Description
                     },
-                    Settings = InstructorResponse.Settings,
+                    Settings = [.. InstructorResponse.Settings.Select(MapInstructorSettingResponseToSetting)],
                 };
             }
             catch (Exception e)
@@ -225,6 +225,25 @@ namespace TECin2.Blazor.Services
                     ArrivalTime = instructorGroupResponse.ArrivalTime,
                     DepartmentId = instructorGroupResponse.DepartmentId,
                     IsLateMessage = instructorGroupResponse.IsLateMessage,
+                };
+            }
+            catch (Exception e)
+            {
+                WriteToLog("MapInstructorResponseToInstructor", e);
+                return null;
+            }
+        }
+
+        private Setting? MapInstructorSettingResponseToSetting(InstructorSettingResponse instructorSettingResponse)
+        {
+            try
+            {
+                return new Setting
+                {
+                    Id = instructorSettingResponse.Id,
+                    Name = instructorSettingResponse.Name,
+                    Description = instructorSettingResponse.Description,
+                    Deactivated = instructorSettingResponse.Deactivated,
                 };
             }
             catch (Exception e)

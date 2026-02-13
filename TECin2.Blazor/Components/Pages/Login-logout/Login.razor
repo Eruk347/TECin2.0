@@ -7,6 +7,7 @@
 @using SessionExtensions = TECin2.Blazor.Services.SessionExtensions;
 @inject NavigationManager NavigationManager
 @inject IHttpContextAccessor HttpContextAccessor
+@inject ILoginService _loginService
 
 <PageTitle>Login</PageTitle>
 
@@ -38,15 +39,8 @@
 </div>
 
 @code {
-    private readonly ILoginService _loginService;
-
     [SupplyParameterFromForm]
     private LogInRequest UserLogin { get; set; } = new LogInRequest { Password = "", UserName = "" };
-
-    public Login(ILoginService loginService)
-    {
-        _loginService = loginService;
-    }
 
     public async Task<IActionResult?> OnPostAsync()
     {

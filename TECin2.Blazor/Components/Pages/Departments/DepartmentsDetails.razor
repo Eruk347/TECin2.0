@@ -8,6 +8,8 @@
 @rendermode InteractiveServer
 @inject NavigationManager NavigationManager
 @inject IHttpContextAccessor HttpContextAccessor
+@inject IDepartmentService _departmentService
+@inject IInstructorService _instructorService
 
 <h3>Detaljer for afdeling: @Department.Name</h3>
 
@@ -40,8 +42,6 @@
     }
 </div>
 @code {
-    private readonly IDepartmentService _departmentService;
-    private readonly IInstructorService _instructorService;
     private LogInResponse? CurrentUserData { get; set; }
     private bool IsLoading = true;
     private bool ShouldRedirectToLogin = false;
@@ -50,12 +50,6 @@
     public required int Id { get; set; }
     private Department Department { get; set; } = new Department { Name = "" };
     private Instructor DepartmentHead { get; set; } = new Instructor { Id = "", FirstName = "", LastName = "", UserName = "", Role = new Role { Name = "", Description = "" }, Groups = [], };
-
-    public DepartmentsDetails(IDepartmentService departmentService, IInstructorService instructorService)
-    {
-        _departmentService = departmentService;
-        _instructorService = instructorService;
-    }
 
     protected override async Task OnInitializedAsync()
     {

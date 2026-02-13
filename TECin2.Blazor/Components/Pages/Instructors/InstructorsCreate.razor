@@ -8,6 +8,9 @@
 @using TECin2.ClassLibrary.Entities
 @inject NavigationManager NavigationManager
 @inject IHttpContextAccessor HttpContextAccessor
+@inject IInstructorService _instructorService
+@inject IRoleService _roleService
+@inject IDepartmentService _departmentService
 
 <h3>Opret Instruktør</h3>
 @if (IsLoading)
@@ -123,9 +126,6 @@ else
 }
 
 @code {
-    private readonly IInstructorService _instructorService;
-    private readonly IRoleService _roleService;
-    private readonly IDepartmentService _departmentService;
 
     [SupplyParameterFromForm]
     private InstructorRequest Instructor { get; set; } = new InstructorRequest { FirstName = "", LastName = "", UserName = "" };
@@ -142,24 +142,17 @@ else
     private bool ShouldRedirectToLogin = false;
     private bool IsLoading = true;
 
-    public InstructorsCreate(IInstructorService instructorService, IRoleService roleService, IDepartmentService departmentService)
-    {
-        _instructorService = instructorService;
-        _roleService = roleService;
-        _departmentService = departmentService;
-    }
-
     protected override async Task OnInitializedAsync()
     {
         var httpContext = HttpContextAccessor.HttpContext;
         if (httpContext != null)
             CurrentUserData = httpContext.Session.GetObject<LogInResponse>("CurrentUser");
 
-        if (CurrentUserData == null)
-        {
-            ShouldRedirectToLogin = true;
-            return;
-        }
+        // if (CurrentUserData == null)
+        // {
+        //     ShouldRedirectToLogin = true;
+        //     return;
+        // }
         await LoadDataAsync();
     }
 
@@ -185,8 +178,8 @@ else
             foreach (var role in roles)
             {
                 if (role != null && role.Rank >= CurrentUserData!.RoleRank)
-                    // if (role.Rank >= CurrentUserData.RoleRank)
-                    RolesForCombobox.Add(new SelectListItem { Text = role.Name, Value = role.Id.ToString() });
+                    if (role.Rank >= CurrentUserData.RoleRank)
+                        RolesForCombobox.Add(new SelectListItem { Text = role.Name, Value = role.Id.ToString() });
             }
 
             if (CurrentUserData!.RoleRank < 2)
@@ -253,11 +246,13 @@ else
                 }
                 if (group.Deactivated)
                 {
-                    Instructor.Groups.Add(group.Id);
+                    Instructor.Groups!.Add(group.Id);
                 }
-                Instructor.PrimaryGroupId = PrimaryGroup;
-
             }
+            if (Instructor.Groups?.Any(g => g == Instructor.PrimaryGroupId) == false)
+                Instructor.PrimaryGroupId = Instructor.Groups[0];
+            else
+                Instructor.PrimaryGroupId = PrimaryGroup;
         }
         if (Password == ConfirmPassword)
             Instructor.Password = Password;

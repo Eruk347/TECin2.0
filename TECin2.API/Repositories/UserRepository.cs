@@ -24,6 +24,26 @@ namespace TECin2.API.Repositories
             LoggerRepository.WriteLog("Error caught in " + this.GetType().Name + " in method " + task + ": " + e.InnerException + " " + e.Message);
         }
 
+        // Helper: replace incoming User.Groups/Settings with tracked entities from the context
+        private async Task AttachExistingGroupsAndSettingsAsync(User user)
+        {
+            if (user == null) return;
+
+            if (user.Groups != null && user.Groups.Any())
+            {
+                var groupIds = user.Groups.Select(g => g.Id).ToList();
+                var trackedGroups = await _context.Group.Where(g => groupIds.Contains(g.Id)).ToListAsync();
+                user.Groups = trackedGroups;
+            }
+
+            if (user.Settings != null && user.Settings.Any())
+            {
+                var settingIds = user.Settings.Select(s => s.Id).ToList();
+                var trackedSettings = await _context.Setting.Where(s => settingIds.Contains(s.Id)).ToListAsync();
+                user.Settings = trackedSettings;
+            }
+        }
+
         public async Task<User?> DeleteUser(string userId)
         {
             try
@@ -111,6 +131,7 @@ namespace TECin2.API.Repositories
                 return await _context.User
                     .Include(s => s.Groups)
                     .Include(r => r.Role)
+                    .Include(s => s.Settings)
                     .Where(user => user.IsStudent == false)
                     .ToListAsync();
             }
@@ -166,10 +187,22 @@ namespace TECin2.API.Repositories
                     .FirstOrDefaultAsync(user => user.Id == userId);
                 if (updatedUser != null)
                 {
-                    updatedUser.Settings = [];
-                    updatedUser.Groups = [];
+                    // Clear existing navigation collections safely
+                    if (updatedUser.Settings != null)
+                        updatedUser.Settings.Clear();
+                    else
+                        updatedUser.Settings = new List<Setting>();
+
+                    if (updatedUser.Groups != null)
+                        updatedUser.Groups.Clear();
+                    else
+                        updatedUser.Groups = new List<Group>();
+
                     await _context.SaveChangesAsync();
                 }
+
+                // Replace incoming references with tracked entities to avoid duplicate tracking exceptions
+                await AttachExistingGroupsAndSettingsAsync(user);
                 updatedUser = await _context.User
                     .Include(g => g.Groups)
                     .Include(r => r.Role)

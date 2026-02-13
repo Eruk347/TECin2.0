@@ -1,6 +1,5 @@
 ﻿using TECin2.ClassLibrary.DTOs;
 using TECin2.ClassLibrary.Entities;
-using static System.Net.WebRequestMethods;
 
 namespace TECin2.Blazor.Services
 {

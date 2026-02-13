@@ -6,6 +6,8 @@
 @using TECin2.ClassLibrary.DTOs; @using TECin2.ClassLibrary.Entities
 @inject NavigationManager NavigationManager
 @inject IHttpContextAccessor HttpContextAccessor
+@inject IDepartmentService _departmentService
+@inject IInstructorService _instructorService
 
 <h3>Opret afdeling</h3>
 
@@ -40,8 +42,6 @@
 
 
 @code {
-    private readonly IDepartmentService _departmentService;
-    private readonly IInstructorService _instructorService;
     private LogInResponse? CurrentUserData { get; set; }
     private bool ShouldRedirectToLogin = false;
 
@@ -49,13 +49,6 @@
     private DepartmentRequest Department { get; set; } = new DepartmentRequest { Name = "" };
 
     private List<SelectListItem> Instructors { get; set; } = [];
-
-
-    public DepartmentsCreate(IDepartmentService departmentService, IInstructorService instructorService)
-    {
-        _departmentService = departmentService;
-        _instructorService = instructorService;
-    }    
 
     protected override async Task OnInitializedAsync()
     {

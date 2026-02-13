@@ -12,9 +12,9 @@ namespace TECin2.API.Repositories
         Task<Password?> UpdatePassword(Password updatePassword);
     }
 
-    public class PasswordRepository(TECinContext2 context2) : IPasswordRepository
+    public class PasswordRepository(TECinContext context) : IPasswordRepository
     {
-        private readonly TECinContext2 _context2 = context2;
+        private readonly TECinContext _context = context;
 
         private void WriteToLog(string task, Exception e)
         {
@@ -25,12 +25,12 @@ namespace TECin2.API.Repositories
         {
             try
             {
-                Password? deletedPassword = await _context2.Password
+                Password? deletedPassword = await _context.Password
                     .FirstOrDefaultAsync(password => password.Id == userId);
                 if (deletedPassword != null)
                 {
-                    _context2.Password.Remove(deletedPassword);
-                    await _context2.SaveChangesAsync();
+                    _context.Password.Remove(deletedPassword);
+                    await _context.SaveChangesAsync();
                 }
                 return deletedPassword;
             }
@@ -45,8 +45,8 @@ namespace TECin2.API.Repositories
         {
             try
             {
-                _context2.Password.Add(newPassword);
-                await _context2.SaveChangesAsync();
+                _context.Password.Add(newPassword);
+                await _context.SaveChangesAsync();
                 return newPassword;
             }
             catch (Exception e)
@@ -60,7 +60,7 @@ namespace TECin2.API.Repositories
         {
             try
             {
-                return await _context2.Password.FirstOrDefaultAsync(password => password.Id == userId);
+                return await _context.Password.FirstOrDefaultAsync(password => password.Id == userId);
             }
             catch (Exception e)
             {
@@ -73,12 +73,12 @@ namespace TECin2.API.Repositories
         {
             try
             {
-                Password? updatedPassword = await _context2.Password
+                Password? updatedPassword = await _context.Password
                     .FirstOrDefaultAsync(id => id.Id == updatePassword.Id);
                 if (updatedPassword != null)
                 {
                     updatedPassword.Cipher = updatePassword.Cipher;
-                    await _context2.SaveChangesAsync();
+                    await _context.SaveChangesAsync();
                 }
                 return updatedPassword;
             }

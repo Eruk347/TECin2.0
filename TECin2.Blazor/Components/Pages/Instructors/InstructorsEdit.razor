@@ -7,6 +7,9 @@
 @using TECin2.ClassLibrary.DTOs; @using TECin2.ClassLibrary.Entities
 @inject NavigationManager NavigationManager
 @inject IHttpContextAccessor HttpContextAccessor
+@inject IInstructorService _instructorService
+@inject IRoleService _roleService
+@inject IDepartmentService _departmentService
 
 <h3>Rediger Instruktør: @Instructor.FirstName @Instructor.LastName</h3>
 
@@ -118,16 +121,11 @@
                     </div>
                 </div>
             </EditForm>
-
-
         </div>
     }
 </div>
 
 @code {
-    private readonly IInstructorService _instructorService;
-    private readonly IRoleService _roleService;
-    private readonly IDepartmentService _departmentService;
     private bool IsLoading = true;
     private bool ShouldRedirectToLogin = false;
 
@@ -148,14 +146,6 @@
     private List<SelectListItem> RolesForCombobox = [];
     private List<Department> Departments = [];
     private LogInResponse? CurrentUserData { get; set; }
-
-
-    public InstructorsEdit(IInstructorService instructorService, IRoleService roleService, IDepartmentService departmentService)
-    {
-        _instructorService = instructorService;
-        _roleService = roleService;
-        _departmentService = departmentService;
-    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -186,13 +176,13 @@
         try
         {
             var _instructor = await _instructorService.GetInstructorById(Id);
-
+             
             if (_instructor == null)
             {
                 NavigationManager.NavigateTo("/instructors/index", true);
                 return;
             }
-
+             
             Instructor = new InstructorRequest
             {
                 FirstName = _instructor.FirstName,
@@ -202,16 +192,16 @@
                 Phonenumber = _instructor.Phonenumber,
                 RoleId = _instructor.Role.Id
             };
-
+             
             List<Role?> roles = await _roleService.GetAllRoles();
             List<Department> _departments = await _departmentService.GetAllDepartments() ?? new();
-
+             
             foreach (var role in roles)
             {
                 if (role != null && role.Rank >= CurrentUserData!.RoleRank)
                     RolesForCombobox.Add(new SelectListItem { Text = role.Name, Value = role.Id.ToString() });
             }
-
+             
             if (CurrentUserData!.RoleRank < 2)
             {
                 Departments = _departments;
@@ -248,7 +238,7 @@
                     }
                 }
             }
-
+             
             foreach (var department in Departments)
             {
                 if (department.Groups == null)
@@ -272,7 +262,7 @@
                         PrimaryGroup = false,
                         IsMember = false
                     };
-
+                     
                     if (_instructor.Groups != null && _instructor.Groups.Any(g => g.Id == _group.Id))
                     {
                         _group.IsMember = true;
@@ -286,7 +276,7 @@
                 ListOfGroups.Add(groupHelpers);
             }
             PrimaryGroup = _instructor.PrimaryGroupId;
-
+            
         }
         catch (Exception)
         {
@@ -297,29 +287,30 @@
             IsLoading = false;
         }
     }
-
+        
     public async Task<IActionResult?> OnPostAsync()
     {
         Instructor.Groups = [];
-
+         
         foreach (var list in ListOfGroups)
         {
             foreach (var group in list)
             {
                 if (group.IsMember)
                 {
-                    if (group.PrimaryGroup)
-                    {
-                        Instructor.PrimaryGroupId = group.Id;
-                    }
                     Instructor.Groups.Add(group.Id);
                 }
             }
         }
-        Instructor.PrimaryGroupId = PrimaryGroup;
+         
+        if (Instructor.Groups?.Any(g => g == Instructor.PrimaryGroupId) == false)
+                Instructor.PrimaryGroupId = Instructor.Groups[0];
+            else
+                Instructor.PrimaryGroupId = PrimaryGroup;
+         
         if (Password == ConfirmPassword && Password != null && Password != "")
             Instructor.Password = Password;
-
+         
         Instructor.IsStudent = false;
         Instructor.Deactivated = false;
         var result = await _instructorService.UpdateInstructor(Instructor, Id);
@@ -330,12 +321,12 @@
         }
         return null;
     }
-
+     
     private void GoToIndex()
     {
         NavigationManager.NavigateTo("/instructors/index", true);
     }
-
+     
     public class GroupHelper : Group
     {
         public bool PrimaryGroup { get; set; }

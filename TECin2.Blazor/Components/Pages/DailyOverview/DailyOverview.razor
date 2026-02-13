@@ -9,6 +9,7 @@
 @inject IHttpContextAccessor HttpContextAccessor
 @inject NavigationManager NavigationManager
 @inject IDailyOverviewService dailyOverviewService
+@inject IGroupService groupService
 
 <div>
     <div>
@@ -18,6 +19,7 @@
         <div class="col" >
             <EditForm Model=@listOfCheckIns>
                 <input type="date" id="datePicker" @bind="SelectedDate" @bind:format="yyyy-MM-dd" />
+                <select asp-items="AllGroupsInDepartment" id="groupPicker" @bind="GroupId"/>
             </EditForm>
         </div>
     </div>
@@ -46,7 +48,7 @@
     private LogInResponse? CurrentUserData { get; set; }
     private bool ShouldRedirectToLogin = false;
     List<List<CheckInResponseLong>> listOfCheckIns = [];
-
+    private List<Group?> AllGroupsInDepartment = [];
     private DateOnly selectedDate = DateOnly.FromDateTime(DateTime.Now);
     private DateOnly SelectedDate
     {
@@ -55,8 +57,22 @@
         {
             if (selectedDate != value)
             {
-                selectedDate = value;
-                _ = LoadDataAsync(selectedDate); // Fire and forget, or make this async if you want to await
+                selectedDate = value; 
+                _ = LoadDataAsync(selectedDate, 0); // Fire and forget, or make this async if you want to await
+            }
+        }
+    }
+
+    private int groupId = 0;
+    private int GroupId
+    {
+        get => groupId;
+        set
+        {
+            if(groupId!=value)
+            {
+                groupId = value;
+                _ = LoadDataAsync(selectedDate, groupId);
             }
         }
     }
@@ -72,7 +88,7 @@
             ShouldRedirectToLogin = true;
             return;
         }
-        await LoadDataAsync(SelectedDate);
+        await LoadDataAsync(SelectedDate,0);
     }
 
     protected override void OnAfterRender(bool firstRender)
@@ -84,7 +100,7 @@
         }
     }
 
-    private async Task LoadDataAsync(DateOnly _selectedDate)
+    private async Task LoadDataAsync(DateOnly _selectedDate, int _groupId)
     {
         IsLoading = true;
 
@@ -95,7 +111,7 @@
             NavigationManager.NavigateTo("/login", true);
             return;
         }
-
+        AllGroupsInDepartment = await groupService.GetAllGroups();
         CurrentUserData.Groups = CurrentUserData.Groups.OrderBy(g => g.Name).ToList();
         var primaryGroup = CurrentUserData.Groups.FirstOrDefault(g => g.Id == CurrentUserData.PrimaryGroupId);
 
@@ -109,9 +125,20 @@
 
         try
         {
-            foreach (var group in CurrentUserData.Groups)
+            if (_groupId == 0)
             {
-                var checkIns = await dailyOverviewService.GetCheckInsForToday(group.Id, SelectedDate);
+                foreach (var group in CurrentUserData.Groups)
+                {
+                    var checkIns = await dailyOverviewService.GetCheckInsForToday(group.Id, SelectedDate);
+                    if (checkIns != null)
+                    {
+                        listOfCheckIns.Add(checkIns);
+                    }
+                }
+            }
+            else
+            {
+                var checkIns = await dailyOverviewService.GetCheckInsForToday(_groupId, SelectedDate);
                 if (checkIns != null)
                 {
                     listOfCheckIns.Add(checkIns);
@@ -135,6 +162,14 @@
             SelectedDate = DateOnly.Parse(e.Value.ToString() ?? string.Empty);
         else
             SelectedDate = DateOnly.FromDateTime(DateTime.Now);
-        await LoadDataAsync(SelectedDate);
+        await LoadDataAsync(SelectedDate,GroupId);
+    }
+    private async Task OnDateGroup(ChangeEventArgs e)
+    {
+        if (e.Value != null)
+            GroupId = int.Parse(e.Value.ToString() ?? "0");
+        else
+            GroupId = 0;
+        await LoadDataAsync(SelectedDate,GroupId);
     }
 }

@@ -7,6 +7,9 @@
 @using TECin2.ClassLibrary.DTOs; @using TECin2.ClassLibrary.Entities
 @inject NavigationManager NavigationManager
 @inject IHttpContextAccessor HttpContextAccessor
+@inject IInstructorService _instructorService
+@inject IRoleService _roleService
+@inject IDepartmentService _departmentService
 
 <h3>Detaljer for Instruktør: @Instructor.FirstName @Instructor.LastName</h3>
 
@@ -93,9 +96,6 @@
 </div>
 
 @code {
-    private readonly IInstructorService _instructorService;
-    private readonly IRoleService _roleService;
-    private readonly IDepartmentService _departmentService;
     private bool IsLoading = true;
     private bool ShouldRedirectToLogin = false;
 
@@ -112,14 +112,6 @@
     private List<SelectListItem> RolesForCombobox = [];
     private List<Department> Departments = [];
     private LogInResponse? CurrentUserData { get; set; }
-
-
-    public InstructorsDetails(IInstructorService instructorService, IRoleService roleService, IDepartmentService departmentService)
-    {
-        _instructorService = instructorService;
-        _roleService = roleService;
-        _departmentService = departmentService;
-    }
 
     protected override async Task OnInitializedAsync()
     {

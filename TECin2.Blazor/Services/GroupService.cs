@@ -196,6 +196,7 @@ namespace TECin2.Blazor.Services
             {
                 ICollection<User> users = [];
 
+                if(students!=null)
                 foreach (var student in students)
                 {
                     if (student != null)

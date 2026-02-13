@@ -13,9 +13,9 @@ namespace TECin2.API.Repositories
         Task<SecurityNumb?> SelectSecurityNumbByCPR(string _securityNumb);
     }
 
-    public class SecurityRepository(TECinContext2 context2) : ISecurityRepository
+    public class SecurityRepository(TECinContext context) : ISecurityRepository
     {
-        private readonly TECinContext2 _context2 = context2;
+        private readonly TECinContext _context = context;
 
         private void WriteToLog(string task, Exception e)
         {
@@ -26,12 +26,12 @@ namespace TECin2.API.Repositories
         {
             try
             {
-                SecurityNumb? deletedSecurityNumb = await _context2.SecurityNumb.
+                SecurityNumb? deletedSecurityNumb = await _context.SecurityNumb.
                     FirstOrDefaultAsync(securityNumb => securityNumb.Id == securityNumbId);
                 if (deletedSecurityNumb != null)
                 {
-                    _context2.SecurityNumb.Remove(deletedSecurityNumb);
-                    await _context2.SaveChangesAsync();
+                    _context.SecurityNumb.Remove(deletedSecurityNumb);
+                    await _context.SaveChangesAsync();
                 }
                 return deletedSecurityNumb;
             }
@@ -46,8 +46,8 @@ namespace TECin2.API.Repositories
         {
             try
             {
-                _context2.SecurityNumb.Add(securityNumb);
-                await _context2.SaveChangesAsync();
+                _context.SecurityNumb.Add(securityNumb);
+                await _context.SaveChangesAsync();
             }
             catch (Exception e)
             {
@@ -61,7 +61,7 @@ namespace TECin2.API.Repositories
         {
             try
             {
-                return await _context2.SecurityNumb.FirstOrDefaultAsync(securityNumb => securityNumb.Id == securityNumbId);
+                return await _context.SecurityNumb.FirstOrDefaultAsync(securityNumb => securityNumb.Id == securityNumbId);
             }
             catch (Exception e)
             {
@@ -74,7 +74,7 @@ namespace TECin2.API.Repositories
         {
             try
             {
-                return await _context2.SecurityNumb.FirstOrDefaultAsync(securityNumb => securityNumb.Cipher == _securityNumb);
+                return await _context.SecurityNumb.FirstOrDefaultAsync(securityNumb => securityNumb.Cipher == _securityNumb);
             }
             catch (Exception e)
             {

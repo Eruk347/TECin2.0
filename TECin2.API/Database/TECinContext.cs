@@ -19,6 +19,8 @@ namespace TECin2.API.Database
         public DbSet<School> School { get; set; }
         public DbSet<Setting> Setting { get; set; }
         public DbSet<User> User { get; set; }
+        public DbSet<Password> Password { get; set; }
+        public DbSet<SecurityNumb> SecurityNumb { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -36,7 +38,6 @@ namespace TECin2.API.Database
         public TECinContext2() { }
         public TECinContext2(DbContextOptions<TECinContext2> options) : base(options) { }
 
-        public DbSet<Password> Password { get; set; }
-        public DbSet<SecurityNumb> SecurityNumb { get; set; }
+        
     }
 }

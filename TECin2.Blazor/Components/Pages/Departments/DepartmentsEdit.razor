@@ -7,7 +7,8 @@
 @using TECin2.ClassLibrary.DTOs; @using TECin2.ClassLibrary.Entities
 @inject NavigationManager NavigationManager
 @inject IHttpContextAccessor HttpContextAccessor
-
+@inject IDepartmentService _departmentService
+@inject IInstructorService _instructorService
 
 <h3>Rediger afdelinge: @Department.Name</h3>
 
@@ -48,8 +49,6 @@
     }
 </div>
 @code {
-    private readonly IDepartmentService _departmentService;
-    private readonly IInstructorService _instructorService;
     private bool IsLoading = true;
     private bool ShouldRedirectToLogin = false;
 
@@ -61,12 +60,6 @@
 
     private LogInResponse? CurrentUserData { get; set; }
     private List<SelectListItem> Instructors { get; set; } = [];
-
-    public DepartmentsEdit(IDepartmentService departmentService, IInstructorService instructorService)
-    {
-        _departmentService = departmentService;
-        _instructorService = instructorService;
-    }
 
     protected override async Task OnInitializedAsync()
     {

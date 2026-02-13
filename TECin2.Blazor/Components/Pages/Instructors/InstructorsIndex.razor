@@ -15,67 +15,77 @@
 }
 else
 {
-<NavLink class="nav-link text-dark" href="/instructors/create">
-    <span class="bi" aria-hidden="true"></span> Opret
-</NavLink>
+    <NavLink class="nav-link text-dark" href="/instructors/create">
+        <span class="bi" aria-hidden="true"></span> Opret
+    </NavLink>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th width="200">
-                Fornavn
-            </th>
-            <th width="200">
-                Efternavn
-            </th>
-            <th width="200">
-                Telefonnummer
-            </th>
-            <th width="150">
-                Email
-            </th>
-            <th width="150">
-                Brugernavn
-            </th>
-            <th width="200">
-                Gruppe(r)
-            </th>
-
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var instructor in Instructors)
-        {
-            <tr>
-                <td>
-                    <a href="/instructors/details/@instructor.Id">@instructor.FirstName</a>
-                </td>
-                <td>
-                    @instructor.LastName
-                </td>
-                <td>
-                    @instructor.Phonenumber
-                </td>
-                <td>
-                    @instructor.Email
-                </td>
-                <td>
-                    @instructor.UserName
-                </td>
-                <td>
-                    @foreach (var group in instructor.Groups)
-                        @group.Name
-                </td>
-                <td>
-                    <a href="/instructors/edit/@instructor.Id">Rediger</a> |
-                    <a href="/instructors/delete/@instructor.Id">Slet</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
-<br />
+    @foreach(var department in Departments)
+    {
+        <h3>
+            <a href="/departments/details/@department.Id">@department.Name</a>
+        </h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th width="200">
+                        Fornavn
+                    </th>
+                    <th width="200">
+                        Efternavn
+                    </th>
+                    <th width="150">
+                        Telefonnummer
+                    </th>
+                    <th width="150">
+                        Email
+                    </th>
+                    <th width="150">
+                        Brugernavn
+                    </th>
+                    <th width="200">
+                        Gruppe(r)
+                    </th>
+                        <th>
+                            <a href="/departments/edit/@department.Id">Rediger</a> |
+                            <a href="/departments/delete/@department.Id">Slet</a>
+                        </th>
+                    </tr>
+            </thead>
+            <tbody>
+                @foreach(var instructor in Instructors)
+                {
+                    if(department.Groups?.Any(g=>g.Id== instructor.PrimaryGroupId)==true|| (instructor.PrimaryGroupId==0&& department.Groups?.Any(g=>g.Id== instructor.Groups[0].Id)==true ))
+                    {
+                        <tr>
+                            <td>
+                                <a href="/instructors/details/@instructor.Id">@instructor.FirstName</a>
+                            </td>
+                            <td>
+                                @instructor.LastName
+                            </td>
+                            <td>
+                                @instructor.Phonenumber
+                            </td>
+                            <td>
+                                @instructor.Email
+                            </td>
+                            <td>
+                                @instructor.UserName
+                            </td>
+                            <td>
+                                @foreach (var group in instructor.Groups!)
+                                    @group.Name
+                            </td>
+                            <td>
+                                <a href="/instructors/edit/@instructor.Id">Rediger</a> |
+                                <a href="/instructors/delete/@instructor.Id">Slet</a>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    }
 }
 
 @code {
@@ -99,7 +109,7 @@ else
 
         if (CurrentUserData == null)
         {
-            ShouldRedirectToLogin = true;
+            ShouldRedirectToLogin= true;
             return;
         }
         await LoadDataAsync();
@@ -127,9 +137,8 @@ else
 
 
 
-
         }
-        catch(Exception)
+        catch (Exception)
         {
             throw;
         }
@@ -138,6 +147,4 @@ else
             IsLoading = false;
         }
     }
-
-
 }

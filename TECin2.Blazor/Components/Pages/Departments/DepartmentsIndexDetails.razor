@@ -1,0 +1,107 @@
+﻿@using System.Threading.Tasks
+@using TECin2.Blazor.Services
+@using TECin2.ClassLibrary.DTOs
+@using TECin2.ClassLibrary.Entities
+@inject IDailyOverviewService dailyOverviewService
+
+
+@if (IsLoading)
+{
+    <p>Indlæser data</p>
+}
+else
+{
+    <table class="table">
+        <tbody>
+            <tr>
+                <td width="20%">
+                    @* Skal måske ikke linke til details, men til dagens checkin *@
+                    <a href="/groups/details/@Group.Id">@Group.Name</a> 
+                </td>
+                <td width="12%">
+                    @Group.ArrivalTime
+                </td>
+                <td width="12%">
+                    @Arrived
+                </td>
+                <td width="12%">
+                    @Late
+                </td>
+                <td width="12%">
+                    @Missing
+                </td>
+                <td width="12%">
+                    @TotalAmount
+                </td>
+                <td width="30%">
+                    <a href="/groups/details/@Group.Id">Detaljer</a>
+                    |
+                    <a href="/groups/edit/@Group.Id">Rediger</a>
+                    |
+                    <a href="/groups/delete/@Group.Id">Slet</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+}
+
+@code {
+    [Parameter]
+    public required Group Group { get; set; }
+
+    [Parameter]
+    public LogInResponse CurrentUserData { get; set; } = null!;
+
+    public int TotalAmount { get; set; } = 0;
+    public int Arrived { get; set; } = 0;
+    public int Late { get; set; } = 0;
+    public int Missing { get; set; } = 0;
+
+    private bool IsLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+
+        await LoadDataAsync();
+    }
+
+    private async Task LoadDataAsync()
+    {
+        IsLoading = true;
+        try
+        {
+            List<CheckInResponseLong> checkInResponses = await dailyOverviewService.GetCheckInsForToday(Group.Id, DateOnly.FromDateTime(DateTime.Today));
+            if (Group.FlexibleArrivalEnabled)
+                Group.ArrivalTime.Add(Group.FlexibleAmount ?? new TimeSpan());
+            if (checkInResponses != null && checkInResponses.Count != 0)
+            {
+                foreach (var item in checkInResponses)
+                {
+                    if (item.Arrival == new TimeOnly())
+                        Missing++;
+                    else
+                    {
+                        Arrived++;
+                        if (item.Arrival > Group.ArrivalTime)
+                        {
+                            Late++;
+                        }
+                    }
+
+                }
+            }
+            TotalAmount = Missing + Arrived;
+        }
+        catch (Exception)
+        {
+
+            throw;
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+}
+

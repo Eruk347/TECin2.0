@@ -1,5 +1,4 @@
 ﻿using TECin2.ClassLibrary.DTOs;
-
 namespace TECin2.Blazor.Services
 {
     public interface IStudentCheckInService

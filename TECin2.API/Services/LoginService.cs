@@ -104,7 +104,8 @@ namespace TECin2.API.Services
                                             IsLateBuffer = group.IsLateBuffer,
                                             IsLateMessage = group.IsLateMessage,
                                             WorkHoursInDay = group.WorkHoursInDay,
-                                            Deactivated = group.Deactivated
+                                            Deactivated = group.Deactivated,
+                                            DepartmentId=group.DepartmentId
                                         });
                                     }
                                 }
